@@ -1,0 +1,562 @@
+/* ============================================================
+   RESPONSIVE NAVIGATION & GLOBAL STYLES
+   ============================================================ */
+
+/* Variáveis responsivas */
+:root {
+  --navbar-height: 70px;
+  --container-padding: 20px;
+  --mobile-padding: 15px;
+}
+
+/* ============================================================
+   NAVBAR RESPONSIVA
+   ============================================================ */
+
+.navbar {
+  position: relative;
+}
+
+/* Menu Hambúrguer */
+.navbar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: transform 0.3s ease;
+  z-index: 1001;
+}
+
+.navbar-toggle:hover {
+  transform: scale(1.1);
+  color: #ff8c00;
+}
+
+.navbar-toggle.active {
+  position: fixed;
+  right: 20px;
+  top: 15px;
+}
+
+/* ============================================================
+   MEDIA QUERIES - TABLET (max-width: 1024px)
+   ============================================================ */
+
+@media (max-width: 1024px) {
+  .navbar-container {
+    padding: 0 var(--mobile-padding);
+  }
+
+  .container,
+  .mapa-container {
+    padding: 0 var(--mobile-padding);
+  }
+
+  /* Ajustar grids para tablet */
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .spots-container {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+/* ============================================================
+   MEDIA QUERIES - MOBILE LARGE (max-width: 768px)
+   ============================================================ */
+
+@media (max-width: 768px) {
+  :root {
+    --navbar-height: 60px;
+  }
+
+  /* Navbar Mobile */
+  .navbar-toggle {
+    display: block;
+  }
+
+  .navbar-container {
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .navbar-brand {
+    flex: 1;
+  }
+
+  .navbar-brand a {
+    font-size: 20px !important;
+  }
+
+  .navbar-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2b 100%);
+    padding: 80px 20px 20px;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 1000;
+    overflow-y: auto;
+  }
+
+  .navbar-menu.active {
+    right: 0;
+  }
+
+  .navbar-menu ul {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .navbar-menu li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .navbar-menu a {
+    display: block;
+    padding: 15px 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .navbar-menu a:hover {
+    padding-left: 20px;
+    background: rgba(255, 140, 0, 0.1);
+  }
+
+  .navbar-user {
+    width: 100%;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Overlay quando menu está aberto */
+  .navbar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+  }
+
+  .navbar-overlay.active {
+    display: block;
+  }
+
+  /* Welcome Section */
+  .welcome-section {
+    padding: 30px 20px !important;
+    margin-bottom: 25px !important;
+  }
+
+  .welcome-section h1 {
+    font-size: 24px !important;
+  }
+
+  .welcome-section p {
+    font-size: 14px !important;
+  }
+
+  /* Stats Grid - 2 colunas em mobile */
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 30px !important;
+  }
+
+  .stat-card {
+    padding: 20px 15px !important;
+  }
+
+  .stat-number {
+    font-size: 28px !important;
+  }
+
+  .stat-label {
+    font-size: 13px !important;
+  }
+
+  /* Grids gerais */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Container */
+  .container {
+    margin: 20px auto;
+    padding: 0 var(--mobile-padding);
+  }
+
+  /* Headings */
+  h2 {
+    font-size: 22px !important;
+    margin-bottom: 15px !important;
+  }
+
+  /* Product Cards */
+  .product-card {
+    margin-bottom: 15px;
+  }
+
+  .product-image {
+    height: 180px !important;
+  }
+
+  /* Profile */
+  .profile-card {
+    padding: 20px !important;
+  }
+
+  .profile-avatar {
+    width: 80px !important;
+    height: 80px !important;
+    font-size: 32px !important;
+  }
+
+  /* Admin Tabs */
+  .admin-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px !important;
+  }
+
+  .admin-tab {
+    padding: 12px 18px !important;
+    font-size: 14px !important;
+    white-space: nowrap;
+  }
+
+  /* Tables */
+  .table {
+    font-size: 14px;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background: white;
+  }
+
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 5px !important;
+    border: none !important;
+    text-align: right !important;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    text-align: left;
+    color: #333;
+  }
+
+  /* Buttons */
+  button,
+  .btn-logout,
+  .btn-salvar,
+  .btn-adicionar {
+    font-size: 14px;
+    padding: 10px 16px !important;
+  }
+
+  /* Mapa */
+  .mapa-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .mapa-header h1 {
+    font-size: 24px !important;
+  }
+
+  .controls {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .controls select,
+  .controls button {
+    width: 100%;
+  }
+
+  #map {
+    height: 400px !important;
+    margin-bottom: 20px;
+  }
+
+  .spots-container {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .spot-card {
+    padding: 15px !important;
+  }
+
+  /* Modalidades */
+  .modalidade-card {
+    width: 100% !important;
+    min-height: 220px !important;
+  }
+
+  .modalidade-icon {
+    height: 60px !important;
+    font-size: 40px !important;
+  }
+
+  .modalidade-info h3 {
+    font-size: 1.2rem !important;
+  }
+
+  .modalidade-info p {
+    font-size: 0.85rem !important;
+  }
+
+  .modalidade-categorias {
+    width: 95vw !important;
+    height: 70vh !important;
+  }
+
+  .categoria-tag {
+    font-size: 0.9rem !important;
+    padding: 10px 14px !important;
+    max-width: 200px !important;
+  }
+
+  /* Form Groups */
+  .form-group {
+    margin-bottom: 18px !important;
+  }
+
+  .form-group label {
+    font-size: 13px !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+  }
+}
+
+/* ============================================================
+   MEDIA QUERIES - MOBILE SMALL (max-width: 480px)
+   ============================================================ */
+
+@media (max-width: 480px) {
+  :root {
+    --mobile-padding: 12px;
+  }
+
+  /* Stats em coluna única */
+  .stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Navbar */
+  .navbar-brand a {
+    font-size: 18px !important;
+  }
+
+  .navbar-menu {
+    width: 100%;
+    right: -100%;
+  }
+
+  .navbar-menu.active {
+    right: 0;
+  }
+
+  .navbar-toggle {
+    font-size: 24px;
+  }
+
+  .role-badge {
+    font-size: 10px !important;
+    padding: 4px 10px !important;
+  }
+
+  /* Welcome Section */
+  .welcome-section {
+    padding: 20px 15px !important;
+  }
+
+  .welcome-section h1 {
+    font-size: 20px !important;
+  }
+
+  .welcome-section p {
+    font-size: 13px !important;
+  }
+
+  /* Cards */
+  .stat-card {
+    padding: 18px 12px !important;
+  }
+
+  .stat-number {
+    font-size: 24px !important;
+  }
+
+  .stat-label {
+    font-size: 12px !important;
+  }
+
+  /* Headings */
+  h2 {
+    font-size: 20px !important;
+  }
+
+  /* Mapa */
+  #map {
+    height: 300px !important;
+  }
+
+  .mapa-header h1 {
+    font-size: 20px !important;
+  }
+
+  /* Modalidades */
+  .modalidade-card {
+    min-height: 200px !important;
+  }
+
+  .modalidade-icon {
+    height: 50px !important;
+    font-size: 32px !important;
+  }
+
+  .modalidade-info {
+    padding: 15px !important;
+  }
+
+  .modalidade-info h3 {
+    font-size: 1.1rem !important;
+  }
+
+  .modalidade-categorias::before {
+    width: 500px !important;
+    height: 500px !important;
+  }
+
+  .categoria-tag {
+    font-size: 0.8rem !important;
+    padding: 8px 12px !important;
+    max-width: 160px !important;
+  }
+
+  /* Botões */
+  .btn-primary {
+    font-size: 15px !important;
+    padding: 12px !important;
+  }
+
+  /* Container */
+  .container {
+    margin: 15px auto;
+  }
+
+  /* Product Cards */
+  .product-image {
+    height: 160px !important;
+  }
+
+  /* Profile Avatar */
+  .profile-avatar {
+    width: 70px !important;
+    height: 70px !important;
+    font-size: 28px !important;
+  }
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+/* Esconder em mobile */
+.hide-mobile {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Mostrar apenas em mobile */
+.show-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+/* Scrollbar para mobile */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1a1a1b;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ff8c00;
+  }
+}
+
+/* Prevenir zoom em inputs no iOS */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BoardSports - Login</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo"></div>
+      <h1>BoardSports</h1>
+      <p>Sua plataforma de desportos de prancha</p>
+    </div>
+
+    <form id="login-form" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          id="email" 
+          type="email" 
+          placeholder="seu@email.com"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password">Palavra-passe</label>
+        <input 
+          id="password" 
+          type="password" 
+          placeholder="••••••••"
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn-primary" id="login-btn">
+        <span>Entrar</span>
+        <span class="btn-icon">→</span>
+      </button>
+
+      <div id="msg" class="auth-message"></div>
+    </form>
+
+    <div class="auth-divider">ou</div>
+
+    <div class="auth-footer">
+      <p>Não tem conta?</p>
+      <a href="register.html" class="auth-link">Criar conta</a>
+    </div>
+  </div>
+
+  <div class="auth-background">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+</div>
+
+<script type="module" src="js/auth.js"></script>
+<script src="js/responsive.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modalidades - BoardSports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .modalidade-card {
+      background: linear-gradient(180deg, rgba(30, 30, 32, 0.95), rgba(18, 18, 20, 0.98));
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 140, 0, 0.1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      position: relative;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      width: min(520px, 92vw);
+      z-index: 2;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .modalidade-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--glow-orange);
+      box-shadow: 0 10px 30px rgba(255, 140, 0, 0.2);
+    }
+
+    .modalidade-icon {
+      width: 100%;
+      height: 80px;
+      background: linear-gradient(135deg, rgba(255, 140, 0, 0.2) 0%, rgba(26, 26, 27, 0.95) 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+      transition: 0.3s;
+    }
+
+    .modalidade-card:hover .modalidade-icon {
+      background: linear-gradient(135deg, #222 0%, var(--glow-orange) 200%);
+    }
+
+    .modalidade-info {
+      padding: 18px 20px 12px 20px;
+      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: 0.3s;
+    }
+
+    .modalidade-info h3 {
+      margin: 0 0 10px 0;
+      color: var(--glow-orange);
+      font-size: 1.5rem;
+    }
+
+    .modalidade-info p {
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    .modalidade-cta {
+      margin: 16px 20px 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #aaa;
+      font-size: 0.85rem;
+    }
+
+    .modalidade-cta span {
+      color: var(--glow-orange);
+      font-weight: 600;
+    }
+
+    .modalidades-layers {
+      position: relative;
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modalidade-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .modalidade-layer.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modalidade-categorias {
+      position: absolute;
+      width: min(1200px, 96vw);
+      height: min(860px, 82vh);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .modalidade-categorias::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 760px;
+      height: 760px;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(255, 160, 60, 0.25);
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(255, 140, 0, 0.08);
+    }
+
+    .categoria-tag {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      border: 1px solid rgba(255, 170, 70, 0.45);
+      background: rgba(18, 18, 20, 0.9);
+      color: #f8f2e6;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      white-space: nowrap;
+      transform: translate(-50%, -50%) translate(calc(var(--orbit-x, 0px) * (1 - var(--orbit-collapse, 0))), calc(var(--orbit-y, 0px) * (1 - var(--orbit-collapse, 0)))) scale(calc(1 - (var(--orbit-collapse, 0) * 0.15)));
+      animation: orbitFloat 4.5s ease-in-out infinite;
+      animation-delay: var(--orbit-delay, 0s);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+      max-width: 320px;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .categoria-empty {
+      color: #777;
+      font-size: 0.75rem;
+    }
+
+    @keyframes orbitFloat {
+      0%, 100% {
+        transform: translate(-50%, -50%) translate(calc(var(--orbit-x, 0px) * (1 - var(--orbit-collapse, 0))), calc(var(--orbit-y, 0px) * (1 - var(--orbit-collapse, 0)))) translateY(0) scale(calc(1 - (var(--orbit-collapse, 0) * 0.15)));
+      }
+      50% {
+        transform: translate(-50%, -50%) translate(calc(var(--orbit-x, 0px) * (1 - var(--orbit-collapse, 0))), calc(var(--orbit-y, 0px) * (1 - var(--orbit-collapse, 0)))) translateY(-6px) scale(calc(1 - (var(--orbit-collapse, 0) * 0.15)));
+      }
+    }
+
+    .tunnel-shell {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .tunnel-stage {
+      width: min(1100px, 92vw);
+      perspective: 1200px;
+    }
+
+    .tunnel-content {
+      transform-style: preserve-3d;
+      transform: translateZ(var(--tunnel-depth, 0px)) scale(var(--tunnel-scale, 1)) rotateX(var(--tunnel-tilt, 0deg));
+      transition: transform 0.08s linear;
+      pointer-events: auto;
+    }
+
+    .tunnel-scroll-space {
+      height: 220vh;
+    }
+
+    .container {
+      background: transparent;
+      box-shadow: none;
+      padding: 10px 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, rgba(255, 140, 0, 0.12), transparent 45%),
+                  radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.06), transparent 60%),
+                  #0b0b0c;
+      overflow-x: hidden;
+    }
+
+    .header-section {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1100px, 92vw);
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .header-section h1,
+    .header-section p {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tunnel-shell {
+      padding-top: 140px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -40%;
+      background: repeating-radial-gradient(circle at center, rgba(255, 140, 0, 0.08) 0, rgba(255, 140, 0, 0.05) 6px, transparent 8px, transparent 28px);
+      opacity: 0.35;
+      z-index: -1;
+      transform: scale(1.1);
+    }
+
+    body.tunnel-scroll::before {
+      animation: tunnelPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes tunnelPulse {
+      0%, 100% { transform: scale(1.05); opacity: 0.28; }
+      50% { transform: scale(1.2); opacity: 0.5; }
+    }
+  </style>
+</head>
+<body class="tunnel-scroll">
+
+<div class="tunnel-shell">
+  <div class="tunnel-stage" id="tunnel-stage">
+    <div class="container tunnel-content" id="tunnel-content">
+      <div class="header-section" style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 3rem; margin-bottom: 10px;">Modalidades âš¡</h1>
+        <p style="color: #888; font-size: 1.2rem;">Explora as diversas disciplinas e as suas categorias tÃ©cnicas.</p>
+      </div>
+
+      <div class="modalidades-layers" id="modalidades-container">
+        <p>A carregar desportos...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tunnel-scroll-space" id="tunnel-scroll-space"></div>
+
+<script type="module" src="js/modalidades_page.js"></script>
+<script src="js/responsive.js"></script>
+</body>
+</html>

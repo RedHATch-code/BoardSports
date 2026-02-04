@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>BoardSports | Login</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-card">
+
+      <!-- HEADER -->
+      <div class="auth-header">
+        <div class="auth-logo">🏂</div>
+        <h1>BoardSports</h1>
+        <p>Entra na tua conta</p>
+      </div>
+
+      <!-- FORM -->
+      <form id="login-form" class="auth-form">
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="exemplo@email.com"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="••••••••"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn-primary">
+          Entrar
+          <span class="btn-icon">→</span>
+        </button>
+
+        <div id="msg" class="auth-message"></div>
+      </form>
+
+      <!-- DIVIDER -->
+      <div class="auth-divider">ou</div>
+
+      <!-- FOOTER -->
+      <div class="auth-footer">
+        <p>Ainda não tens conta?</p>
+        <a href="register.html" class="auth-link">Criar conta</a>
+      </div>
+
+    </div>
+
+    <!-- BACKGROUND BLOBS -->
+    <div class="auth-background">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+  </div>
+
+  <!-- AUTH JS -->
+  <script type="module" src="js/auth.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empresa - BoardSports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .empresa-container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px 60px 20px;
+    }
+
+    .empresa-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 140, 0, 0.5);
+      background: transparent;
+      color: #f2f2f2;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tab-btn.active {
+      background: #ff8c00;
+      color: #111;
+    }
+
+    .tab-panel {
+      display: none;
+      background: rgba(20, 20, 22, 0.85);
+      border: 1px solid rgba(255, 140, 0, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #f2f2f2;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 140, 0, 0.4);
+      background: #141417;
+      color: #f2f2f2;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .btn-primary {
+      padding: 10px 16px;
+      background: #ff8c00;
+      border: none;
+      color: #111;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      padding: 10px 16px;
+      background: transparent;
+      border: 1px solid rgba(255, 140, 0, 0.5);
+      color: #f2f2f2;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .empresa-preview {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 140, 0, 0.15);
+    }
+
+    .empresa-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #1f1f22;
+      border: 1px solid rgba(255, 140, 0, 0.2);
+    }
+
+    .produtos-grid {
+      margin-top: 20px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .produto-card {
+      padding: 16px;
+      border-radius: 10px;
+      background: rgba(24, 24, 26, 0.9);
+      border: 1px solid rgba(255, 140, 0, 0.2);
+    }
+
+    .produto-card h4 {
+      margin: 0 0 6px 0;
+      color: #ff8c00;
+    }
+  </style>
+</head>
+<body>
+  <div class="empresa-container">
+    <div class="empresa-header">
+      <h1>Área da Empresa</h1>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="perfil">Perfil da Empresa</button>
+        <button class="tab-btn" data-tab="produtos">Produtos</button>
+      </div>
+    </div>
+
+    <div class="tab-panel active" id="tab-perfil">
+      <p>Cola o link do site da tua empresa e importamos automaticamente os dados.</p>
+
+      <div class="form-group">
+        <label for="empresa-url">Website da empresa</label>
+        <input type="url" id="empresa-url" placeholder="https://exemplo.com">
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+        <button class="btn-primary" id="btn-importar">Importar dados</button>
+        <button class="btn-secondary" id="btn-guardar-perfil">Guardar perfil</button>
+      </div>
+
+      <div class="empresa-preview" id="empresa-preview" style="display: none;">
+        <img id="empresa-logo" class="empresa-logo" alt="Logo da empresa">
+        <div>
+          <strong id="empresa-nome-preview"></strong>
+          <p id="empresa-bio-preview" style="margin: 6px 0 0 0; color: #aaa;"></p>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top: 20px;">
+        <div class="form-group">
+          <label for="empresa-nome">Nome</label>
+          <input type="text" id="empresa-nome" placeholder="Nome da empresa">
+        </div>
+        <div class="form-group">
+          <label for="empresa-site">Website</label>
+          <input type="url" id="empresa-site" placeholder="https://exemplo.com">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label for="empresa-bio">Descrição</label>
+          <textarea id="empresa-bio" placeholder="Descrição da empresa"></textarea>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label for="empresa-logo-url">Logo (URL)</label>
+          <input type="url" id="empresa-logo-url" placeholder="https://.../logo.png">
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-produtos">
+      <h3>Adicionar Produto</h3>
+      <form id="form-produto">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="produto-nome">Nome do produto</label>
+            <input type="text" id="produto-nome" required>
+          </div>
+          <div class="form-group">
+            <label for="produto-preco">Preço (€)</label>
+            <input type="number" id="produto-preco" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="produto-stock">Stock</label>
+            <input type="number" id="produto-stock" value="0">
+          </div>
+          <div class="form-group">
+            <label for="produto-modalidade">Modalidade</label>
+            <select id="produto-modalidade" required>
+              <option value="">Selecionar Modalidade</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="produto-descricao">Descrição</label>
+            <textarea id="produto-descricao"></textarea>
+          </div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button type="submit" class="btn-primary">Adicionar produto</button>
+        </div>
+      </form>
+
+      <h3 style="margin-top: 30px;">Os teus produtos</h3>
+      <div class="produtos-grid" id="produtos-empresa"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/empresa_page.js"></script>
+  <script src="js/responsive.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "boardsportsinc-tm2026",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node run_server.js",
+    "smoke": "node smoke_test.js"
+  }
+}

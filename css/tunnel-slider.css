@@ -1,0 +1,557 @@
+.landing-main {
+  position: relative;
+  z-index: 1;
+}
+
+.tunnel-slider-section {
+  position: relative;
+  margin-top: 20px;
+  padding: 36px 0 112px;
+}
+
+.tunnel-slider-intro {
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto 24px;
+}
+
+.tunnel-kicker {
+  margin-bottom: 12px;
+  color: rgba(255, 202, 122, 0.88);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.tunnel-slider-intro h2 {
+  max-width: 10ch;
+  font-size: clamp(2.5rem, 4.2vw, 4rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  color: #f6f4ef;
+}
+
+.tunnel-slider-intro p:last-child {
+  max-width: 560px;
+  margin-top: 14px;
+  color: rgba(237, 237, 237, 0.66);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.tunnel-scroll-track {
+  position: relative;
+  height: 190vh;
+}
+
+.tunnel-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.tunnel-stage {
+  --tunnel-progress: 0;
+  --tunnel-flight: 0px;
+  position: relative;
+  width: min(1240px, calc(100% - 48px));
+  height: 100vh;
+  margin: 0 auto;
+  perspective: 2100px;
+  transform-style: preserve-3d;
+  isolation: isolate;
+}
+
+.tunnel-stage::before,
+.tunnel-stage::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.tunnel-stage::before {
+  inset: 10% 10% 12%;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 140, 0, 0.12), transparent 24%),
+    radial-gradient(circle at 50% 50%, rgba(77, 166, 255, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(7, 8, 10, 0.01));
+  transform:
+    translateZ(-560px)
+    rotateX(calc(-4deg + (var(--tunnel-progress) * 8deg)));
+  filter: blur(2px);
+}
+
+.tunnel-stage::after {
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(4, 6, 8, 0) 0 21%, rgba(4, 6, 8, 0.62) 52%, rgba(4, 6, 8, 0.92) 100%);
+  z-index: 4;
+}
+
+.tunnel-rings {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  z-index: 0;
+}
+
+.tunnel-rings span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(220px + (var(--ring-index) * 138px));
+  height: calc(160px + (var(--ring-index) * 96px));
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 0 0 1px rgba(255, 140, 0, 0.015),
+    0 0 20px rgba(255, 140, 0, 0.025),
+    inset 0 0 24px rgba(77, 166, 255, 0.02);
+  transform:
+    translate(-50%, -50%)
+    translateZ(calc((var(--ring-index) * -240px) + var(--tunnel-flight)))
+    rotateX(calc(-10deg + (var(--tunnel-progress) * 8deg)));
+  opacity: calc(0.94 - (var(--ring-index) * 0.07));
+}
+
+.tunnel-progress-shell {
+  position: absolute;
+  right: 0;
+  bottom: 54px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tunnel-progress-index {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: rgba(255, 176, 78, 0.92);
+}
+
+.tunnel-progress-track {
+  width: 150px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tunnel-progress-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(0.12);
+  background: linear-gradient(90deg, #ff9f0a 0%, #66b8ff 100%);
+}
+
+.tunnel-slide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(720px, calc(100vw - 120px));
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(13, 17, 24, 0.94);
+  box-shadow:
+    0 24px 52px rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  contain: layout style paint;
+  opacity: 0;
+  z-index: 3;
+}
+
+.tunnel-slide::before,
+.tunnel-slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tunnel-slide::before {
+  background:
+    radial-gradient(circle at 18% 18%, var(--mind-aura), transparent 26%),
+    radial-gradient(circle at 82% 24%, var(--mind-secondary), transparent 26%),
+    linear-gradient(180deg, rgba(11, 13, 18, 0.08) 0%, rgba(11, 13, 18, 0.14) 38%, rgba(11, 13, 18, 0.92) 100%);
+  z-index: 1;
+}
+
+.tunnel-slide::after {
+  inset: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 2;
+}
+
+.tunnel-slide.is-active {
+  box-shadow:
+    0 32px 64px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 28px rgba(255, 140, 0, 0.05);
+}
+
+.mind-map {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.mind-links {
+  position: absolute;
+  inset: 0;
+}
+
+.mind-connection {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05));
+  transform-origin: left center;
+  opacity: 0.52;
+}
+
+.mind-connection.is-focus {
+  background: linear-gradient(90deg, rgba(255, 176, 78, 0.9), rgba(102, 184, 255, 0.2));
+  box-shadow: 0 0 18px rgba(255, 140, 0, 0.18);
+  opacity: 1;
+}
+
+.mind-connection-surf {
+  width: 216px;
+  transform: translate(-4px, -2px) rotate(-150deg);
+}
+
+.mind-connection-skate {
+  width: 208px;
+  transform: translate(-2px, -2px) rotate(-34deg);
+}
+
+.mind-connection-skim {
+  width: 226px;
+  transform: translate(-6px, 2px) rotate(147deg);
+}
+
+.mind-connection-snow {
+  width: 214px;
+  transform: translate(-4px, 2px) rotate(36deg);
+}
+
+.mind-connection-sand {
+  width: 156px;
+  transform: translate(-2px, 2px) rotate(90deg);
+}
+
+.mind-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 174px;
+  height: 174px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18), transparent 28%),
+    radial-gradient(circle at center, rgba(255, 140, 0, 0.2), transparent 60%),
+    rgba(12, 15, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 0 40px rgba(255, 140, 0, 0.06);
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+}
+
+.mind-core small {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(237, 237, 237, 0.56);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.mind-core strong {
+  display: block;
+  color: #f6f4ef;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.mind-node {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 116px;
+  padding: 13px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(18, 21, 27, 0.88);
+  color: rgba(237, 237, 237, 0.82);
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  font-size: 14px;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+}
+
+.mind-node.is-focus {
+  background: linear-gradient(135deg, rgba(255, 159, 10, 0.2), rgba(77, 166, 255, 0.14));
+  border-color: rgba(255, 176, 78, 0.34);
+  color: #fff6e7;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.3),
+    0 0 24px rgba(255, 140, 0, 0.14);
+}
+
+.mind-node-surf {
+  top: 27%;
+  left: 24%;
+}
+
+.mind-node-skate {
+  top: 28%;
+  left: 76%;
+}
+
+.mind-node-skim {
+  top: 68%;
+  left: 22%;
+}
+
+.mind-node-snow {
+  top: 67%;
+  left: 78%;
+}
+
+.mind-node-sand {
+  top: 82%;
+  left: 50%;
+}
+
+.mind-caption {
+  position: absolute;
+  left: 24px;
+  bottom: 22px;
+  z-index: 3;
+}
+
+.mind-caption span {
+  display: inline-flex;
+  margin-bottom: 10px;
+  color: rgba(255, 176, 78, 0.92);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.mind-caption h3 {
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 0.96;
+  color: #f7f4ef;
+}
+
+@media (max-width: 1024px) {
+  .tunnel-stage,
+  .tunnel-slider-intro {
+    width: min(100%, calc(100% - 32px));
+  }
+
+  .tunnel-progress-shell {
+    right: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tunnel-slider-section {
+    padding: 38px 0 92px;
+  }
+
+  .tunnel-scroll-track {
+    height: 170vh;
+  }
+
+  .tunnel-slider-intro h2 {
+    max-width: none;
+  }
+
+  .tunnel-progress-shell {
+    right: 0;
+    bottom: 32px;
+    left: 0;
+    justify-content: center;
+  }
+
+  .tunnel-progress-track {
+    width: 120px;
+  }
+
+  .tunnel-slide {
+    width: min(100%, calc(100vw - 42px));
+    border-radius: 24px;
+  }
+
+  .tunnel-slide::after {
+    inset: 12px;
+    border-radius: 18px;
+  }
+
+  .mind-core {
+    width: 146px;
+    height: 146px;
+  }
+
+  .mind-core strong {
+    font-size: 23px;
+  }
+
+  .mind-node {
+    min-width: 94px;
+    padding: 11px 14px;
+    font-size: 12px;
+  }
+
+  .mind-node-surf {
+    top: 24%;
+    left: 23%;
+  }
+
+  .mind-node-skate {
+    top: 25%;
+    left: 77%;
+  }
+
+  .mind-node-skim {
+    top: 69%;
+    left: 21%;
+  }
+
+  .mind-node-snow {
+    top: 67%;
+    left: 79%;
+  }
+
+  .mind-node-sand {
+    top: 82%;
+    left: 50%;
+  }
+
+  .mind-connection-surf {
+    width: 180px;
+  }
+
+  .mind-connection-skate {
+    width: 176px;
+  }
+
+  .mind-connection-skim {
+    width: 184px;
+  }
+
+  .mind-connection-snow {
+    width: 178px;
+  }
+
+  .mind-connection-sand {
+    width: 128px;
+  }
+
+  .mind-caption {
+    left: 18px;
+    bottom: 18px;
+  }
+
+  .mind-caption h3 {
+    font-size: clamp(1.8rem, 8vw, 2.4rem);
+  }
+}
+
+@media (max-width: 560px) {
+  .tunnel-slider-intro,
+  .tunnel-stage {
+    width: min(100%, calc(100% - 24px));
+  }
+
+  .tunnel-stage::before {
+    inset: 10% 2%;
+    border-radius: 34px;
+  }
+
+  .tunnel-rings span {
+    width: calc(160px + (var(--ring-index) * 96px));
+    height: calc(110px + (var(--ring-index) * 72px));
+  }
+
+  .mind-core {
+    width: 132px;
+    height: 132px;
+  }
+
+  .mind-core strong {
+    font-size: 20px;
+  }
+
+  .mind-node {
+    min-width: 82px;
+    padding: 10px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+  }
+
+  .mind-node-surf {
+    top: 23%;
+    left: 22%;
+  }
+
+  .mind-node-skate {
+    top: 24%;
+    left: 78%;
+  }
+
+  .mind-node-skim {
+    top: 68%;
+    left: 19%;
+  }
+
+  .mind-node-snow {
+    top: 66%;
+    left: 81%;
+  }
+
+  .mind-connection-surf {
+    width: 154px;
+  }
+
+  .mind-connection-skate {
+    width: 146px;
+  }
+
+  .mind-connection-skim {
+    width: 164px;
+  }
+
+  .mind-connection-snow {
+    width: 152px;
+  }
+
+  .mind-connection-sand {
+    width: 110px;
+  }
+}

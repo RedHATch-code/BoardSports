@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moderacao - BoardSports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/moderation.css">
+</head>
+<body class="moderation-page">
+
+<div class="moderation-shell">
+  <section class="moderation-hero">
+    <div>
+      <span class="moderation-kicker">Painel admin</span>
+      <h1>Moderacao de spots pendentes.</h1>
+      <p>
+        Aprova ou rejeita pedidos de publicacao. Quando aprovas, o spot fica
+        imediatamente publico no mapa para toda a comunidade.
+      </p>
+    </div>
+
+    <div class="moderation-hero-card">
+      <strong id="moderation-count">0 pendentes</strong>
+      <span id="moderation-user-label">Admin</span>
+      <p id="moderation-summary">Usa este painel para manter o mapa publico coerente e moderado.</p>
+    </div>
+  </section>
+
+  <section class="moderation-panel">
+    <div class="moderation-panel-head">
+      <div>
+        <h2>Solicitacoes e historico</h2>
+        <p>Filtra pendentes, aprovados e rejeitados. A pesquisa cruza spot, autor, modalidade e categoria.</p>
+      </div>
+      <div class="moderation-toolbar">
+        <select id="moderation-status-filter" class="moderation-filter">
+          <option value="pendente">Pendentes</option>
+          <option value="todos">Todos</option>
+          <option value="aprovado">Aprovados</option>
+          <option value="rejeitado">Rejeitados</option>
+        </select>
+        <input type="search" id="moderation-search" class="moderation-search" placeholder="Pesquisar spot, autor ou modalidade">
+        <button type="button" id="moderation-refresh" class="moderation-secondary-button">Atualizar</button>
+      </div>
+    </div>
+
+    <div class="moderation-stats-row">
+      <article class="moderation-stat-card">
+        <strong id="moderation-pending-count">0</strong>
+        <span>Pendentes</span>
+      </article>
+      <article class="moderation-stat-card">
+        <strong id="moderation-approved-count">0</strong>
+        <span>Aprovados</span>
+      </article>
+      <article class="moderation-stat-card">
+        <strong id="moderation-rejected-count">0</strong>
+        <span>Rejeitados</span>
+      </article>
+    </div>
+
+    <div id="moderation-list" class="moderation-list">
+      <article class="moderation-empty-card">
+        <p>A carregar solicitacoes...</p>
+      </article>
+    </div>
+  </section>
+</div>
+
+<script type="module" src="js/moderacao_page.js"></script>
+<script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
+</body>
+</html>

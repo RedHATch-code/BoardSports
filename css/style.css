@@ -1,10 +1,29 @@
 :root {
-  --black: #1a1a1b;
-  --washed-black: #212121;
+  --black: #111317;
+  --washed-black: #191d25;
   --glow-orange: #ff8c00;
   --orange-accent: #ffae42;
-  --white: #EDEDED;
-  --gray: #2A2A2D;
+  --white: #f4f2ed;
+  --gray: #242934;
+  --page-bg: #0f131b;
+  --surface-1: rgba(18, 23, 31, 0.94);
+  --surface-2: rgba(255, 255, 255, 0.04);
+  --surface-3: rgba(255, 255, 255, 0.06);
+  --line-soft: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.12);
+  --text-main: #f3f1eb;
+  --text-muted: #a8afbb;
+  --accent-soft: rgba(255, 140, 0, 0.14);
+  --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.18);
+  --shadow-strong: 0 28px 72px rgba(0, 0, 0, 0.24);
+  --radius-xl: 28px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-pill: 999px;
+  --ui-font-sans: "Aptos", "Segoe UI Variable Text", "Segoe UI", sans-serif;
+  --ui-font-display: "Aptos Display", "Bahnschrift", "Segoe UI", sans-serif;
+  --ui-font-serif: Georgia, "Times New Roman", serif;
+  --focus-ring: 0 0 0 3px rgba(255, 140, 0, 0.16);
 }
 
 * {
@@ -13,37 +32,107 @@
   box-sizing: border-box;
 }
 
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
-  background: var(--black);
-  color: var(--white);
+  min-height: 100vh;
+  font-family: var(--ui-font-sans);
+  background:
+    radial-gradient(circle at top left, rgba(255, 140, 0, 0.12), transparent 20%),
+    radial-gradient(circle at top right, rgba(77, 166, 255, 0.08), transparent 24%),
+    linear-gradient(180deg, #0f131b 0%, #151b26 100%);
+  color: var(--text-main);
+  line-height: 1.55;
   overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
 }
 
 a {
-  color: var(--glow-orange);
+  color: #ffc268;
   text-decoration: none;
-  transition: 0.3s;
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 a:hover {
-  text-shadow: 0 0 8px var(--glow-orange);
+  color: #ffd49a;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 button {
-  background: var(--glow-orange);
-  color: #000;
-  border: none;
-  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--orange-accent) 0%, var(--glow-orange) 100%);
+  color: #111319;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: bold;
-  border-radius: 6px;
-  transition: 0.3s;
-  box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 12px 28px rgba(255, 140, 0, 0.18);
 }
 
 button:hover {
-  background: var(--orange-accent);
-  box-shadow: 0 0 20px var(--glow-orange);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  box-shadow: 0 16px 32px rgba(255, 140, 0, 0.22);
+}
+
+button:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+input,
+select,
+textarea {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(255, 140, 0, 0.24);
+  color: #fff8ef;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

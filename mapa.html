@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
@@ -7,32 +7,85 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/responsive.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
   <style>
     body {
-      background-color: #1a1a1b;
+      background:
+        radial-gradient(circle at top left, rgba(255, 140, 0, 0.12), transparent 22%),
+        radial-gradient(circle at top right, rgba(77, 166, 255, 0.1), transparent 26%),
+        linear-gradient(180deg, #101317 0%, #161b24 100%);
       color: #ededed;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: var(--ui-font-sans, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
     }
 
     .mapa-container {
-      max-width: 1400px;
+      max-width: 1360px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 104px 16px 40px;
     }
 
     .mapa-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-end;
       margin-bottom: 20px;
       flex-wrap: wrap;
-      gap: 15px;
+      gap: 18px;
+      padding: 24px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background:
+        radial-gradient(circle at top right, rgba(77, 166, 255, 0.08), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(255, 140, 0, 0.1), transparent 32%),
+        rgba(18, 22, 30, 0.9);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+    }
+
+    .mapa-heading {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 760px;
+    }
+
+    .mapa-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      align-self: flex-start;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #dff2ff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mapa-eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ff8c00;
+      box-shadow: 0 0 14px rgba(255, 140, 0, 0.6);
     }
 
     .mapa-header h1 {
       color: #ff8c00;
       margin: 0;
-      font-size: 32px;
+      font-size: clamp(34px, 4vw, 46px);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+    }
+
+    .mapa-heading p {
+      margin: 0;
+      max-width: 64ch;
+      color: #a9afbb;
+      line-height: 1.7;
     }
 
     .controls {
@@ -40,32 +93,37 @@
       gap: 15px;
       align-items: center;
       flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .controls select {
+      min-height: 46px;
       padding: 10px 15px;
-      background-color: #2a2a2b;
+      background-color: rgba(255, 255, 255, 0.04);
       color: #ededed;
-      border: 1px solid #ff8c00;
-      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
       cursor: pointer;
       font-size: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
 
     .controls button {
-      padding: 10px 20px;
+      min-height: 46px;
+      padding: 10px 18px;
       background-color: #ff8c00;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 14px;
       cursor: pointer;
       font-weight: bold;
       transition: all 0.3s ease;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
     }
 
     .controls button:hover {
       background-color: #e67e00;
-      transform: translateY(-2px);
+      transform: translateY(-1px);
     }
 
     .controls button.btn-evento {
@@ -76,11 +134,326 @@
       background-color: #009e8a;
     }
 
+    .controls button.btn-location {
+      background-color: #2f333d;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
+
+    .controls button.btn-location:hover {
+      background-color: #3a404d;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .controls button.btn-location.is-ready {
+      border-color: rgba(77, 166, 255, 0.45);
+      box-shadow: 0 0 0 1px rgba(77, 166, 255, 0.18);
+    }
+
+    .globe-section {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.95fr) minmax(420px, 1.25fr);
+      gap: 24px;
+      margin-bottom: 30px;
+      padding: 22px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(77, 166, 255, 0.12), transparent 32%),
+        radial-gradient(circle at bottom left, rgba(255, 140, 0, 0.1), transparent 38%),
+        linear-gradient(180deg, rgba(19, 24, 32, 0.96), rgba(12, 16, 22, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+      overflow: hidden;
+    }
+
+    .globe-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .globe-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      align-self: flex-start;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #dff2ff;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .globe-kicker::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4da6ff;
+      box-shadow: 0 0 16px rgba(77, 166, 255, 0.6);
+    }
+
+    .globe-copy h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 0.95;
+      color: #f6f7fb;
+      max-width: 12ch;
+    }
+
+    .globe-copy p {
+      margin: 0;
+      color: #a8acb7;
+      line-height: 1.7;
+    }
+
+    .globe-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .globe-stat {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .globe-stat strong {
+      display: block;
+      color: #ffffff;
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .globe-stat span {
+      color: #9ca3b1;
+      font-size: 13px;
+    }
+
+    .globe-active-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.025));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .globe-active-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .globe-active-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #3c4656, #1a1a1b);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .globe-active-text strong {
+      display: block;
+      font-size: 18px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .globe-active-text span {
+      display: block;
+      color: #90c7ff;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .globe-active-text small {
+      color: #8e93a1;
+      font-size: 12px;
+    }
+
+    .globe-active-note {
+      color: #c2c6cf;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .globe-stage {
+      position: relative;
+      min-height: 440px;
+      border-radius: 20px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at center, rgba(113, 164, 228, 0.1), transparent 42%),
+        radial-gradient(circle at top center, rgba(255, 255, 255, 0.045), transparent 28%),
+        linear-gradient(180deg, rgba(9, 13, 20, 0.94), rgba(6, 8, 13, 0.99));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .globe-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 26%),
+        repeating-linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.028) 0,
+          rgba(255, 255, 255, 0.028) 1px,
+          transparent 1px,
+          transparent 16px
+        );
+      pointer-events: none;
+    }
+
+    #globe-canvas {
+      width: 100%;
+      height: 100%;
+      min-height: 440px;
+      display: block;
+      cursor: grab;
+    }
+
+    .globe-stage-footer {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-end;
+      pointer-events: none;
+    }
+
+    .globe-stage-chip,
+    .globe-stage-hint {
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(8, 10, 16, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .globe-stage-chip strong,
+    .globe-stage-hint strong {
+      display: block;
+      color: #ffffff;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .globe-stage-chip span,
+    .globe-stage-hint span {
+      color: #aeb4c1;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .globe-stage-chip {
+      max-width: 210px;
+    }
+
+    .globe-stage-hint {
+      max-width: 460px;
+    }
+
+    .map-panel,
+    .spots-panel {
+      margin-bottom: 30px;
+      padding: 22px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(77, 166, 255, 0.08), transparent 30%),
+        linear-gradient(180deg, rgba(18, 22, 30, 0.96), rgba(12, 15, 20, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      color: #ff8c00;
+      font-size: 26px;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: #9da4b1;
+      line-height: 1.6;
+      max-width: 62ch;
+    }
+
+    @media (max-width: 980px) {
+      .globe-section {
+        grid-template-columns: 1fr;
+      }
+
+      .mapa-header {
+        align-items: flex-start;
+      }
+
+      .controls {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .globe-section {
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      #globe-canvas,
+      .globe-stage {
+        min-height: 360px;
+      }
+
+      .globe-stage-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .map-panel,
+      .spots-panel {
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .controls {
+        width: 100%;
+      }
+
+      .controls select,
+      .controls button {
+        width: 100%;
+      }
+    }
+
     #map {
       height: 600px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border-radius: 18px;
+      margin-bottom: 0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
     }
 
     .checkpoint-icon {
@@ -116,19 +489,193 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     }
 
+    .user-location-icon {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+    }
+
+    .user-location-dot {
+      position: relative;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #4da6ff;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 5px rgba(77, 166, 255, 0.18);
+    }
+
+    .user-location-dot::after {
+      content: "";
+      position: absolute;
+      inset: -7px;
+      border-radius: 50%;
+      border: 2px solid rgba(77, 166, 255, 0.45);
+      animation: user-location-pulse 1.9s ease-out infinite;
+    }
+
+    @keyframes user-location-pulse {
+      0% {
+        transform: scale(0.65);
+        opacity: 0.95;
+      }
+
+      75% {
+        transform: scale(1.35);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1.45);
+        opacity: 0;
+      }
+    }
+
     .spots-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      gap: 18px;
+      align-items: start;
+      padding-top: 8px;
     }
 
     .spot-card {
-      background-color: #2a2a2b;
-      border-left: 4px solid #ff8c00;
-      padding: 20px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
+      position: relative;
+      display: block;
       cursor: pointer;
+      perspective: 700px;
+      padding-bottom: 52px;
+      --pin-accent: #ff8c00;
+      --pin-accent-soft: rgba(255, 140, 0, 0.2);
+      --pin-rotate-x: 0deg;
+      --pin-rotate-y: 0deg;
+      --pin-translate-y: 0px;
+    }
+
+    .spot-card-shell {
+      position: relative;
+      transform-style: preserve-3d;
+      transform:
+        rotateX(var(--pin-rotate-x))
+        rotateY(var(--pin-rotate-y))
+        translateY(var(--pin-translate-y));
+      transition: transform 0.18s ease, filter 0.24s ease;
+      filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.24));
+    }
+
+    .spot-card:hover .spot-card-shell {
+      --pin-translate-y: -4px;
+      filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.28));
+    }
+
+    .spot-card-surface {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(24, 28, 36, 0.98), rgba(15, 18, 24, 1)),
+        #2a2a2b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 18px 18px 20px;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 10px 20px rgba(0, 0, 0, 0.18);
+      transform: translateZ(42px);
+    }
+
+    .spot-card-surface::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(255, 140, 0, 0.12), transparent 32%),
+        linear-gradient(140deg, rgba(255, 255, 255, 0.03), transparent 35%);
+      pointer-events: none;
+    }
+
+    .spot-card-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .spot-card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #dcefff;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .spot-card-link::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--pin-accent);
+      box-shadow: 0 0 8px var(--pin-accent);
+    }
+
+    .spot-card-preview {
+      position: relative;
+      min-height: 120px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      padding: 16px;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), transparent 28%),
+        linear-gradient(135deg, var(--pin-accent), #15202c 82%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .spot-card-preview::after {
+      content: "";
+      position: absolute;
+      inset: auto -28px -34px auto;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      filter: blur(2px);
+    }
+
+    .spot-preview-icon {
+      font-size: 30px;
+      line-height: 1;
+      margin-bottom: 28px;
+      display: block;
+    }
+
+    .spot-preview-meta {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .spot-preview-meta strong {
+      display: block;
+      color: #fff;
+      font-size: 16px;
+      margin-bottom: 4px;
     }
 
     .spot-card-header {
@@ -139,23 +686,18 @@
     }
 
     .checkpoint-badge {
-      background-color: #ff8c00;
+      background-color: var(--pin-accent);
       color: #111;
       font-weight: bold;
       font-size: 12px;
       padding: 4px 8px;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(255, 140, 0, 0.25);
+      box-shadow: 0 4px 10px var(--pin-accent-soft);
       white-space: nowrap;
     }
 
-    .spot-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(255, 140, 0, 0.2);
-    }
-
     .spot-card h3 {
-      color: #ff8c00;
+      color: var(--pin-accent);
       margin: 0 0 10px 0;
       font-size: 18px;
     }
@@ -180,6 +722,85 @@
       border-radius: 4px;
       cursor: pointer;
       transition: all 0.2s ease;
+    }
+
+    .spot-card-stem {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      width: 2px;
+      height: 44px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, var(--pin-accent) 0%, rgba(255, 255, 255, 0.75) 24%, rgba(255, 255, 255, 0.04) 100%);
+      box-shadow: 0 0 10px rgba(255, 140, 0, 0.16);
+      opacity: 0.74;
+    }
+
+    .spot-card-node {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 14px;
+      height: 14px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, var(--pin-accent) 58%, rgba(255, 255, 255, 0.12) 100%);
+      box-shadow:
+        0 0 10px rgba(255, 140, 0, 0.3),
+        0 0 22px rgba(255, 140, 0, 0.14);
+      z-index: 1;
+    }
+
+    .spot-card-pulse {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 70px;
+      height: 22px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      border: 1px solid var(--pin-accent-soft);
+      background: radial-gradient(circle, var(--pin-accent-soft), transparent 70%);
+      opacity: 0.55;
+      animation: spotPinPulse 2.6s ease-out infinite;
+    }
+
+    .spot-card-pulse::after {
+      content: "";
+      position: absolute;
+      inset: 6px 18px;
+      border-radius: inherit;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      opacity: 0.55;
+    }
+
+    @keyframes spotPinPulse {
+      0% {
+        transform: translateX(-50%) scale(0.72);
+        opacity: 0.85;
+      }
+      70% {
+        transform: translateX(-50%) scale(1.08);
+        opacity: 0.15;
+      }
+      100% {
+        transform: translateX(-50%) scale(1.14);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .spots-container {
+        gap: 22px;
+      }
+
+      .spot-card {
+        padding-bottom: 64px;
+      }
+
+      .spot-card-preview {
+        min-height: 108px;
+      }
     }
 
     .btn-edit {
@@ -215,14 +836,15 @@
     }
 
     .modal-content {
-      background-color: #2a2a2b;
-      padding: 30px;
-      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(20, 24, 31, 0.98), rgba(13, 16, 22, 0.99));
+      padding: 26px;
+      border-radius: 20px;
       max-width: 500px;
       width: 90%;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .modal-header {
@@ -266,11 +888,11 @@
     .form-group select,
     .form-group textarea {
       width: 100%;
-      padding: 10px;
-      background-color: #1a1a1b;
+      padding: 12px 14px;
+      background-color: rgba(255, 255, 255, 0.04);
       color: #ededed;
-      border: 1px solid #ff8c00;
-      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
       font-family: inherit;
       font-size: 14px;
       box-sizing: border-box;
@@ -286,7 +908,7 @@
     .form-group textarea:focus {
       outline: none;
       border-color: #ff8c00;
-      box-shadow: 0 0 5px rgba(255, 140, 0, 0.3);
+      box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.14);
     }
 
     .checkbox-group {
@@ -311,7 +933,7 @@
       padding: 12px;
       font-weight: bold;
       border: none;
-      border-radius: 6px;
+      border-radius: 14px;
       cursor: pointer;
       transition: all 0.3s ease;
       font-size: 14px;
@@ -336,13 +958,15 @@
     }
 
     #visibility-msg {
-      background-color: rgba(255, 140, 0, 0.1);
+      background:
+        linear-gradient(180deg, rgba(255, 140, 0, 0.13), rgba(255, 140, 0, 0.08));
       border-left: 4px solid #ff8c00;
-      padding: 12px;
-      border-radius: 4px;
-      margin-bottom: 15px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
       color: #ff8c00;
       font-size: 13px;
+      line-height: 1.6;
     }
 
     .no-spots {
@@ -361,7 +985,11 @@
 
 <div class="mapa-container">
   <div class="mapa-header">
-    <h1>🗺️ Mapa de Spots</h1>
+    <div class="mapa-heading">
+      <span class="mapa-eyebrow">Exploracao em direto</span>
+      <h1>Mapa de Spots</h1>
+      <p>Descobre spots, eventos e a tua localizacao atual num unico fluxo, com leitura global no globo e detalhe imediato no mapa.</p>
+    </div>
     <div class="controls">
       <select id="filter-modalidade">
         <option value="all">Todas as Modalidades</option>
@@ -371,6 +999,7 @@
         <option value="4">Snowboard</option>
         <option value="5">Sandboard</option>
       </select>
+      <button id="btn-my-location" class="btn-location" type="button">📍 Minha localização</button>
       <button id="btn-add-spot">➕ Novo Spot</button>
       <button id="btn-add-event" class="btn-evento">📅 Novo Evento</button>
     </div>
@@ -378,12 +1007,78 @@
 
   <div id="visibility-msg" style="display: none;"></div>
 
-  <div id="map"></div>
+  <section class="globe-section">
+    <div class="globe-copy">
+      <span class="globe-kicker">Globo 3D</span>
+      <h2>Le o globo antes de entrares no mapa.</h2>
+      <p>
+        Esta vista transforma spots e eventos em marcadores globais e mistura leitura territorial com rotas animadas. Quando ainda nao ha dados reais, o globo usa um conjunto demo para a experiencia nunca ficar vazia.
+      </p>
 
-  <div id="spots-list">
-    <h2 style="color: #ff8c00; margin-bottom: 20px;">Spots Encontrados</h2>
+      <div class="globe-stats">
+        <div class="globe-stat">
+          <strong id="globe-marker-count">0</strong>
+          <span>Marcadores ativos</span>
+        </div>
+        <div class="globe-stat">
+          <strong id="globe-source-label">Demo</strong>
+          <span>Fonte atual</span>
+        </div>
+        <div class="globe-stat">
+          <strong id="globe-route-count">0</strong>
+          <span>Rotas ativas</span>
+        </div>
+      </div>
+
+      <div class="globe-active-card">
+        <div class="globe-active-top">
+          <img id="globe-active-avatar" class="globe-active-avatar" alt="Marcador ativo">
+          <div class="globe-active-text">
+            <strong id="globe-active-label">A preparar o globo</strong>
+            <span id="globe-active-type">Sem marcador ativo</span>
+            <small id="globe-active-meta">Passa o cursor sobre o globo</small>
+          </div>
+        </div>
+        <p id="globe-active-note" class="globe-active-note">
+          Os marcadores, continentes e rotas vao aparecer aqui com detalhe. Ao passar por um continente, o globo mostra quantos spots existem nessa regiao.
+        </p>
+      </div>
+    </div>
+
+    <div class="globe-stage">
+      <canvas id="globe-canvas" aria-label="Globo 3D com marcadores"></canvas>
+      <div class="globe-stage-footer">
+        <div class="globe-stage-chip">
+          <strong id="globe-hover-label">Exploracao global</strong>
+          <span id="globe-hover-subtitle">Passa o cursor para ver marcadores e continentes. Clica para focar.</span>
+        </div>
+        <div class="globe-stage-hint">
+          <strong>Interacao</strong>
+          <span>Arrasta para rodar. Passar o cursor num continente mostra quantos spots existem la. As rotas animadas correm por cima da esfera e os marcadores continuam clicaveis.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="map-panel">
+    <div class="section-heading">
+      <div>
+        <h2>Mapa principal</h2>
+        <p>Os checkpoints dos spots e eventos aparecem aqui com foco rapido. O teu ponto atual tambem entra nos limites do mapa quando a geolocalizacao esta disponivel.</p>
+      </div>
+    </div>
+    <div id="map"></div>
+  </section>
+
+  <section id="spots-list" class="spots-panel">
+    <div class="section-heading">
+      <div>
+        <h2>Spots encontrados</h2>
+        <p>Seleciona um card para focar o ponto correspondente no mapa. Os teus spots continuam editaveis diretamente a partir desta lista.</p>
+      </div>
+    </div>
     <div id="spots-container" class="spots-container"></div>
-  </div>
+  </section>
 </div>
 
 <!-- MODAL PARA CRIAR/EDITAR SPOTS -->
@@ -394,8 +1089,6 @@
       <button class="close-modal">&times;</button>
     </div>
 
-    <div id="visibility-msg"></div>
-
     <form id="form-spot">
       <div class="form-group">
         <label for="spot-nome">Nome do Spot *</label>
@@ -403,13 +1096,13 @@
       </div>
 
       <div class="form-group">
-        <label for="spot-descricao">Descrição</label>
+        <label for="spot-descricao">Descricao</label>
         <textarea id="spot-descricao" placeholder="Descreva o spot..."></textarea>
       </div>
 
       <div class="form-group">
-        <label for="spot-video">Vídeo (opcional)</label>
-        <input type="url" id="spot-video" placeholder="Link do vídeo (YouTube, Vimeo, etc.)">
+        <label for="spot-video">Video (opcional)</label>
+        <input type="url" id="spot-video" placeholder="Link do video (YouTube, Vimeo, etc.)">
       </div>
 
       <div class="form-group">
@@ -443,12 +1136,12 @@
 
       <div id="public-request-group" class="form-group checkbox-group" style="display: none;">
         <input type="checkbox" id="request-public">
-        <label for="request-public" style="margin: 0;">Solicitar publicação como spot público</label>
+        <label for="request-public" style="margin: 0;">Solicitar publicacao como spot publico</label>
       </div>
 
       <div class="form-buttons">
-        <button type="submit" class="btn-submit">💾 Guardar</button>
-        <button type="button" class="btn-cancel" onclick="closeModal()">✕ Cancelar</button>
+        <button type="submit" class="btn-submit">Guardar</button>
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
       </div>
     </form>
   </div>
@@ -469,7 +1162,7 @@
       </div>
 
       <div class="form-group">
-        <label for="event-descricao">Descrição</label>
+        <label for="event-descricao">Descricao</label>
         <textarea id="event-descricao" placeholder="Descreva o evento..."></textarea>
       </div>
 
@@ -486,7 +1179,7 @@
       </div>
 
       <div class="form-group">
-        <label for="event-data-inicio">Data Início *</label>
+        <label for="event-data-inicio">Data Inicio *</label>
         <input type="datetime-local" id="event-data-inicio" required>
       </div>
 
@@ -511,8 +1204,8 @@
       </div>
 
       <div class="form-buttons">
-        <button type="submit" class="btn-submit">💾 Guardar</button>
-        <button type="button" class="btn-cancel" id="cancel-event">✖ Cancelar</button>
+        <button type="submit" class="btn-submit">Guardar</button>
+        <button type="button" class="btn-cancel" id="cancel-event">Cancelar</button>
       </div>
     </form>
   </div>
@@ -521,5 +1214,7 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script type="module" src="js/mapa_page.js"></script>
 <script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
 </body>
 </html>
+

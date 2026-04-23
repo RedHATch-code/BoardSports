@@ -7,111 +7,109 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/auth.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
 </head>
-<body>
+<body class="site-dock-auth">
 
 <div class="auth-container">
   <div class="auth-card">
     <div class="auth-header">
       <div class="auth-logo"></div>
       <h1>BoardSports</h1>
-      <p>Criar sua conta</p>
+      <p>Cria conta para guardar compras, spots e inscricoes no mesmo ecossistema.</p>
     </div>
 
     <form id="register-form" class="auth-form">
-      <!-- Linha 1: Nome completo -->
       <div class="form-group">
         <label for="nome">Nome Completo</label>
-        <input 
-          id="nome" 
-          type="text" 
-          placeholder="João Silva"
+        <input
+          id="nome"
+          type="text"
+          autocomplete="name"
+          placeholder="Joao Silva"
           required
         >
       </div>
 
-      <!-- Linha 2: Email -->
       <div class="form-group">
         <label for="email">Email</label>
-        <input 
-          id="email" 
-          type="email" 
-          placeholder="seu@email.com"
+        <input
+          id="email"
+          type="email"
+          autocomplete="email"
+          placeholder="tu@email.com"
           required
         >
       </div>
 
-      <!-- Linha 3: Tipo de Utilizador -->
       <div class="form-group">
         <label for="role">Tipo de Utilizador</label>
         <select id="role" required>
           <option value="">Selecione o tipo</option>
-          <option value="empresa"> Empresa</option>
-          <option value="atleta"> Atleta</option>
-          <option value="cliente"> Cliente</option>
+          <option value="empresa">Empresa</option>
+          <option value="atleta">Atleta</option>
+          <option value="cliente">Cliente</option>
         </select>
       </div>
 
-      <!-- Linha 4: Palavra-passe -->
       <div class="form-group">
         <label for="password">Palavra-passe</label>
-        <input 
-          id="password" 
-          type="password" 
-          placeholder="••••••••"
+        <input
+          id="password"
+          type="password"
+          autocomplete="new-password"
+          placeholder="********"
           required
           minlength="6"
         >
-        <small>Mínimo 6 caracteres</small>
+        <small>Minimo 6 caracteres</small>
       </div>
 
-      <!-- Linha 5: Confirmar Palavra-passe -->
       <div class="form-group">
         <label for="password-confirm">Confirmar Palavra-passe</label>
-        <input 
-          id="password-confirm" 
-          type="password" 
-          placeholder="••••••••"
+        <input
+          id="password-confirm"
+          type="password"
+          autocomplete="new-password"
+          placeholder="********"
           required
         >
       </div>
 
-      <!-- Linha 6: Telefone -->
       <div class="form-group">
         <label for="telefone">Telefone (opcional)</label>
-        <input 
-          id="telefone" 
-          type="tel" 
+        <input
+          id="telefone"
+          type="tel"
+          autocomplete="tel"
           placeholder="+351 000 000 000"
         >
       </div>
 
-      <!-- Linha 7: Localidade -->
       <div class="form-group">
         <label for="localidade">Localidade/Cidade (opcional)</label>
-        <input 
-          id="localidade" 
-          type="text" 
+        <input
+          id="localidade"
+          type="text"
+          autocomplete="address-level2"
           placeholder="Ex: Porto, Lisboa"
         >
       </div>
 
-      <!-- Linha 8: Bio -->
       <div class="form-group">
         <label for="bio">Bio (opcional)</label>
-        <textarea 
-          id="bio" 
-          placeholder="Conte-nos sobre si..." 
+        <textarea
+          id="bio"
+          placeholder="Conte-nos sobre si..."
           rows="3"
           maxlength="500"
         ></textarea>
         <small id="bio-counter">0/500</small>
       </div>
 
-      <!-- Botão de submissão -->
       <button type="submit" class="btn-primary" id="register-btn">
-        <span>Criar Conta</span>
-        <span class="btn-icon">✓</span>
+        <span>Criar conta</span>
+        <span class="btn-icon">-></span>
       </button>
 
       <div id="msg" class="auth-message"></div>
@@ -120,8 +118,8 @@
     <div class="auth-divider">ou</div>
 
     <div class="auth-footer">
-      <p>Já tem conta?</p>
-      <a href="index.html" class="auth-link">Fazer login</a>
+      <p>Ja tens conta?</p>
+      <a href="login.html" class="auth-link">Fazer login</a>
     </div>
   </div>
 
@@ -134,5 +132,6 @@
 
 <script type="module" src="js/register.js"></script>
 <script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
 </body>
 </html>

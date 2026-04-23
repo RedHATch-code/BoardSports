@@ -3,238 +3,173 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Empresa - BoardSports</title>
+  <title>Area da Empresa - BoardSports</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
   <link rel="stylesheet" href="css/responsive.css">
-  <style>
-    .empresa-container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 0 20px 60px 20px;
-    }
-
-    .empresa-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .tab-btn {
-      padding: 10px 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 140, 0, 0.5);
-      background: transparent;
-      color: #f2f2f2;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .tab-btn.active {
-      background: #ff8c00;
-      color: #111;
-    }
-
-    .tab-panel {
-      display: none;
-      background: rgba(20, 20, 22, 0.85);
-      border: 1px solid rgba(255, 140, 0, 0.2);
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
-    }
-
-    .tab-panel.active {
-      display: block;
-    }
-
-    .form-grid {
-      display: grid;
-      gap: 16px;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #f2f2f2;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 140, 0, 0.4);
-      background: #141417;
-      color: #f2f2f2;
-      font-family: inherit;
-    }
-
-    .form-group textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .btn-primary {
-      padding: 10px 16px;
-      background: #ff8c00;
-      border: none;
-      color: #111;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-secondary {
-      padding: 10px 16px;
-      background: transparent;
-      border: 1px solid rgba(255, 140, 0, 0.5);
-      color: #f2f2f2;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .empresa-preview {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 140, 0, 0.15);
-    }
-
-    .empresa-logo {
-      width: 72px;
-      height: 72px;
-      border-radius: 12px;
-      object-fit: cover;
-      background: #1f1f22;
-      border: 1px solid rgba(255, 140, 0, 0.2);
-    }
-
-    .produtos-grid {
-      margin-top: 20px;
-      display: grid;
-      gap: 16px;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    }
-
-    .produto-card {
-      padding: 16px;
-      border-radius: 10px;
-      background: rgba(24, 24, 26, 0.9);
-      border: 1px solid rgba(255, 140, 0, 0.2);
-    }
-
-    .produto-card h4 {
-      margin: 0 0 6px 0;
-      color: #ff8c00;
-    }
-  </style>
+  <link rel="stylesheet" href="css/company.css">
 </head>
-<body>
-  <div class="empresa-container">
-    <div class="empresa-header">
-      <h1>Área da Empresa</h1>
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="perfil">Perfil da Empresa</button>
-        <button class="tab-btn" data-tab="produtos">Produtos</button>
+<body class="company-page">
+
+<div class="company-shell">
+  <section class="company-hero">
+    <div>
+      <span class="company-kicker">Workspace da empresa</span>
+      <h1>Gerir perfil, catalogo e stock sem sair do painel.</h1>
+      <p>
+        Esta area fecha o fluxo da empresa com edicao completa dos produtos,
+        preview de marca e atualizacao direta do perfil publico.
+      </p>
+    </div>
+
+    <div class="company-hero-meta">
+      <strong id="company-product-count">0 produtos</strong>
+      <span id="company-brand-label">Perfil por completar</span>
+      <small>As alteracoes entram no mercado assim que guardares.</small>
+    </div>
+  </section>
+
+  <section class="company-tabs">
+    <button type="button" class="company-tab active" data-tab="perfil">Perfil</button>
+    <button type="button" class="company-tab" data-tab="produtos">Produtos</button>
+    <button type="button" class="company-tab" data-tab="pedidos">Pedidos</button>
+  </section>
+
+  <section class="company-panel active" id="tab-perfil">
+    <div class="company-section-head">
+      <div>
+        <h2>Perfil da empresa</h2>
+        <p>Usa o dominio apenas para preencher sugestoes locais. O resto fica sob teu controlo.</p>
+      </div>
+      <div class="company-actions">
+        <button id="btn-sugerir-perfil" type="button" class="company-secondary-button">Gerar sugestao</button>
+        <button id="btn-guardar-perfil" type="button" class="company-primary-button">Guardar perfil</button>
       </div>
     </div>
 
-    <div class="tab-panel active" id="tab-perfil">
-      <p>Cola o link do site da tua empresa e importamos automaticamente os dados.</p>
+    <div class="company-grid">
+      <div class="company-form-card">
+        <label class="company-field">
+          <span>Dominio ou website</span>
+          <input type="url" id="empresa-url" placeholder="https://exemplo.com">
+        </label>
 
-      <div class="form-group">
-        <label for="empresa-url">Website da empresa</label>
-        <input type="url" id="empresa-url" placeholder="https://exemplo.com">
-      </div>
-
-      <div style="display: flex; gap: 10px; margin-bottom: 16px;">
-        <button class="btn-primary" id="btn-importar">Importar dados</button>
-        <button class="btn-secondary" id="btn-guardar-perfil">Guardar perfil</button>
-      </div>
-
-      <div class="empresa-preview" id="empresa-preview" style="display: none;">
-        <img id="empresa-logo" class="empresa-logo" alt="Logo da empresa">
-        <div>
-          <strong id="empresa-nome-preview"></strong>
-          <p id="empresa-bio-preview" style="margin: 6px 0 0 0; color: #aaa;"></p>
-        </div>
-      </div>
-
-      <div class="form-grid" style="margin-top: 20px;">
-        <div class="form-group">
-          <label for="empresa-nome">Nome</label>
+        <label class="company-field">
+          <span>Nome da empresa</span>
           <input type="text" id="empresa-nome" placeholder="Nome da empresa">
-        </div>
-        <div class="form-group">
-          <label for="empresa-site">Website</label>
+        </label>
+
+        <label class="company-field">
+          <span>Website publico</span>
           <input type="url" id="empresa-site" placeholder="https://exemplo.com">
-        </div>
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label for="empresa-bio">Descrição</label>
-          <textarea id="empresa-bio" placeholder="Descrição da empresa"></textarea>
-        </div>
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label for="empresa-logo-url">Logo (URL)</label>
+        </label>
+
+        <label class="company-field">
+          <span>Logo (URL)</span>
           <input type="url" id="empresa-logo-url" placeholder="https://.../logo.png">
-        </div>
+        </label>
+
+        <label class="company-field">
+          <span>Descricao</span>
+          <textarea id="empresa-bio" rows="6" placeholder="Explica o foco da marca, produtos e posicionamento."></textarea>
+        </label>
       </div>
+
+      <aside class="company-preview-card" id="empresa-preview">
+        <div class="company-preview-head">
+          <img id="empresa-logo" class="company-preview-logo" alt="Logo da empresa">
+          <div>
+            <strong id="empresa-nome-preview">Empresa</strong>
+            <span id="empresa-site-preview">boardsports.company</span>
+          </div>
+        </div>
+        <p id="empresa-bio-preview">A descricao publica da empresa aparece aqui assim que comecares a preencher o perfil.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="company-panel" id="tab-produtos">
+    <div class="company-section-head">
+      <div>
+        <h2>Catalogo da empresa</h2>
+        <p>Cria, edita e remove produtos com stock e imagem visiveis no mercado.</p>
+      </div>
+      <span class="company-inline-note">Os produtos ativos aparecem de imediato em /produtos.</span>
     </div>
 
-    <div class="tab-panel" id="tab-produtos">
-      <h3>Adicionar Produto</h3>
-      <form id="form-produto">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="produto-nome">Nome do produto</label>
+    <div class="company-grid company-grid-wide">
+      <form id="form-produto" class="company-form-card">
+        <input type="hidden" id="produto-id">
+
+        <div class="company-form-columns">
+          <label class="company-field">
+            <span>Nome do produto</span>
             <input type="text" id="produto-nome" required>
-          </div>
-          <div class="form-group">
-            <label for="produto-preco">Preço (€)</label>
-            <input type="number" id="produto-preco" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label for="produto-stock">Stock</label>
-            <input type="number" id="produto-stock" value="0">
-          </div>
-          <div class="form-group">
-            <label for="produto-modalidade">Modalidade</label>
+          </label>
+
+          <label class="company-field">
+            <span>Modalidade</span>
             <select id="produto-modalidade" required>
-              <option value="">Selecionar Modalidade</option>
+              <option value="">Selecionar</option>
             </select>
-          </div>
-          <div class="form-group" style="grid-column: 1 / -1;">
-            <label for="produto-descricao">Descrição</label>
-            <textarea id="produto-descricao"></textarea>
-          </div>
+          </label>
+
+          <label class="company-field">
+            <span>Preco (EUR)</span>
+            <input type="number" id="produto-preco" step="0.01" min="0" required>
+          </label>
+
+          <label class="company-field">
+            <span>Stock</span>
+            <input type="number" id="produto-stock" min="0" value="0" required>
+          </label>
         </div>
-        <div style="margin-top: 14px;">
-          <button type="submit" class="btn-primary">Adicionar produto</button>
+
+        <label class="company-field">
+          <span>Imagem do produto (URL)</span>
+          <input type="url" id="produto-imagem" placeholder="https://.../produto.jpg">
+        </label>
+
+        <label class="company-field">
+          <span>Descricao</span>
+          <textarea id="produto-descricao" rows="5" placeholder="Contexto, materiais, publico e posicionamento do produto."></textarea>
+        </label>
+
+        <div class="company-actions">
+          <button type="submit" id="produto-submit" class="company-primary-button">Adicionar produto</button>
+          <button type="button" id="produto-cancelar" class="company-secondary-button" hidden>Cancelar edicao</button>
         </div>
       </form>
 
-      <h3 style="margin-top: 30px;">Os teus produtos</h3>
-      <div class="produtos-grid" id="produtos-empresa"></div>
+      <div class="company-products-card">
+        <div class="company-products-head">
+          <h3>Os teus produtos</h3>
+          <span id="company-stock-summary">Sem stock registado</span>
+        </div>
+        <div id="produtos-empresa" class="company-products-grid"></div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <script type="module" src="js/empresa_page.js"></script>
-  <script src="js/responsive.js"></script>
+  <section class="company-panel" id="tab-pedidos">
+    <div class="company-section-head">
+      <div>
+        <h2>Pedidos da empresa</h2>
+        <p>Atualiza o estado das encomendas, acompanha clientes e fecha o ciclo operacional sem recorrer ao perfil geral.</p>
+      </div>
+      <span class="company-inline-note" id="company-order-count">0 pedidos</span>
+    </div>
+
+    <div id="pedidos-empresa" class="company-orders-grid">
+      <article class="company-preview-card">
+        <p>A carregar pedidos...</p>
+      </article>
+    </div>
+  </section>
+</div>
+
+<script type="module" src="js/empresa_page.js"></script>
+<script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
 </body>
 </html>

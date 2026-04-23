@@ -98,7 +98,8 @@ server.listen(PORT, () => {
   console.log(`✓ Diretório: ${ROOT_DIR}`);
   console.log();
   console.log('URLs disponíveis:');
-  console.log(`  • Login: http://localhost:${PORT}/index.html`);
+  console.log(`  • Inicio: http://localhost:${PORT}/index.html`);
+  console.log(`  • Login: http://localhost:${PORT}/login.html`);
   console.log(`  • Registo: http://localhost:${PORT}/register.html`);
   console.log(`  • Dashboard: http://localhost:${PORT}/dashboard.html`);
   console.log();

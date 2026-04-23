@@ -3,67 +3,299 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BoardSports - Login</title>
+  <title>BoardSports - Plataforma de Desportos de Prancha</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/tunnel-slider.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
-<body>
+<body class="landing-page">
 
-<div class="auth-container">
-  <div class="auth-card">
-    <div class="auth-header">
-      <div class="auth-logo"></div>
-      <h1>BoardSports</h1>
-      <p>Sua plataforma de desportos de prancha</p>
-    </div>
-
-    <form id="login-form" class="auth-form">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input 
-          id="email" 
-          type="email" 
-          placeholder="seu@email.com"
-          required
-        >
-      </div>
-
-      <div class="form-group">
-        <label for="password">Palavra-passe</label>
-        <input 
-          id="password" 
-          type="password" 
-          placeholder="••••••••"
-          required
-        >
-      </div>
-
-      <button type="submit" class="btn-primary" id="login-btn">
-        <span>Entrar</span>
-        <span class="btn-icon">→</span>
-      </button>
-
-      <div id="msg" class="auth-message"></div>
-    </form>
-
-    <div class="auth-divider">ou</div>
-
-    <div class="auth-footer">
-      <p>Não tem conta?</p>
-      <a href="register.html" class="auth-link">Criar conta</a>
-    </div>
-  </div>
-
-  <div class="auth-background">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-  </div>
+<div class="landing-background" aria-hidden="true">
+  <div class="landing-grid"></div>
+  <div class="landing-orb landing-orb-1"></div>
+  <div class="landing-orb landing-orb-2"></div>
 </div>
 
-<script type="module" src="js/auth.js"></script>
-<script src="js/responsive.js"></script>
+<main class="landing-main">
+  <section class="hero-shell" aria-labelledby="cover-title">
+    <div class="hero-topline">
+      <span class="hero-chip">BoardSports 2026</span>
+      <span class="hero-meta">Lisbon / Porto / Online</span>
+    </div>
 
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="hero-kicker">Spots, gear e comunidade</p>
+        <h1 id="cover-title">Um ecossistema limpo para quem vive desportos de prancha.</h1>
+        <p class="hero-description">
+          Descobre modalidades, explora spots, compra equipamento e acompanha a tua atividade sem saltar entre fluxos soltos.
+        </p>
+
+        <div class="hero-actions">
+          <a href="login.html" class="landing-btn landing-btn-primary">Entrar</a>
+          <a href="register.html" class="landing-btn landing-btn-secondary">Criar conta</a>
+        </div>
+
+        <div class="hero-metrics" aria-label="Resumo da plataforma">
+          <article class="hero-metric">
+            <span>Spots</span>
+            <strong>Radar local</strong>
+          </article>
+          <article class="hero-metric">
+            <span>Mercado</span>
+            <strong>Checkout direto</strong>
+          </article>
+          <article class="hero-metric">
+            <span>Conta</span>
+            <strong>Perfil e pedidos</strong>
+          </article>
+        </div>
+      </div>
+
+      <figure class="hero-visual">
+        <img
+          src="assets/images/cover-skate.png"
+          alt="Fotografia noturna de skate em destaque na homepage"
+          loading="eager"
+          fetchpriority="high"
+        >
+        <figcaption>
+          <span>Destaque</span>
+          <strong>Skate noturno.</strong>
+          <p>Uma identidade visual mais limpa, sem perder o tom da marca.</p>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="hero-links" aria-label="Acesso rapido">
+      <a href="modalidades.html">Modalidades</a>
+      <a href="mapa.html">Mapa de spots</a>
+      <a href="produtos.html">Mercado</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </section>
+
+  <section class="feature-grid" aria-label="Destaques da plataforma">
+    <article class="feature-card">
+      <span>Spots</span>
+      <h2>Explora o mapa com menos ruido.</h2>
+      <p>Localiza spots, filtra por modalidade e entra rapidamente nos pontos ativos da comunidade.</p>
+    </article>
+
+    <article class="feature-card feature-card-image" style="--feature-image: url('assets/images/skim.jpg');">
+      <span>Mercado</span>
+      <h2>Compra sem quebrar o ritmo.</h2>
+      <p>Pesquisa, compara e fecha pedidos num fluxo mais direto e previsivel.</p>
+    </article>
+
+    <article class="feature-card">
+      <span>Conta</span>
+      <h2>Perfil, pedidos e inscricoes no mesmo sitio.</h2>
+      <p>A tua area pessoal deixa de competir com o resto da interface e passa a funcionar como centro operativo.</p>
+    </article>
+  </section>
+
+  <section class="tunnel-slider-section" aria-labelledby="tunnel-title">
+    <div class="tunnel-slider-intro">
+      <p class="tunnel-kicker">Modalidades</p>
+      <h2 id="tunnel-title">Mapa mental das modalidades.</h2>
+      <p>Um bloco interativo mais contido, focado nas ligacoes entre surf, skate, skimboard, snowboard e sandboard.</p>
+    </div>
+
+    <div class="tunnel-scroll-track" data-tunnel-track>
+      <div class="tunnel-sticky">
+        <div class="tunnel-stage" data-tunnel-stage>
+          <div class="tunnel-rings" aria-hidden="true">
+            <span style="--ring-index: 0;"></span>
+            <span style="--ring-index: 1;"></span>
+            <span style="--ring-index: 2;"></span>
+            <span style="--ring-index: 3;"></span>
+            <span style="--ring-index: 4;"></span>
+            <span style="--ring-index: 5;"></span>
+            <span style="--ring-index: 6;"></span>
+            <span style="--ring-index: 7;"></span>
+            <span style="--ring-index: 8;"></span>
+            <span style="--ring-index: 9;"></span>
+            <span style="--ring-index: 10;"></span>
+            <span style="--ring-index: 11;"></span>
+          </div>
+
+          <div class="tunnel-progress-shell" aria-hidden="true">
+            <span class="tunnel-progress-index" data-tunnel-progress>01</span>
+            <div class="tunnel-progress-track">
+              <span class="tunnel-progress-fill" data-tunnel-progress-bar></span>
+            </div>
+          </div>
+
+          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(255, 140, 0, 0.24); --mind-secondary: rgba(77, 166, 255, 0.14);">
+            <div class="mind-map">
+              <div class="mind-links" aria-hidden="true">
+                <span class="mind-connection mind-connection-surf is-focus"></span>
+                <span class="mind-connection mind-connection-skate"></span>
+                <span class="mind-connection mind-connection-skim"></span>
+                <span class="mind-connection mind-connection-snow"></span>
+                <span class="mind-connection mind-connection-sand"></span>
+              </div>
+
+              <div class="mind-core">
+                <small>BoardSports</small>
+                <strong>Surf</strong>
+              </div>
+
+              <span class="mind-node mind-node-surf is-focus">Surf</span>
+              <span class="mind-node mind-node-skate">Skate</span>
+              <span class="mind-node mind-node-skim">Skimboard</span>
+              <span class="mind-node mind-node-snow">Snowboard</span>
+              <span class="mind-node mind-node-sand">Sandboard</span>
+            </div>
+
+            <div class="mind-caption">
+              <span>01</span>
+              <h3>Surf</h3>
+            </div>
+          </article>
+
+          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(77, 166, 255, 0.2); --mind-secondary: rgba(255, 140, 0, 0.1);">
+            <div class="mind-map">
+              <div class="mind-links" aria-hidden="true">
+                <span class="mind-connection mind-connection-surf"></span>
+                <span class="mind-connection mind-connection-skate is-focus"></span>
+                <span class="mind-connection mind-connection-skim"></span>
+                <span class="mind-connection mind-connection-snow"></span>
+                <span class="mind-connection mind-connection-sand"></span>
+              </div>
+
+              <div class="mind-core">
+                <small>BoardSports</small>
+                <strong>Skate</strong>
+              </div>
+
+              <span class="mind-node mind-node-surf">Surf</span>
+              <span class="mind-node mind-node-skate is-focus">Skate</span>
+              <span class="mind-node mind-node-skim">Skimboard</span>
+              <span class="mind-node mind-node-snow">Snowboard</span>
+              <span class="mind-node mind-node-sand">Sandboard</span>
+            </div>
+
+            <div class="mind-caption">
+              <span>02</span>
+              <h3>Skate</h3>
+            </div>
+          </article>
+
+          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(77, 210, 202, 0.16); --mind-secondary: rgba(255, 140, 0, 0.1);">
+            <div class="mind-map">
+              <div class="mind-links" aria-hidden="true">
+                <span class="mind-connection mind-connection-surf"></span>
+                <span class="mind-connection mind-connection-skate"></span>
+                <span class="mind-connection mind-connection-skim is-focus"></span>
+                <span class="mind-connection mind-connection-snow"></span>
+                <span class="mind-connection mind-connection-sand"></span>
+              </div>
+
+              <div class="mind-core">
+                <small>BoardSports</small>
+                <strong>Skim</strong>
+              </div>
+
+              <span class="mind-node mind-node-surf">Surf</span>
+              <span class="mind-node mind-node-skate">Skate</span>
+              <span class="mind-node mind-node-skim is-focus">Skimboard</span>
+              <span class="mind-node mind-node-snow">Snowboard</span>
+              <span class="mind-node mind-node-sand">Sandboard</span>
+            </div>
+
+            <div class="mind-caption">
+              <span>03</span>
+              <h3>Skimboard</h3>
+            </div>
+          </article>
+
+          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(176, 214, 255, 0.18); --mind-secondary: rgba(77, 166, 255, 0.12);">
+            <div class="mind-map">
+              <div class="mind-links" aria-hidden="true">
+                <span class="mind-connection mind-connection-surf"></span>
+                <span class="mind-connection mind-connection-skate"></span>
+                <span class="mind-connection mind-connection-skim"></span>
+                <span class="mind-connection mind-connection-snow is-focus"></span>
+                <span class="mind-connection mind-connection-sand"></span>
+              </div>
+
+              <div class="mind-core">
+                <small>BoardSports</small>
+                <strong>Snow</strong>
+              </div>
+
+              <span class="mind-node mind-node-surf">Surf</span>
+              <span class="mind-node mind-node-skate">Skate</span>
+              <span class="mind-node mind-node-skim">Skimboard</span>
+              <span class="mind-node mind-node-snow is-focus">Snowboard</span>
+              <span class="mind-node mind-node-sand">Sandboard</span>
+            </div>
+
+            <div class="mind-caption">
+              <span>04</span>
+              <h3>Snowboard</h3>
+            </div>
+          </article>
+
+          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(255, 183, 77, 0.18); --mind-secondary: rgba(77, 166, 255, 0.12);">
+            <div class="mind-map">
+              <div class="mind-links" aria-hidden="true">
+                <span class="mind-connection mind-connection-surf"></span>
+                <span class="mind-connection mind-connection-skate"></span>
+                <span class="mind-connection mind-connection-skim"></span>
+                <span class="mind-connection mind-connection-snow"></span>
+                <span class="mind-connection mind-connection-sand is-focus"></span>
+              </div>
+
+              <div class="mind-core">
+                <small>BoardSports</small>
+                <strong>Sand</strong>
+              </div>
+
+              <span class="mind-node mind-node-surf">Surf</span>
+              <span class="mind-node mind-node-skate">Skate</span>
+              <span class="mind-node mind-node-skim">Skimboard</span>
+              <span class="mind-node mind-node-snow">Snowboard</span>
+              <span class="mind-node mind-node-sand is-focus">Sandboard</span>
+            </div>
+
+            <div class="mind-caption">
+              <span>05</span>
+              <h3>Sandboard</h3>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="issue-grid" aria-label="Destaques visuais">
+    <article class="issue-card issue-card-feature issue-card-image" style="--issue-image: url('assets/images/cover-skate.png');">
+      <span>Street</span>
+      <h3>Noite urbana</h3>
+      <p>Luz, textura e cadencia visual mais limpa.</p>
+    </article>
+
+    <article class="issue-card issue-card-image" style="--issue-image: url('assets/images/skim.jpg');">
+      <span>Skim</span>
+      <h3>Agua rasa</h3>
+      <p>Uma segunda direcao visual dentro da mesma paleta.</p>
+    </article>
+
+    <article class="issue-card issue-card-image" style="--issue-image: url('assets/images/boardsports-mix.jpg');">
+      <span>Mix</span>
+      <h3>Board mix</h3>
+      <p>Menos efeito de revista, mais plataforma.</p>
+    </article>
+  </section>
+</main>
+
+<script src="js/landing_tunnel.js"></script>
+<script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
 </body>
 </html>

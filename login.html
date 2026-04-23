@@ -2,75 +2,76 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>BoardSports | Login</title>
-
-  <!-- CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BoardSports - Login</title>
+  <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
 </head>
-<body>
+<body class="site-dock-auth">
 
-  <div class="auth-container">
-    <div class="auth-card">
-
-      <!-- HEADER -->
-      <div class="auth-header">
-        <div class="auth-logo">🏂</div>
-        <h1>BoardSports</h1>
-        <p>Entra na tua conta</p>
-      </div>
-
-      <!-- FORM -->
-      <form id="login-form" class="auth-form">
-
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            placeholder="exemplo@email.com"
-            required
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            placeholder="••••••••"
-            required
-          >
-        </div>
-
-        <button type="submit" class="btn-primary">
-          Entrar
-          <span class="btn-icon">→</span>
-        </button>
-
-        <div id="msg" class="auth-message"></div>
-      </form>
-
-      <!-- DIVIDER -->
-      <div class="auth-divider">ou</div>
-
-      <!-- FOOTER -->
-      <div class="auth-footer">
-        <p>Ainda não tens conta?</p>
-        <a href="register.html" class="auth-link">Criar conta</a>
-      </div>
-
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo"></div>
+      <h1>BoardSports</h1>
+      <p>Entra para abrir spots, mercado e perfil num unico fluxo.</p>
     </div>
 
-    <!-- BACKGROUND BLOBS -->
-    <div class="auth-background">
-      <div class="blob blob-1"></div>
-      <div class="blob blob-2"></div>
-      <div class="blob blob-3"></div>
+    <form id="login-form" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          autocomplete="email"
+          placeholder="tu@email.com"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password">Palavra-passe</label>
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="********"
+          required
+        >
+      </div>
+
+      <div class="auth-inline-actions">
+        <button type="button" class="auth-link-button" id="forgot-password">Esqueci-me da palavra-passe</button>
+      </div>
+
+      <button type="submit" class="btn-primary" id="login-btn">
+        <span>Entrar</span>
+        <span class="btn-icon">-></span>
+      </button>
+
+      <div id="msg" class="auth-message"></div>
+    </form>
+
+    <div class="auth-divider">ou</div>
+
+    <div class="auth-footer">
+      <p>Ainda nao tens conta?</p>
+      <a href="register.html" class="auth-link">Criar conta</a>
     </div>
   </div>
 
-  <!-- AUTH JS -->
-  <script type="module" src="js/auth.js"></script>
+  <div class="auth-background">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+</div>
+
+<script type="module" src="js/auth.js"></script>
+<script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
 
 </body>
 </html>

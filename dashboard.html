@@ -4,248 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - BoardSports</title>
-
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
   <link rel="stylesheet" href="css/responsive.css">
-
-  <style>
-    body {
-      background-color: #f5f5f5;
-    }
-
-    /* NAVBAR */
-    .navbar {
-      background-color: #1a1a1a;
-      color: white;
-      padding: 15px 0;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .navbar-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 20px;
-    }
-
-    .navbar-brand a {
-      font-size: 26px;
-      font-weight: bold;
-      color: #ff6b6b;
-      text-decoration: none;
-      letter-spacing: 1px;
-    }
-
-    .navbar-menu ul {
-      list-style: none;
-      display: flex;
-      gap: 30px;
-      padding: 0;
-      margin: 0;
-    }
-
-    .navbar-menu a {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-
-    .navbar-menu a:hover {
-      color: #ff6b6b;
-    }
-
-    .navbar-user {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .role-badge {
-      background-color: #ff6b6b;
-      color: white;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-    }
-
-    .btn-logout {
-      background-color: #ff6b6b;
-      color: white;
-      border: none;
-      padding: 9px 18px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s ease;
-    }
-
-    .btn-logout:hover {
-      background-color: #e55555;
-      transform: translateY(-1px);
-    }
-
-    /* CONTAINER */
-    .container {
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-
-    /* WELCOME */
-    .welcome-section {
-      background: linear-gradient(135deg, #643a2e 0%, #a24b4b 100%);
-      color: white;
-      padding: 50px 40px;
-      border-radius: 14px;
-      margin-bottom: 40px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      animation: fadeIn 0.6s ease;
-    }
-
-    .welcome-section h1 {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-
-    .welcome-section p {
-      font-size: 16px;
-      opacity: 0.9;
-    }
-
-    /* STATS */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 25px;
-      margin-bottom: 50px;
-    }
-
-    .stat-card {
-      background: white;
-      padding: 30px 20px;
-      border-radius: 14px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      text-align: center;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background-color: #ff6b6b;
-      transform: scaleX(0);
-      transition: transform 0.3s ease;
-    }
-
-    .stat-card:hover::after {
-      transform: scaleX(1);
-    }
-
-    .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-    }
-
-    .stat-number {
-      font-size: 36px;
-      font-weight: bold;
-      color: #ff6b6b;
-    }
-
-    .stat-label {
-      margin-top: 12px;
-      color: #666;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-    }
-
-    /* MODALIDADES */
-    h2 {
-      margin-bottom: 20px;
-      font-size: 26px;
-      color: #333;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 25px;
-    }
-
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 14px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-    }
-
-    /* ANIMAÇÃO */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/dashboard-home.css">
 </head>
+<body class="dashboard-page">
 
-<body>
+<div class="dashboard-shell">
+  <section class="dashboard-hero">
+    <div>
+      <span class="dashboard-kicker">BoardSports dashboard</span>
+      <h1 id="dashboard-greeting">Bem-vindo de volta.</h1>
+      <p id="dashboard-subtitle">
+        Estatisticas reais, modalidades ativas e eventos com inscricao direta.
+      </p>
+    </div>
 
-<div class="container">
-  <div class="welcome-section">
-    <h1>Bem-vindo ao BoardSports 🏄</h1>
-    <p>Sua plataforma de desportos radicais</p>
+    <div class="dashboard-hero-card">
+      <strong id="dashboard-role-label">Membro</strong>
+      <span id="dashboard-admin-summary">Sem alertas de moderacao</span>
+      <p>Usa esta vista como centro operacional do teu ecossistema BoardSports.</p>
+    </div>
+  </section>
+
+  <section class="dashboard-stats">
+    <article class="dashboard-stat-card">
+      <strong id="total-produtos">0</strong>
+      <span>Produtos ativos</span>
+    </article>
+    <article class="dashboard-stat-card">
+      <strong id="total-eventos">0</strong>
+      <span>Eventos ativos</span>
+    </article>
+    <article class="dashboard-stat-card">
+      <strong id="total-empresas">0</strong>
+      <span>Empresas registadas</span>
+    </article>
+    <article class="dashboard-stat-card">
+      <strong id="total-atletas">0</strong>
+      <span>Atletas ativos</span>
+    </article>
+  </section>
+
+  <div class="dashboard-grid">
+    <section class="dashboard-panel">
+      <div class="dashboard-section-head">
+        <div>
+          <h2>Modalidades</h2>
+          <p>Entrada rapida para o mercado e para a exploracao do catalogo.</p>
+        </div>
+      </div>
+      <div class="dashboard-card-grid" id="modalidades-container">
+        <article class="dashboard-empty-card">
+          <p>A carregar modalidades...</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-panel">
+      <div class="dashboard-section-head">
+        <div>
+          <h2>Proximos eventos</h2>
+          <p>Inscreve-te diretamente no dashboard e acompanha o calendario ativo.</p>
+        </div>
+      </div>
+      <div class="dashboard-event-list" id="dashboard-eventos">
+        <article class="dashboard-empty-card">
+          <p>A carregar eventos...</p>
+        </article>
+      </div>
+    </section>
   </div>
 
-  <div class="stats" id="stats-container">
-    <div class="stat-card">
-      <div class="stat-number" id="total-produtos">-</div>
-      <div class="stat-label">Produtos</div>
+  <section class="dashboard-panel" id="dashboard-admin-panel" hidden>
+    <div class="dashboard-section-head">
+      <div>
+        <h2>Moderacao</h2>
+        <p>Solicitacoes de spots pendentes para aprovar ou rejeitar.</p>
+      </div>
+      <a class="dashboard-link-button" href="moderacao.html">Abrir moderacao</a>
     </div>
-    <div class="stat-card">
-      <div class="stat-number" id="total-eventos">-</div>
-      <div class="stat-label">Eventos</div>
+    <div class="dashboard-admin-card">
+      <strong id="dashboard-pending-count">0 pedidos pendentes</strong>
+      <p>Quando aprovas um pedido, o spot passa imediatamente a publico.</p>
     </div>
-    <div class="stat-card">
-      <div class="stat-number" id="total-empresas">-</div>
-      <div class="stat-label">Empresas</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" id="total-atletas">-</div>
-      <div class="stat-label">Atletas</div>
-    </div>
-  </div>
-
-  <h2>Modalidades</h2>
-  <div class="grid" id="modalidades-container">
-    <div class="card">Carregando...</div>
-  </div>
+  </section>
 </div>
 
 <script type="module" src="js/dashboard.js"></script>
 <script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
 </body>
 </html>

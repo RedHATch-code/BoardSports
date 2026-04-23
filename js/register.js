@@ -12,7 +12,6 @@ const registerForm = document.getElementById('register-form')
 const msgDiv = document.getElementById('msg')
 const bioCounter = document.getElementById('bio-counter')
 
-// Contador de caracteres para a bio
 bioInput.addEventListener('input', () => {
   bioCounter.textContent = `${bioInput.value.length}/500`
 })
@@ -20,17 +19,17 @@ bioInput.addEventListener('input', () => {
 function mostrarMensagem(texto, tipo) {
   msgDiv.textContent = texto
   msgDiv.className = `auth-message show ${tipo}`
-  
+
   if (tipo === 'success') {
     setTimeout(() => {
       msgDiv.classList.remove('show')
-    }, 1500)
+    }, 2200)
   }
 }
 
-registerForm.onsubmit = async (e) => {
-  e.preventDefault()
-  
+registerForm.onsubmit = async (event) => {
+  event.preventDefault()
+
   const nome = nomeInput.value.trim()
   const email = emailInput.value.trim()
   const password = passwordInput.value.trim()
@@ -40,27 +39,25 @@ registerForm.onsubmit = async (e) => {
   const localidade = localidadeInput.value.trim()
   const bio = bioInput.value.trim()
 
-  // Validações
   if (!nome || !email || !password || !role) {
-    mostrarMensagem('Por favor preencha email, nome, tipo e palavra-passe', 'error')
+    mostrarMensagem('Preenche nome, email, tipo de conta e palavra-passe.', 'error')
     return
   }
 
   if (password.length < 6) {
-    mostrarMensagem('Palavra-passe deve ter pelo menos 6 caracteres', 'error')
+    mostrarMensagem('A palavra-passe tem de ter pelo menos 6 caracteres.', 'error')
     return
   }
 
   if (password !== passwordConfirm) {
-    mostrarMensagem('As palavras-passe não coincidem', 'error')
+    mostrarMensagem('As palavras-passe nao coincidem.', 'error')
     return
   }
 
-  // Desabilitar botão
   const registerBtn = document.getElementById('register-btn')
   const textoOriginal = registerBtn.innerHTML
   registerBtn.disabled = true
-  registerBtn.innerHTML = '<span>Criando conta...</span>'
+  registerBtn.innerHTML = '<span>A criar conta...</span>'
 
   const resultado = await fazerRegistro(email, password, role, {
     nome,
@@ -68,15 +65,24 @@ registerForm.onsubmit = async (e) => {
     localidade: localidade || null,
     bio: bio || null
   })
-  
+
   if (resultado.sucesso) {
-    mostrarMensagem('✓ Conta criada! Verifique o seu email...', 'success')
+    if (resultado.precisaVerificacao) {
+      mostrarMensagem('Conta criada. Verifica o email para ativar o acesso.', 'success')
+      setTimeout(() => {
+        window.location.href = '/verify-email.html'
+      }, 1200)
+      return
+    }
+
+    mostrarMensagem('Conta criada com sucesso. A entrar no dashboard...', 'success')
     setTimeout(() => {
-      window.location.href = '/verify-email.html'
-    }, 1500)
-  } else {
-    mostrarMensagem('✗ ' + resultado.erro, 'error')
-    registerBtn.disabled = false
-    registerBtn.innerHTML = textoOriginal
+      window.location.href = '/dashboard.html'
+    }, 1200)
+    return
   }
+
+  mostrarMensagem(`Falha no registo: ${resultado.erro}`, 'error')
+  registerBtn.disabled = false
+  registerBtn.innerHTML = textoOriginal
 }

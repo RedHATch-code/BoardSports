@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BoardSports - Verificar Email</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <style>
+    .verify-card {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .verify-hero {
+      text-align: center;
+    }
+
+    .verify-icon {
+      font-size: 58px;
+      margin-bottom: 14px;
+    }
+
+    .verify-hero h2 {
+      color: #ededed;
+      margin-bottom: 10px;
+    }
+
+    .verify-hero p {
+      color: #b8b8b8;
+      line-height: 1.6;
+    }
+
+    .status-message {
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: #ededed;
+    }
+
+    .status-message.success {
+      background: rgba(35, 116, 74, 0.18);
+      color: #dcfce7;
+    }
+
+    .status-message.error {
+      background: rgba(153, 27, 27, 0.18);
+      color: #fee2e2;
+    }
+
+    .status-message.loading {
+      background: rgba(255, 140, 0, 0.14);
+      color: #ffddb0;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-right: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #ff8c00;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: -2px;
+    }
+
+    .verify-loading-text {
+      color: #8f8f95;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .verify-actions {
+      display: none;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .verify-actions button {
+      min-width: 170px;
+    }
+
+    .btn-secondary {
+      background: #2a2a2d;
+      color: #ededed;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: #343438;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body class="site-dock-auth">
+
+<div class="auth-container">
+  <div class="auth-card verify-card">
+    <div class="verify-hero">
+      <div class="verify-icon" id="verify-icon">...</div>
+      <h2 id="verify-title">A verificar o teu email</h2>
+      <p id="verify-text">Estamos a confirmar se a tua conta ja foi ativada.</p>
+    </div>
+
+    <div class="status-message loading" id="status-message">
+      <div id="status-text"><span class="spinner"></span><span>A validar o estado da tua conta...</span></div>
+    </div>
+
+    <p class="verify-loading-text" id="loading-text">Isto pode demorar alguns segundos.</p>
+
+    <div class="verify-actions" id="verify-buttons">
+      <button type="button" id="goto-dashboard">Ir para o dashboard</button>
+      <button type="button" class="btn-secondary" id="resend-email">Reenviar email</button>
+    </div>
+
+    <div class="verify-actions" id="error-buttons">
+      <button type="button" id="retry-verify">Tentar novamente</button>
+      <button type="button" class="btn-secondary" id="back-login">Voltar ao login</button>
+    </div>
+  </div>
+
+  <div class="auth-background">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+</div>
+
+<script type="module" src="js/verify-email.js"></script>
+<script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
+
+</body>
+</html>

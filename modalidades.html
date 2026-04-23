@@ -7,264 +7,687 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/dashboard.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
   <style>
-    .modalidade-card {
-      background: linear-gradient(180deg, rgba(30, 30, 32, 0.95), rgba(18, 18, 20, 0.98));
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 140, 0, 0.1);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      cursor: pointer;
-      position: relative;
-      min-height: 260px;
-      display: flex;
-      flex-direction: column;
-      width: min(520px, 92vw);
-      z-index: 2;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    :root {
+      --page-bg: #0a0a0c;
+      --panel-bg: rgba(18, 21, 28, 0.9);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f6f2ea;
+      --text-muted: #b9b2a7;
+      --accent: #ff8c00;
+      --accent-soft: rgba(255, 140, 0, 0.16);
+      --shadow-strong: 0 22px 54px rgba(0, 0, 0, 0.28);
+      --shadow-soft: 0 16px 34px rgba(0, 0, 0, 0.22);
+      --radius-lg: 24px;
+      --radius-md: 16px;
     }
 
-    .modalidade-card:hover {
-      transform: translateY(-10px);
-      border-color: var(--glow-orange);
-      box-shadow: 0 10px 30px rgba(255, 140, 0, 0.2);
-    }
-
-    .modalidade-icon {
-      width: 100%;
-      height: 80px;
-      background: linear-gradient(135deg, rgba(255, 140, 0, 0.2) 0%, rgba(26, 26, 27, 0.95) 60%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 50px;
-      transition: 0.3s;
-    }
-
-    .modalidade-card:hover .modalidade-icon {
-      background: linear-gradient(135deg, #222 0%, var(--glow-orange) 200%);
-    }
-
-    .modalidade-info {
-      padding: 18px 20px 12px 20px;
-      text-align: center;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      transition: 0.3s;
-    }
-
-    .modalidade-info h3 {
-      margin: 0 0 10px 0;
-      color: var(--glow-orange);
-      font-size: 1.5rem;
-    }
-
-    .modalidade-info p {
-      color: #aaa;
-      font-size: 0.9rem;
-    }
-
-    .modalidade-cta {
-      margin: 16px 20px 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: #aaa;
-      font-size: 0.85rem;
-    }
-
-    .modalidade-cta span {
-      color: var(--glow-orange);
-      font-weight: 600;
-    }
-
-    .modalidades-layers {
-      position: relative;
-      min-height: 60vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modalidade-layer {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.35s ease;
-    }
-
-    .modalidade-layer.is-active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modalidade-categorias {
-      position: absolute;
-      width: min(1200px, 96vw);
-      height: min(860px, 82vh);
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .modalidade-categorias::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 760px;
-      height: 760px;
-      transform: translate(-50%, -50%);
-      border: 1px solid rgba(255, 160, 60, 0.25);
-      border-radius: 50%;
-      box-shadow: 0 0 40px rgba(255, 140, 0, 0.08);
-    }
-
-    .categoria-tag {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      border: 1px solid rgba(255, 170, 70, 0.45);
-      background: rgba(18, 18, 20, 0.9);
-      color: #f8f2e6;
-      font-size: 1.05rem;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      padding: 12px 18px;
-      border-radius: 12px;
-      white-space: nowrap;
-      transform: translate(-50%, -50%) translate(calc(var(--orbit-x, 0px) * (1 - var(--orbit-collapse, 0))), calc(var(--orbit-y, 0px) * (1 - var(--orbit-collapse, 0)))) scale(calc(1 - (var(--orbit-collapse, 0) * 0.15)));
-      animation: orbitFloat 4.5s ease-in-out infinite;
-      animation-delay: var(--orbit-delay, 0s);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-      max-width: 320px;
-      line-height: 1.3;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .categoria-empty {
-      color: #777;
-      font-size: 0.75rem;
-    }
-
-    @keyframes orbitFloat {
-      0%, 100% {
-        transform: translate(-50%, -50%) translate(calc(var(--orbit-x, 0px) * (1 - var(--orbit-collapse, 0))), calc(var(--orbit-y, 0px) * (1 - var(--orbit-collapse, 0)))) translateY(0) scale(calc(1 - (var(--orbit-collapse, 0) * 0.15)));
-      }
-      50% {
-        transform: translate(-50%, -50%) translate(calc(var(--orbit-x, 0px) * (1 - var(--orbit-collapse, 0))), calc(var(--orbit-y, 0px) * (1 - var(--orbit-collapse, 0)))) translateY(-6px) scale(calc(1 - (var(--orbit-collapse, 0) * 0.15)));
-      }
-    }
-
-    .tunnel-shell {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 40px 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .tunnel-stage {
-      width: min(1100px, 92vw);
-      perspective: 1200px;
-    }
-
-    .tunnel-content {
-      transform-style: preserve-3d;
-      transform: translateZ(var(--tunnel-depth, 0px)) scale(var(--tunnel-scale, 1)) rotateX(var(--tunnel-tilt, 0deg));
-      transition: transform 0.08s linear;
-      pointer-events: auto;
-    }
-
-    .tunnel-scroll-space {
-      height: 220vh;
-    }
-
-    .container {
-      background: transparent;
-      box-shadow: none;
-      padding: 10px 0;
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      background: radial-gradient(circle at 50% 20%, rgba(255, 140, 0, 0.12), transparent 45%),
-                  radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.06), transparent 60%),
-                  #0b0b0c;
+      margin: 0;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at top left, rgba(255, 140, 0, 0.12), transparent 24%),
+        radial-gradient(circle at top right, rgba(76, 167, 255, 0.1), transparent 30%),
+        radial-gradient(circle at bottom center, rgba(255, 255, 255, 0.04), transparent 28%),
+        var(--page-bg);
+      min-height: 100vh;
       overflow-x: hidden;
     }
 
-    .header-section {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(1100px, 92vw);
-      z-index: 5;
-      pointer-events: none;
-    }
-
-    .header-section h1,
-    .header-section p {
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .tunnel-shell {
-      padding-top: 140px;
+    body.modal-open {
+      overflow: hidden;
     }
 
     body::before {
       content: "";
       position: fixed;
-      inset: -40%;
-      background: repeating-radial-gradient(circle at center, rgba(255, 140, 0, 0.08) 0, rgba(255, 140, 0, 0.05) 6px, transparent 8px, transparent 28px);
-      opacity: 0.35;
+      inset: 0;
+      background:
+        linear-gradient(130deg, rgba(255, 255, 255, 0.02), transparent 28%),
+        repeating-linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.012) 0,
+          rgba(255, 255, 255, 0.012) 1px,
+          transparent 1px,
+          transparent 22px
+        );
+      pointer-events: none;
       z-index: -1;
-      transform: scale(1.1);
     }
 
-    body.tunnel-scroll::before {
-      animation: tunnelPulse 4s ease-in-out infinite;
+    .modalidades-shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 120px auto 56px;
     }
 
-    @keyframes tunnelPulse {
-      0%, 100% { transform: scale(1.05); opacity: 0.28; }
-      50% { transform: scale(1.2); opacity: 0.5; }
+    .modalidades-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 30px 30px 34px;
+      background:
+        linear-gradient(145deg, rgba(22, 24, 30, 0.92), rgba(11, 13, 18, 0.98)),
+        var(--page-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow-strong);
+      margin-bottom: 28px;
+    }
+
+    .modalidades-hero::after {
+      content: "";
+      position: absolute;
+      right: -100px;
+      top: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 140, 0, 0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    .modalidades-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #ffd9a8;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .modalidades-kicker::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff8c00, #ffd166);
+      box-shadow: 0 0 16px rgba(255, 140, 0, 0.65);
+    }
+
+    .modalidades-title {
+      margin: 18px 0 10px;
+      font-size: clamp(2.4rem, 5vw, 4.6rem);
+      line-height: 0.94;
+      letter-spacing: -0.04em;
+      max-width: 11ch;
+    }
+
+    .modalidades-subtitle {
+      margin: 0;
+      max-width: 640px;
+      color: var(--text-muted);
+      font-size: 1.02rem;
+      line-height: 1.7;
+    }
+
+    .modalidades-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .modalidade-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 320px;
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(21, 24, 31, 0.92), rgba(12, 15, 20, 0.98));
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+    }
+
+    .modalidade-card:hover,
+    .modalidade-card:focus-visible {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+      outline: none;
+    }
+
+    .modalidade-visual {
+      position: relative;
+      min-height: 176px;
+      padding: 20px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      background: var(--card-gradient, linear-gradient(135deg, #2a2a2e, #111));
+      isolation: isolate;
+    }
+
+    .modalidade-visual::before,
+    .modalidade-visual::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      z-index: -1;
+      filter: blur(10px);
+      opacity: 0.72;
+    }
+
+    .modalidade-visual::before {
+      width: 140px;
+      height: 140px;
+      right: -26px;
+      top: -26px;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .modalidade-visual::after {
+      width: 110px;
+      height: 110px;
+      left: -18px;
+      bottom: -18px;
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .modalidade-emoji {
+      font-size: 4rem;
+      line-height: 1;
+      text-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .modalidade-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(10, 12, 18, 0.42);
+      color: #fff7ea;
+      font-size: 0.78rem;
+      font-weight: 700;
+      backdrop-filter: blur(6px);
+    }
+
+    .modalidade-count::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .modalidade-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 16px;
+      padding: 22px;
+    }
+
+    .modalidade-copy h3 {
+      margin: 0 0 10px;
+      font-size: 1.6rem;
+      line-height: 1.05;
+    }
+
+    .modalidade-copy p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .modalidade-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 34px;
+    }
+
+    .modalidade-tags span {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #f2ede4;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .modalidade-footer {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      color: #f7ebd8;
+      font-size: 0.9rem;
+    }
+
+    .modalidade-footer strong {
+      color: #ffffff;
+      font-size: 1rem;
+    }
+
+    .modalidade-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-weight: 700;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .modalidade-card:hover .modalidade-action {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(2px);
+    }
+
+    .modalidades-empty {
+      padding: 36px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--panel-border);
+      background: var(--panel-bg);
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .modalidade-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.24s ease, visibility 0.24s ease;
+    }
+
+    .modalidade-overlay.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .modalidade-overlay-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+    }
+
+    .modalidade-dialog {
+      position: relative;
+      width: min(920px, 100%);
+      max-height: min(88vh, 920px);
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(180deg, rgba(17, 20, 27, 0.98), rgba(10, 12, 17, 0.99));
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+      transform: translateY(24px) scale(0.97);
+      transition: transform 0.28s ease;
+    }
+
+    .modalidade-overlay.is-visible .modalidade-dialog {
+      transform: translateY(0) scale(1);
+    }
+
+    .modalidade-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 2;
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .modalidade-close:hover {
+      background: rgba(255, 255, 255, 0.16);
+      transform: rotate(0deg);
+    }
+
+    .modalidade-modal-top {
+      display: grid;
+      grid-template-columns: minmax(280px, 1.15fr) minmax(280px, 1fr);
+      min-height: 290px;
+    }
+
+    .modalidade-modal-hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      background: var(--modal-gradient, linear-gradient(135deg, #333, #111));
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 18px;
+      isolation: isolate;
+    }
+
+    .modalidade-modal-hero::before,
+    .modalidade-modal-hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      z-index: -1;
+    }
+
+    .modalidade-modal-hero::before {
+      width: 220px;
+      height: 220px;
+      right: -30px;
+      top: -44px;
+      background: rgba(255, 255, 255, 0.12);
+      filter: blur(4px);
+    }
+
+    .modalidade-modal-hero::after {
+      width: 170px;
+      height: 170px;
+      left: -34px;
+      bottom: -54px;
+      background: rgba(0, 0, 0, 0.16);
+    }
+
+    .modalidade-modal-emoji {
+      font-size: clamp(4rem, 9vw, 6.6rem);
+      line-height: 1;
+      margin: 0;
+      text-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
+    }
+
+    .modalidade-modal-chip {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .modalidade-modal-chip::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .modalidade-modal-copy {
+      padding: 30px 28px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+      background: linear-gradient(180deg, rgba(16, 19, 26, 0.94), rgba(10, 12, 17, 0.98));
+    }
+
+    .modalidade-modal-copy h2 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 3vw, 2.6rem);
+      line-height: 0.98;
+    }
+
+    .modalidade-modal-copy p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+
+    .modalidade-modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .modalidade-modal-actions a,
+    .modalidade-modal-actions button {
+      appearance: none;
+      border: 0;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .modalidade-modal-actions a:hover,
+    .modalidade-modal-actions button:hover {
+      transform: translateY(-1px);
+    }
+
+    .modalidade-primary-action {
+      background: #f6f1e6;
+      color: #111;
+    }
+
+    .modalidade-secondary-action {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    .modalidade-modal-bottom {
+      padding: 24px 28px 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(250px, 0.85fr);
+      gap: 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .modalidade-section {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .modalidade-section h3 {
+      margin: 0 0 10px;
+      font-size: 0.98rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #ffd9a8;
+    }
+
+    .modalidade-section p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .modalidade-category-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .modalidade-category-list span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #f3ecdf;
+      font-size: 0.9rem;
+    }
+
+    .modalidade-facts {
+      display: grid;
+      gap: 10px;
+    }
+
+    .modalidade-fact {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.035);
+      color: #f7f1e6;
+    }
+
+    .modalidade-fact span {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .modalidade-loading {
+      padding: 50px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--panel-border);
+      background: var(--panel-bg);
+    }
+
+    @media (max-width: 920px) {
+      .modalidades-shell {
+        width: min(100vw - 24px, 1180px);
+        margin-top: 104px;
+      }
+
+      .modalidade-modal-top,
+      .modalidade-modal-bottom {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .modalidades-shell {
+        width: min(100vw - 18px, 1180px);
+        margin-top: 92px;
+      }
+
+      .modalidades-hero {
+        padding: 24px 18px 28px;
+        border-radius: 24px;
+      }
+
+      .modalidades-title {
+        max-width: none;
+      }
+
+      .modalidade-card {
+        min-height: 320px;
+      }
+
+      .modalidade-body,
+      .modalidade-modal-copy,
+      .modalidade-modal-bottom,
+      .modalidade-modal-hero {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .modalidade-overlay {
+        padding: 10px;
+      }
+
+      .modalidade-dialog {
+        max-height: 94vh;
+        border-radius: 24px;
+      }
     }
   </style>
 </head>
-<body class="tunnel-scroll">
+<body>
 
-<div class="tunnel-shell">
-  <div class="tunnel-stage" id="tunnel-stage">
-    <div class="container tunnel-content" id="tunnel-content">
-      <div class="header-section" style="text-align: center; margin-bottom: 50px;">
-        <h1 style="font-size: 3rem; margin-bottom: 10px;">Modalidades âš¡</h1>
-        <p style="color: #888; font-size: 1.2rem;">Explora as diversas disciplinas e as suas categorias tÃ©cnicas.</p>
+<main class="modalidades-shell">
+  <section class="modalidades-hero">
+    <span class="modalidades-kicker">Biblioteca de disciplinas</span>
+    <h1 class="modalidades-title">Modalidades que pedem detalhe.</h1>
+    <p class="modalidades-subtitle">
+      Cada disciplina abre num painel próprio com categorias, contexto técnico e acesso direto ao mercado. O objetivo aqui é explorar antes de navegar.
+    </p>
+  </section>
+
+  <section class="modalidades-grid" id="modalidades-container">
+    <div class="modalidade-loading">A carregar modalidades...</div>
+  </section>
+</main>
+
+<div class="modalidade-overlay" id="modalidade-overlay" aria-hidden="true">
+  <div class="modalidade-overlay-backdrop" id="modalidade-overlay-backdrop"></div>
+  <article class="modalidade-dialog" id="modalidade-dialog" role="dialog" aria-modal="true" aria-labelledby="modalidade-modal-title" tabindex="-1">
+    <button type="button" class="modalidade-close" id="modalidade-close" aria-label="Fechar detalhe da modalidade">&times;</button>
+    <div class="modalidade-modal-top">
+      <div class="modalidade-modal-hero" id="modalidade-modal-hero">
+        <span class="modalidade-modal-chip" id="modalidade-modal-chip"></span>
+        <p class="modalidade-modal-emoji" id="modalidade-modal-emoji"></p>
       </div>
-
-      <div class="modalidades-layers" id="modalidades-container">
-        <p>A carregar desportos...</p>
+      <div class="modalidade-modal-copy">
+        <div>
+          <h2 id="modalidade-modal-title"></h2>
+          <p id="modalidade-modal-description"></p>
+        </div>
+        <div class="modalidade-modal-actions">
+          <a class="modalidade-primary-action" id="modalidade-modal-link" href="#">Ver produtos</a>
+          <button type="button" class="modalidade-secondary-action" id="modalidade-modal-close-action">Fechar</button>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div class="tunnel-scroll-space" id="tunnel-scroll-space"></div>
+    <div class="modalidade-modal-bottom">
+      <section class="modalidade-section">
+        <h3>Leitura rapida</h3>
+        <p id="modalidade-modal-summary"></p>
+      </section>
+
+      <section class="modalidade-section">
+        <h3>Indicadores</h3>
+        <div class="modalidade-facts" id="modalidade-modal-facts"></div>
+      </section>
+
+      <section class="modalidade-section">
+        <h3>Categorias</h3>
+        <div class="modalidade-category-list" id="modalidade-modal-categories"></div>
+      </section>
+
+      <section class="modalidade-section">
+        <h3>Próximo passo</h3>
+        <p id="modalidade-modal-next-step"></p>
+      </section>
+    </div>
+  </article>
+</div>
 
 <script type="module" src="js/modalidades_page.js"></script>
 <script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
 </body>
 </html>

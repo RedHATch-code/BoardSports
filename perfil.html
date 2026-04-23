@@ -3,205 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Perfil - BoardSports</title>
+  <title>Perfil - BoardSports</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
   <link rel="stylesheet" href="css/responsive.css">
-  <style>
-    .navbar {
-      background-color: #1a1a1a;
-      color: white;
-      padding: 15px 0;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .navbar-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 20px;
-    }
-    
-    .navbar-brand a {
-      font-size: 24px;
-      font-weight: bold;
-      color: #ff6b6b;
-      text-decoration: none;
-    }
-    
-    .navbar-menu ul {
-      list-style: none;
-      display: flex;
-      gap: 30px;
-    }
-    
-    .navbar-menu a {
-      color: white;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    
-    .navbar-menu a:hover {
-      color: #ff6b6b;
-    }
-    
-    .navbar-user {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    
-    .role-badge {
-      background-color: #ff6b6b;
-      color: white;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-    
-    .btn-logout {
-      background-color: #ff6b6b;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    
-    .btn-logout:hover {
-      background-color: #e55555;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-
-    .profile-card {
-      background: white;
-      border-radius: 10px;
-      padding: 30px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .profile-avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #d11111 0%, #ec3d3d 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      margin: 0 auto 20px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-
-    .btn-salvar {
-      background-color: #eaa866;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 16px;
-      transition: background-color 0.3s;
-    }
-
-    .btn-salvar:hover {
-      background-color: #cf9c44;
-    }
-
-    .msg {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      text-align: center;
-    }
-
-    .msg.success {
-      background-color: #d4edda;
-      color: #155724;
-    }
-
-    .msg.error {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
-  </style>
+  <link rel="stylesheet" href="css/profile-page.css">
 </head>
-<body>
+<body class="profile-page">
 
-<div class="container">
-  <h1>Meu Perfil </h1>
-  
-  <div class="profile-card">
-    <div class="profile-avatar" id="avatar">👤</div>
+<div class="profile-shell">
+  <section class="profile-hero">
+    <div>
+      <span class="profile-kicker">Conta BoardSports</span>
+      <h1 id="profile-hero-name">O teu perfil e atividade.</h1>
+      <p id="profile-hero-copy">
+        Atualiza a identidade publica, acompanha pedidos e gere as inscricoes que fizeste em eventos.
+      </p>
+    </div>
 
-    <form id="profile-form">
-      <div class="form-group">
-        <label>Nome</label>
-        <input type="text" id="nome" placeholder="Seu nome completo">
+    <div class="profile-hero-meta">
+      <strong id="profile-role-badge">membro</strong>
+      <span id="profile-admin-link-wrapper" hidden><a href="moderacao.html">Abrir moderacao</a></span>
+      <small>As alteracoes aqui refletem-se no header e no resto da plataforma.</small>
+    </div>
+  </section>
+
+  <div class="profile-grid">
+    <section class="profile-panel">
+      <div class="profile-photo-section">
+        <div class="profile-avatar-shell">
+          <img id="avatar-image" class="profile-avatar-image" alt="Foto de perfil">
+          <span id="avatar-fallback" class="profile-avatar-fallback">BS</span>
+        </div>
+
+        <div class="profile-photo-copy">
+          <h2>Identidade visual</h2>
+          <p>Adiciona uma imagem para personalizar o perfil e o dock de navegacao.</p>
+
+          <div class="profile-photo-actions">
+            <label class="profile-primary-button" for="foto-perfil">Escolher foto</label>
+            <button type="button" class="profile-secondary-button" id="remove-photo-btn">Remover foto</button>
+          </div>
+
+          <input type="file" id="foto-perfil" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+          <div class="profile-photo-meta" id="photo-meta">JPG, PNG, WebP ou GIF ate 5 MB.</div>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="email" placeholder="seu@email.com" disabled>
-      </div>
+      <form id="profile-form" class="profile-form">
+        <label class="profile-field">
+          <span>Nome</span>
+          <input type="text" id="nome" placeholder="Nome completo">
+        </label>
 
-      <div class="form-group">
-        <label>Tipo</label>
-        <input type="text" id="role" placeholder="Tipo de utilizador" disabled>
-      </div>
+        <div class="profile-form-columns">
+          <label class="profile-field">
+            <span>Email</span>
+            <input type="email" id="email" placeholder="email@dominio.com" disabled>
+          </label>
 
-      <div class="form-group">
-        <label>Telefone</label>
-        <input type="tel" id="telefone" placeholder="+351 000 000 000">
-      </div>
+          <label class="profile-field">
+            <span>Tipo</span>
+            <input type="text" id="role" placeholder="Tipo de utilizador" disabled>
+          </label>
+        </div>
 
-      <div class="form-group">
-        <label>Localidade</label>
-        <input type="text" id="localidade" placeholder="Cidade/Região">
-      </div>
+        <div class="profile-form-columns">
+          <label class="profile-field">
+            <span>Telefone</span>
+            <input type="tel" id="telefone" placeholder="+351 000 000 000">
+          </label>
 
-      <div class="form-group">
-        <label>Bio</label>
-        <textarea id="bio" placeholder="Conte-nos sobre si..." rows="4"></textarea>
-      </div>
+          <label class="profile-field">
+            <span>Localidade</span>
+            <input type="text" id="localidade" placeholder="Cidade ou regiao">
+          </label>
+        </div>
 
-      <button type="submit" class="btn-salvar">Salvar Alterações</button>
-      <div id="msg" class="msg" style="display: none;"></div>
-    </form>
+        <label class="profile-field">
+          <span>Bio</span>
+          <textarea id="bio" rows="5" placeholder="Conta-nos como participas no universo BoardSports."></textarea>
+        </label>
+
+        <button type="submit" class="profile-primary-button">Guardar alteracoes</button>
+        <div id="msg" class="profile-inline-message" hidden></div>
+      </form>
+
+      <section class="profile-security-section">
+        <div class="profile-section-head">
+          <h2>Seguranca da conta</h2>
+          <span>Password</span>
+        </div>
+        <p class="profile-security-copy">Atualiza a palavra-passe sem sair da area pessoal.</p>
+
+        <form id="password-form" class="profile-form">
+          <div class="profile-form-columns">
+            <label class="profile-field">
+              <span>Nova palavra-passe</span>
+              <input type="password" id="nova-password" autocomplete="new-password" placeholder="Minimo de 6 caracteres">
+            </label>
+
+            <label class="profile-field">
+              <span>Confirmar nova palavra-passe</span>
+              <input type="password" id="confirmar-password" autocomplete="new-password" placeholder="Repete a password">
+            </label>
+          </div>
+
+          <button type="submit" class="profile-secondary-button">Atualizar palavra-passe</button>
+          <div id="password-msg" class="profile-inline-message" hidden></div>
+        </form>
+      </section>
+    </section>
+
+    <aside class="profile-panel profile-panel-side">
+      <section class="profile-activity-section">
+        <div class="profile-section-head">
+          <h2>Pedidos recentes</h2>
+          <span id="orders-count">0 pedidos</span>
+        </div>
+        <div id="orders-list" class="profile-activity-list">
+          <article class="profile-empty-card">
+            <p>A carregar pedidos...</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="profile-activity-section">
+        <div class="profile-section-head">
+          <h2>Eventos inscritos</h2>
+          <span id="registrations-count">0 inscricoes</span>
+        </div>
+        <div id="registrations-list" class="profile-activity-list">
+          <article class="profile-empty-card">
+            <p>A carregar inscricoes...</p>
+          </article>
+        </div>
+      </section>
+    </aside>
   </div>
 </div>
 
 <script type="module" src="js/perfil_page.js"></script>
 <script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
 </body>
 </html>

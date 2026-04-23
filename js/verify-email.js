@@ -1,5 +1,13 @@
 import { supabase } from './supabase.js'
-import { atualizarStatusEmailVerificado, resendEmailConfirmation } from './auth_utils.js'
+import {
+  atualizarStatusEmailVerificado,
+  garantirPerfilUtilizador,
+  limparEmailRegistoPendente,
+  obterEmailRegistoPendente,
+  processarRedirecionamentoAuth,
+  resendEmailConfirmation
+} from './auth_utils.js'
+import { showToast } from './ui_feedback.js'
 
 const statusMessage = document.getElementById('status-message')
 const statusText = document.getElementById('status-text')
@@ -10,111 +18,120 @@ const verifyButtons = document.getElementById('verify-buttons')
 const errorButtons = document.getElementById('error-buttons')
 const loadingText = document.getElementById('loading-text')
 
-let userEmail = null
-
-async function verificarEmail() {
-  try {
-    // Pequeno delay para garantir que a sessão foi atualizada
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      mostrarErro('Utilizador não encontrado. Faça login novamente.')
-      return
-    }
-
-    userEmail = user.email
-
-    // Verificar se email está confirmado
-    if (user.email_confirmed_at) {
-      // Atualizar status na base de dados
-      await atualizarStatusEmailVerificado()
-      
-      mostrarSucesso()
-    } else {
-      mostrarAguardando()
-    }
-  } catch (error) {
-    console.error('Erro ao verificar email:', error)
-    mostrarErro('Erro ao verificar email. Tente novamente mais tarde.')
-  }
-}
+let userEmail = obterEmailRegistoPendente()
 
 function mostrarSucesso() {
-  verifyIcon.textContent = '✅'
-  verifyTitle.textContent = 'Email Verificado com Sucesso!'
-  verifyText.textContent = 'A sua conta foi ativada. Pode agora aceder ao BoardSports.'
-  
+  verifyIcon.textContent = 'OK'
+  verifyTitle.textContent = 'Email verificado com sucesso'
+  verifyText.textContent = 'A tua conta foi ativada e o perfil ficou sincronizado com o Supabase.'
+
   statusMessage.className = 'status-message success'
-  statusText.textContent = 'Email confirmado com sucesso!'
-  loadingText.textContent = 'Redirecionando em 3 segundos...'
-  
+  statusText.textContent = 'Email confirmado com sucesso.'
+  loadingText.textContent = 'Redirecionamento automatico para o dashboard em 3 segundos.'
+
   verifyButtons.style.display = 'flex'
   errorButtons.style.display = 'none'
-  
-  // Redirecionar automaticamente
+
   setTimeout(() => {
     window.location.href = '/dashboard.html'
   }, 3000)
 }
 
 function mostrarAguardando() {
-  verifyIcon.textContent = '⏳'
-  verifyTitle.textContent = 'Email Ainda Não Confirmado'
-  verifyText.textContent = `Verifique o seu email (${userEmail}) e clique no link de confirmação.`
-  
+  verifyIcon.textContent = '...'
+  verifyTitle.textContent = 'A aguardar confirmacao'
+  verifyText.textContent = userEmail
+    ? `O registo de ${userEmail} foi criado. Abre o link mais recente que recebeste por email para concluir a ativacao.`
+    : 'Estamos a aguardar a confirmacao do teu email. Abre o link recebido para concluir a ativacao.'
+
   statusMessage.className = 'status-message loading'
-  statusText.innerHTML = '<span class="spinner"></span><span>Aguardando confirmação do email...</span>'
-  loadingText.textContent = 'Se não recebeu o email, pode reenviá-lo abaixo.'
-  
+  statusText.innerHTML = '<span class="spinner"></span><span>Conta criada. Falta apenas confirmar o email.</span>'
+  loadingText.textContent = 'Se o email nao chegou, usa o botao abaixo para pedir novo envio.'
+
   verifyButtons.style.display = 'flex'
   errorButtons.style.display = 'none'
 }
 
 function mostrarErro(mensagem) {
-  verifyIcon.textContent = '❌'
-  verifyTitle.textContent = 'Erro na Verificação'
+  verifyIcon.textContent = 'ERR'
+  verifyTitle.textContent = 'Nao foi possivel validar a conta'
   verifyText.textContent = mensagem
-  
+
   statusMessage.className = 'status-message error'
   statusText.textContent = mensagem
   loadingText.textContent = ''
-  
+
   verifyButtons.style.display = 'none'
   errorButtons.style.display = 'flex'
 }
 
-// Eventos dos botões
+async function verificarEmail() {
+  try {
+    const redirectResult = await processarRedirecionamentoAuth()
+    if (!redirectResult.sucesso) {
+      mostrarErro(redirectResult.erro)
+      return
+    }
+
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      if (userEmail) {
+        mostrarAguardando()
+        return
+      }
+
+      mostrarErro('Nao existe sessao valida neste browser. Usa o link mais recente do email ou faz login novamente.')
+      return
+    }
+
+    userEmail = user.email || userEmail
+
+    if (user.email_confirmed_at) {
+      await garantirPerfilUtilizador(user, { email: user.email })
+      await atualizarStatusEmailVerificado()
+      limparEmailRegistoPendente()
+      mostrarSucesso()
+      return
+    }
+
+    mostrarAguardando()
+  } catch (error) {
+    console.error('Erro ao verificar email:', error)
+    mostrarErro(error.message || 'Erro inesperado ao validar o email.')
+  }
+}
+
 document.getElementById('goto-dashboard').addEventListener('click', () => {
   window.location.href = '/dashboard.html'
 })
 
 document.getElementById('resend-email').addEventListener('click', async () => {
   if (!userEmail) {
-    alert('Email não encontrado')
+    showToast('Nao existe email pendente para reenvio.', { type: 'error' })
     return
   }
 
   const btn = document.getElementById('resend-email')
   btn.disabled = true
-  btn.textContent = 'Enviando...'
+  btn.textContent = 'A enviar...'
 
   const resultado = await resendEmailConfirmation(userEmail)
-  
+
   if (resultado.sucesso) {
     statusMessage.className = 'status-message success'
-    statusText.textContent = 'Email reenviado com sucesso! Verifique a sua caixa de entrada.'
-    setTimeout(() => {
-      btn.disabled = false
-      btn.textContent = 'Reenviar Email'
-    }, 3000)
+    statusText.textContent = 'Novo email de confirmacao enviado com sucesso.'
+    showToast('Email reenviado com sucesso.', { type: 'success' })
   } else {
     statusMessage.className = 'status-message error'
-    statusText.textContent = 'Erro ao reenviar email: ' + resultado.erro
-    btn.disabled = false
-    btn.textContent = 'Reenviar Email'
+    statusText.textContent = `Falha no reenvio: ${resultado.erro}`
+    showToast('Nao foi possivel reenviar o email.', { type: 'error' })
   }
+
+  btn.disabled = false
+  btn.textContent = 'Reenviar email'
 })
 
 document.getElementById('retry-verify').addEventListener('click', () => {
@@ -122,8 +139,7 @@ document.getElementById('retry-verify').addEventListener('click', () => {
 })
 
 document.getElementById('back-login').addEventListener('click', () => {
-  window.location.href = '/index.html'
+  window.location.href = '/login.html'
 })
 
-// Iniciar verificação quando a página carregar
 document.addEventListener('DOMContentLoaded', verificarEmail)

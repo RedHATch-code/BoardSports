@@ -1,135 +1,350 @@
-import { inicializarPaginaProtegida } from './auth_utils.js'
 import { obterModalidades, obterCategoriasPorModalidade } from './db_utils.js'
 
-const emojis = {
-  'Surf': '🏄',
-  'Skate': '🛹',
-  'Skimboard': '🏄',
-  'Snowboard': '🏂',
-  'Sandboard': '🏜️'
+const modalidadeMeta = {
+  Surf: {
+    emoji: '🏄',
+    gradient: 'linear-gradient(135deg, #0c7abf 0%, #14b8ff 46%, #ffb703 100%)',
+    chip: 'Agua e leitura de ondas',
+    terrain: 'Costa e mar',
+    focus: 'Linhas, leitura e fluidez',
+    energy: 'Alta'
+  },
+  Skate: {
+    emoji: '🛹',
+    gradient: 'linear-gradient(135deg, #1f1f24 0%, #50555c 44%, #ff7b00 100%)',
+    chip: 'Rua, park e transicao',
+    terrain: 'Cidade e skatepark',
+    focus: 'Truques e precisao',
+    energy: 'Alta'
+  },
+  Skimboard: {
+    emoji: '🌊',
+    gradient: 'linear-gradient(135deg, #153243 0%, #2d8f85 48%, #ffd166 100%)',
+    chip: 'Praia rasa e resposta rapida',
+    terrain: 'Areia molhada',
+    focus: 'Aceleracao e timing',
+    energy: 'Media-alta'
+  },
+  Snowboard: {
+    emoji: '🏂',
+    gradient: 'linear-gradient(135deg, #183153 0%, #4f6d8c 48%, #dfe7f3 100%)',
+    chip: 'Neve, park e montanha',
+    terrain: 'Pistas e backcountry',
+    focus: 'Controle e adaptacao',
+    energy: 'Alta'
+  },
+  Sandboard: {
+    emoji: '🏜️',
+    gradient: 'linear-gradient(135deg, #5a3718 0%, #c07a2d 50%, #f2c078 100%)',
+    chip: 'Dunas e descida tecnica',
+    terrain: 'Areia seca',
+    focus: 'Equilibrio e leitura da inclinacao',
+    energy: 'Media'
+  }
 }
 
-let scrollRaf = null
-let activeLayerIndex = 0
-let layers = []
+const fallbackMeta = {
+  emoji: '🏄',
+  gradient: 'linear-gradient(135deg, #2b2b31 0%, #43454f 45%, #ff8c00 100%)',
+  chip: 'Disciplina em destaque',
+  terrain: 'Terreno variavel',
+  focus: 'Tecnica e progressao',
+  energy: 'Media'
+}
+
+const state = {
+  modalidades: [],
+  activeId: null,
+  lastFocusedElement: null
+}
+
+const ui = {
+  container: null,
+  overlay: null,
+  dialog: null,
+  backdrop: null,
+  closeButton: null,
+  closeAction: null,
+  modalHero: null,
+  modalChip: null,
+  modalEmoji: null,
+  modalTitle: null,
+  modalDescription: null,
+  modalSummary: null,
+  modalFacts: null,
+  modalCategories: null,
+  modalNextStep: null,
+  modalLink: null
+}
 
 async function inicializarModalidades() {
-  await inicializarPaginaProtegida()
+  cacheDom()
+  bindEvents()
   await carregarModalidades()
-  configurarTunelScroll()
 }
 
-function configurarTunelScroll() {
-  const stage = document.getElementById('tunnel-stage')
-  const scrollSpace = document.getElementById('tunnel-scroll-space')
+function cacheDom() {
+  ui.container = document.getElementById('modalidades-container')
+  ui.overlay = document.getElementById('modalidade-overlay')
+  ui.dialog = document.getElementById('modalidade-dialog')
+  ui.backdrop = document.getElementById('modalidade-overlay-backdrop')
+  ui.closeButton = document.getElementById('modalidade-close')
+  ui.closeAction = document.getElementById('modalidade-modal-close-action')
+  ui.modalHero = document.getElementById('modalidade-modal-hero')
+  ui.modalChip = document.getElementById('modalidade-modal-chip')
+  ui.modalEmoji = document.getElementById('modalidade-modal-emoji')
+  ui.modalTitle = document.getElementById('modalidade-modal-title')
+  ui.modalDescription = document.getElementById('modalidade-modal-description')
+  ui.modalSummary = document.getElementById('modalidade-modal-summary')
+  ui.modalFacts = document.getElementById('modalidade-modal-facts')
+  ui.modalCategories = document.getElementById('modalidade-modal-categories')
+  ui.modalNextStep = document.getElementById('modalidade-modal-next-step')
+  ui.modalLink = document.getElementById('modalidade-modal-link')
+}
 
-  if (!stage || !scrollSpace || layers.length === 0) return
-
-  scrollSpace.style.height = `${Math.max(layers.length, 1) * 100}vh`
-
-  const atualizarTunel = () => {
-    const rawIndex = window.scrollY / window.innerHeight
-    const index = Math.min(layers.length - 1, Math.max(0, Math.round(rawIndex)))
-    const local = rawIndex - Math.floor(rawIndex)
-
-    if (index !== activeLayerIndex) {
-      if (layers[activeLayerIndex]) layers[activeLayerIndex].classList.remove('is-active')
-      if (layers[index]) layers[index].classList.add('is-active')
-      activeLayerIndex = index
-    }
-
-    const depth = -local * 260
-    const scale = 1 - local * 0.08
-    const tilt = -local * 3
-
-    stage.style.setProperty('--tunnel-depth', `${depth}px`)
-    stage.style.setProperty('--tunnel-scale', `${scale.toFixed(3)}`)
-    stage.style.setProperty('--tunnel-tilt', `${tilt.toFixed(2)}deg`)
-
-    if (layers[index]) {
-      layers[index].style.setProperty('--orbit-collapse', local.toFixed(2))
-    }
-  }
-
-  const onScroll = () => {
-    if (scrollRaf) return
-    scrollRaf = requestAnimationFrame(() => {
-      scrollRaf = null
-      atualizarTunel()
-    })
-  }
-
-  window.addEventListener('scroll', onScroll)
-  window.addEventListener('resize', atualizarTunel)
-  atualizarTunel()
+function bindEvents() {
+  ui.container.addEventListener('click', onCardClick)
+  ui.container.addEventListener('keydown', onCardKeydown)
+  ui.backdrop.addEventListener('click', fecharModal)
+  ui.closeButton.addEventListener('click', fecharModal)
+  ui.closeAction.addEventListener('click', fecharModal)
+  document.addEventListener('keydown', onDocumentKeydown)
 }
 
 async function carregarModalidades() {
   try {
     const modalidades = await obterModalidades()
-    const container = document.getElementById('modalidades-container')
 
-    container.innerHTML = ''
-    layers = []
-    activeLayerIndex = 0
-
-    for (const [index, modalidade] of modalidades.entries()) {
-      const emoji = emojis[modalidade.nome] || '🏄'
-      const categorias = await obterCategoriasPorModalidade(modalidade.id)
-      const categoriasHtml = categorias.length
-        ? (() => {
-          const rings = categorias.length > 8 ? 3 : categorias.length > 4 ? 2 : 1
-          const perRing = Math.ceil(categorias.length / rings)
-          const baseRadius = 320
-          const ringGap = 80
-          return categorias.map((cat, catIndex) => {
-            const ringIndex = catIndex % rings
-            const posIndex = Math.floor(catIndex / rings)
-            const angle = (Math.PI * 2 / perRing) * posIndex - Math.PI / 2 + (ringIndex * (Math.PI / perRing))
-            const radius = baseRadius + ringIndex * ringGap
-            const x = Math.cos(angle) * radius
-            const y = Math.sin(angle) * radius
-            const delay = (catIndex % 6) * 0.2
-            return `<span class="categoria-tag" style="--orbit-x:${x.toFixed(1)}px;--orbit-y:${y.toFixed(1)}px;--orbit-delay:${delay}s">${cat.nome}</span>`
-          }).join('')
-        })()
-        : '<span class="categoria-empty">Categorias em breve...</span>'
-
-      const layer = document.createElement('div')
-      layer.className = 'modalidade-layer'
-      if (index === 0) layer.classList.add('is-active')
-
-      const card = document.createElement('div')
-      card.className = 'modalidade-card'
-
-      const orbit = document.createElement('div')
-      orbit.className = 'modalidade-categorias'
-      orbit.innerHTML = categoriasHtml
-
-      card.innerHTML = `
-        <div class="modalidade-icon">${emoji}</div>
-        <div class="modalidade-info">
-          <h3>${modalidade.nome}</h3>
-          <p>${modalidade.descricao}</p>
-        </div>
-        <div class="modalidade-cta">
-          <span>Explorar</span>
-          <div>+</div>
-        </div>
-      `
-
-      card.onclick = () => {
-        window.location.href = `produtos.html?modalidade=${modalidade.id}`
-      }
-
-      layer.appendChild(orbit)
-      layer.appendChild(card)
-      container.appendChild(layer)
-      layers.push(layer)
+    if (!modalidades.length) {
+      renderEmptyState('Nenhuma modalidade encontrada.')
+      return
     }
+
+    const categoriasPorModalidade = await Promise.all(
+      modalidades.map(modalidade => obterCategoriasPorModalidade(modalidade.id))
+    )
+
+    state.modalidades = modalidades.map((modalidade, index) => {
+      const categorias = categoriasPorModalidade[index] || []
+      return {
+        ...modalidade,
+        categorias,
+        meta: obterMetaModalidade(modalidade.nome)
+      }
+    })
+
+    renderCards()
   } catch (error) {
     console.error('Erro ao carregar modalidades:', error)
+    renderEmptyState('Nao foi possivel carregar as modalidades neste momento.')
   }
+}
+
+function renderCards() {
+  ui.container.innerHTML = state.modalidades.map(modalidade => {
+    const previewCategorias = modalidade.categorias.slice(0, 3)
+    const extraCategorias = Math.max(modalidade.categorias.length - previewCategorias.length, 0)
+    const resumo = construirResumoCurto(modalidade)
+    const cardStyle = `--card-gradient:${modalidade.meta.gradient};`
+
+    return `
+      <article
+        class="modalidade-card"
+        data-modalidade-id="${modalidade.id}"
+        tabindex="0"
+        role="button"
+        aria-label="Abrir detalhe de ${escapeHtml(modalidade.nome)}"
+        style="${cardStyle}">
+        <div class="modalidade-visual">
+          <div class="modalidade-emoji">${modalidade.meta.emoji}</div>
+          <div class="modalidade-count">${modalidade.categorias.length} categorias</div>
+        </div>
+
+        <div class="modalidade-body">
+          <div class="modalidade-copy">
+            <h3>${escapeHtml(modalidade.nome)}</h3>
+            <p>${escapeHtml(resumo)}</p>
+          </div>
+
+          <div class="modalidade-tags">
+            ${renderPreviewCategorias(previewCategorias, extraCategorias)}
+          </div>
+
+          <div class="modalidade-footer">
+            <div>
+              <span>Terreno</span><br>
+              <strong>${escapeHtml(modalidade.meta.terrain)}</strong>
+            </div>
+            <div class="modalidade-action">Abrir detalhe</div>
+          </div>
+        </div>
+      </article>
+    `
+  }).join('')
+}
+
+function renderPreviewCategorias(previewCategorias, extraCategorias) {
+  if (!previewCategorias.length) {
+    return '<span>Categorias em definicao</span>'
+  }
+
+  const tags = previewCategorias
+    .map(categoria => `<span>${escapeHtml(categoria.nome)}</span>`)
+    .join('')
+
+  if (!extraCategorias) {
+    return tags
+  }
+
+  return `${tags}<span>+${extraCategorias} extra</span>`
+}
+
+function renderEmptyState(message) {
+  ui.container.innerHTML = `<div class="modalidades-empty">${escapeHtml(message)}</div>`
+}
+
+function onCardClick(event) {
+  const card = event.target.closest('[data-modalidade-id]')
+  if (!card) return
+
+  abrirModal(Number(card.dataset.modalidadeId))
+}
+
+function onCardKeydown(event) {
+  const card = event.target.closest('[data-modalidade-id]')
+  if (!card) return
+
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
+    abrirModal(Number(card.dataset.modalidadeId))
+  }
+}
+
+function onDocumentKeydown(event) {
+  if (event.key === 'Escape' && state.activeId !== null) {
+    fecharModal()
+  }
+}
+
+function abrirModal(modalidadeId) {
+  const modalidade = state.modalidades.find(item => item.id === modalidadeId)
+  if (!modalidade) return
+
+  state.activeId = modalidadeId
+  state.lastFocusedElement = document.activeElement
+
+  preencherModal(modalidade)
+  ui.overlay.classList.add('is-visible')
+  ui.overlay.setAttribute('aria-hidden', 'false')
+  document.body.classList.add('modal-open')
+  ui.dialog.focus()
+}
+
+function fecharModal() {
+  if (state.activeId === null) return
+
+  state.activeId = null
+  ui.overlay.classList.remove('is-visible')
+  ui.overlay.setAttribute('aria-hidden', 'true')
+  document.body.classList.remove('modal-open')
+
+  if (state.lastFocusedElement && typeof state.lastFocusedElement.focus === 'function') {
+    state.lastFocusedElement.focus()
+  }
+}
+
+function preencherModal(modalidade) {
+  const resumoLongo = construirResumoLongo(modalidade)
+  const proximoPasso = construirProximoPasso(modalidade)
+  const facts = construirIndicadores(modalidade)
+
+  ui.modalHero.style.setProperty('--modal-gradient', modalidade.meta.gradient)
+  ui.modalChip.textContent = modalidade.meta.chip
+  ui.modalEmoji.textContent = modalidade.meta.emoji
+  ui.modalTitle.textContent = modalidade.nome
+  ui.modalDescription.textContent = modalidade.descricao || 'Disciplina sem descricao detalhada.'
+  ui.modalSummary.textContent = resumoLongo
+  ui.modalNextStep.textContent = proximoPasso
+  ui.modalLink.href = `produtos.html?modalidade=${modalidade.id}`
+  ui.modalLink.textContent = `Ver produtos de ${modalidade.nome}`
+  ui.modalLink.setAttribute('aria-label', `Ver produtos da modalidade ${modalidade.nome}`)
+
+  ui.modalFacts.innerHTML = facts.map(fact => `
+    <div class="modalidade-fact">
+      <span>${escapeHtml(fact.label)}</span>
+      <strong>${escapeHtml(fact.value)}</strong>
+    </div>
+  `).join('')
+
+  if (modalidade.categorias.length) {
+    ui.modalCategories.innerHTML = modalidade.categorias
+      .map(categoria => `<span>${escapeHtml(categoria.nome)}</span>`)
+      .join('')
+  } else {
+    ui.modalCategories.innerHTML = '<span>Categorias em definicao</span>'
+  }
+}
+
+function construirResumoCurto(modalidade) {
+  const descricao = modalidade.descricao || 'Exploracao tecnica e progressao.'
+  if (descricao.length <= 105) return descricao
+  return `${descricao.slice(0, 102).trim()}...`
+}
+
+function construirResumoLongo(modalidade) {
+  const categorias = modalidade.categorias.map(categoria => categoria.nome)
+  const preview = categorias.slice(0, 4).join(', ')
+  const extra = Math.max(categorias.length - 4, 0)
+  const descricao = modalidade.descricao || 'Esta disciplina ainda nao tem uma descricao detalhada na plataforma.'
+
+  if (!preview) {
+    return `${descricao} O catalogo desta modalidade ainda esta a ser organizado, por isso o proximo passo natural e entrar no mercado e acompanhar as futuras adicoes.`
+  }
+
+  return `${descricao} Neste momento a modalidade ja inclui categorias como ${preview}${extra ? ` e mais ${extra}` : ''}, o que permite navegar por estilos e necessidades tecnicas diferentes sem sair do mesmo fluxo.`
+}
+
+function construirProximoPasso(modalidade) {
+  if (!modalidade.categorias.length) {
+    return `Abre o mercado de ${modalidade.nome} para acompanhar quando surgirem produtos e novas categorias nesta area.`
+  }
+
+  const primeiraCategoria = modalidade.categorias[0].nome
+  return `Entra no mercado de ${modalidade.nome} e comeca pela categoria ${primeiraCategoria} se queres uma entrada rapida neste universo.`
+}
+
+function construirIndicadores(modalidade) {
+  return [
+    {
+      label: 'Categorias',
+      value: String(modalidade.categorias.length)
+    },
+    {
+      label: 'Terreno',
+      value: modalidade.meta.terrain
+    },
+    {
+      label: 'Foco tecnico',
+      value: modalidade.meta.focus
+    },
+    {
+      label: 'Intensidade',
+      value: modalidade.meta.energy
+    }
+  ]
+}
+
+function obterMetaModalidade(nome) {
+  return modalidadeMeta[nome] || fallbackMeta
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 document.addEventListener('DOMContentLoaded', inicializarModalidades)

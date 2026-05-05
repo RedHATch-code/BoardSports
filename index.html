@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BoardSports - Plataforma de Desportos de Prancha</title>
+  <title>BoardSports - Spots, Videos e Perfis</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/floating-dock.css">
   <link rel="stylesheet" href="css/landing.css">
-  <link rel="stylesheet" href="css/tunnel-slider.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body class="landing-page">
@@ -20,18 +19,31 @@
 
 <main class="landing-main">
   <section class="hero-shell" aria-labelledby="cover-title">
+    <header class="landing-header">
+      <div class="brand-visual">
+        <a href="index.html" class="brand-logo-link">
+          <img src="assets/images/logotipo.png" alt="BoardSports Logo" class="brand-logo">
+        </a>
+        <span class="brand-mark">Ride like a pro</span>
+        <strong class="brand-name">BoardSports</strong>
+      </div>
+
+      <nav class="landing-header-nav" aria-label="Navegacao principal">
+        <a href="mapa.html">Mapa</a>
+        <a href="videos.html">Videos</a>
+        <a href="perfil.html">Perfil</a>
+      </nav>
+    </header>
+
     <div class="hero-topline">
-      <span class="hero-chip">BoardSports 2026</span>
-      <span class="hero-meta">Lisbon / Porto / Online</span>
+      <span class="hero-chip">Temporada 2026</span>
     </div>
 
     <div class="hero-grid">
       <div class="hero-copy">
-        <p class="hero-kicker">Spots, gear e comunidade</p>
-        <h1 id="cover-title">Um ecossistema limpo para quem vive desportos de prancha.</h1>
-        <p class="hero-description">
-          Descobre modalidades, explora spots, compra equipamento e acompanha a tua atividade sem saltar entre fluxos soltos.
-        </p>
+        <p class="hero-kicker">Spots. Crew. Conteudo real.</p>
+        <h1 id="cover-title">Descobre spots, publica videos e segue quem anda no mesmo flow.</h1>
+        <p class="hero-description">A plataforma ficou reduzida ao essencial: mapa de spots, perfis de utilizador, mensagens e uma galeria de videos ligados aos spots onde foram gravados.</p>
 
         <div class="hero-actions">
           <a href="login.html" class="landing-btn landing-btn-primary">Entrar</a>
@@ -40,16 +52,16 @@
 
         <div class="hero-metrics" aria-label="Resumo da plataforma">
           <article class="hero-metric">
-            <span>Spots</span>
-            <strong>Radar local</strong>
+            <span>Mapa</span>
+            <strong>Spots reais</strong>
           </article>
           <article class="hero-metric">
-            <span>Mercado</span>
-            <strong>Checkout direto</strong>
+            <span>Videos</span>
+            <strong>Publicacao por spot</strong>
           </article>
           <article class="hero-metric">
-            <span>Conta</span>
-            <strong>Perfil e pedidos</strong>
+            <span>Perfil</span>
+            <strong>Seguidores e mensagens</strong>
           </article>
         </div>
       </div>
@@ -63,238 +75,59 @@
         >
         <figcaption>
           <span>Destaque</span>
-          <strong>Skate noturno.</strong>
-          <p>Uma identidade visual mais limpa, sem perder o tom da marca.</p>
+          <strong>Comunidade local</strong>
         </figcaption>
       </figure>
     </div>
 
     <div class="hero-links" aria-label="Acesso rapido">
-      <a href="modalidades.html">Modalidades</a>
-      <a href="mapa.html">Mapa de spots</a>
-      <a href="produtos.html">Mercado</a>
-      <a href="dashboard.html">Dashboard</a>
+      <a href="mapa.html">Abrir mapa</a>
+      <a href="videos.html">Explorar videos</a>
+      <a href="perfil.html">Ver perfil</a>
     </div>
   </section>
 
   <section class="feature-grid" aria-label="Destaques da plataforma">
     <article class="feature-card">
-      <span>Spots</span>
-      <h2>Explora o mapa com menos ruido.</h2>
-      <p>Localiza spots, filtra por modalidade e entra rapidamente nos pontos ativos da comunidade.</p>
+      <span>1. Spots</span>
+      <h2>Marca localizacoes e abre cada spot com contexto.</h2>
+      <p>O mapa serve de base para descobrir pontos, abrir perfis e perceber rapidamente onde a comunidade anda a publicar.</p>
     </article>
 
     <article class="feature-card feature-card-image" style="--feature-image: url('assets/images/skim.jpg');">
-      <span>Mercado</span>
-      <h2>Compra sem quebrar o ritmo.</h2>
-      <p>Pesquisa, compara e fecha pedidos num fluxo mais direto e previsivel.</p>
+      <span>2. Videos</span>
+      <h2>Publica diretamente num spot existente.</h2>
+      <p>Ao clicar num spot podes anexar um video e deixas de perder conteudo fora do sitio onde ele realmente aconteceu.</p>
     </article>
 
     <article class="feature-card">
-      <span>Conta</span>
-      <h2>Perfil, pedidos e inscricoes no mesmo sitio.</h2>
-      <p>A tua area pessoal deixa de competir com o resto da interface e passa a funcionar como centro operativo.</p>
+      <span>3. Perfis</span>
+      <h2>Segue utilizadores, envia mensagens e centraliza publicacoes.</h2>
+      <p>O perfil mostra seguidores, bio, publicacoes e acesso rapido a edicao da conta sem ruído extra.</p>
     </article>
-  </section>
-
-  <section class="tunnel-slider-section" aria-labelledby="tunnel-title">
-    <div class="tunnel-slider-intro">
-      <p class="tunnel-kicker">Modalidades</p>
-      <h2 id="tunnel-title">Mapa mental das modalidades.</h2>
-      <p>Um bloco interativo mais contido, focado nas ligacoes entre surf, skate, skimboard, snowboard e sandboard.</p>
-    </div>
-
-    <div class="tunnel-scroll-track" data-tunnel-track>
-      <div class="tunnel-sticky">
-        <div class="tunnel-stage" data-tunnel-stage>
-          <div class="tunnel-rings" aria-hidden="true">
-            <span style="--ring-index: 0;"></span>
-            <span style="--ring-index: 1;"></span>
-            <span style="--ring-index: 2;"></span>
-            <span style="--ring-index: 3;"></span>
-            <span style="--ring-index: 4;"></span>
-            <span style="--ring-index: 5;"></span>
-            <span style="--ring-index: 6;"></span>
-            <span style="--ring-index: 7;"></span>
-            <span style="--ring-index: 8;"></span>
-            <span style="--ring-index: 9;"></span>
-            <span style="--ring-index: 10;"></span>
-            <span style="--ring-index: 11;"></span>
-          </div>
-
-          <div class="tunnel-progress-shell" aria-hidden="true">
-            <span class="tunnel-progress-index" data-tunnel-progress>01</span>
-            <div class="tunnel-progress-track">
-              <span class="tunnel-progress-fill" data-tunnel-progress-bar></span>
-            </div>
-          </div>
-
-          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(255, 140, 0, 0.24); --mind-secondary: rgba(77, 166, 255, 0.14);">
-            <div class="mind-map">
-              <div class="mind-links" aria-hidden="true">
-                <span class="mind-connection mind-connection-surf is-focus"></span>
-                <span class="mind-connection mind-connection-skate"></span>
-                <span class="mind-connection mind-connection-skim"></span>
-                <span class="mind-connection mind-connection-snow"></span>
-                <span class="mind-connection mind-connection-sand"></span>
-              </div>
-
-              <div class="mind-core">
-                <small>BoardSports</small>
-                <strong>Surf</strong>
-              </div>
-
-              <span class="mind-node mind-node-surf is-focus">Surf</span>
-              <span class="mind-node mind-node-skate">Skate</span>
-              <span class="mind-node mind-node-skim">Skimboard</span>
-              <span class="mind-node mind-node-snow">Snowboard</span>
-              <span class="mind-node mind-node-sand">Sandboard</span>
-            </div>
-
-            <div class="mind-caption">
-              <span>01</span>
-              <h3>Surf</h3>
-            </div>
-          </article>
-
-          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(77, 166, 255, 0.2); --mind-secondary: rgba(255, 140, 0, 0.1);">
-            <div class="mind-map">
-              <div class="mind-links" aria-hidden="true">
-                <span class="mind-connection mind-connection-surf"></span>
-                <span class="mind-connection mind-connection-skate is-focus"></span>
-                <span class="mind-connection mind-connection-skim"></span>
-                <span class="mind-connection mind-connection-snow"></span>
-                <span class="mind-connection mind-connection-sand"></span>
-              </div>
-
-              <div class="mind-core">
-                <small>BoardSports</small>
-                <strong>Skate</strong>
-              </div>
-
-              <span class="mind-node mind-node-surf">Surf</span>
-              <span class="mind-node mind-node-skate is-focus">Skate</span>
-              <span class="mind-node mind-node-skim">Skimboard</span>
-              <span class="mind-node mind-node-snow">Snowboard</span>
-              <span class="mind-node mind-node-sand">Sandboard</span>
-            </div>
-
-            <div class="mind-caption">
-              <span>02</span>
-              <h3>Skate</h3>
-            </div>
-          </article>
-
-          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(77, 210, 202, 0.16); --mind-secondary: rgba(255, 140, 0, 0.1);">
-            <div class="mind-map">
-              <div class="mind-links" aria-hidden="true">
-                <span class="mind-connection mind-connection-surf"></span>
-                <span class="mind-connection mind-connection-skate"></span>
-                <span class="mind-connection mind-connection-skim is-focus"></span>
-                <span class="mind-connection mind-connection-snow"></span>
-                <span class="mind-connection mind-connection-sand"></span>
-              </div>
-
-              <div class="mind-core">
-                <small>BoardSports</small>
-                <strong>Skim</strong>
-              </div>
-
-              <span class="mind-node mind-node-surf">Surf</span>
-              <span class="mind-node mind-node-skate">Skate</span>
-              <span class="mind-node mind-node-skim is-focus">Skimboard</span>
-              <span class="mind-node mind-node-snow">Snowboard</span>
-              <span class="mind-node mind-node-sand">Sandboard</span>
-            </div>
-
-            <div class="mind-caption">
-              <span>03</span>
-              <h3>Skimboard</h3>
-            </div>
-          </article>
-
-          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(176, 214, 255, 0.18); --mind-secondary: rgba(77, 166, 255, 0.12);">
-            <div class="mind-map">
-              <div class="mind-links" aria-hidden="true">
-                <span class="mind-connection mind-connection-surf"></span>
-                <span class="mind-connection mind-connection-skate"></span>
-                <span class="mind-connection mind-connection-skim"></span>
-                <span class="mind-connection mind-connection-snow is-focus"></span>
-                <span class="mind-connection mind-connection-sand"></span>
-              </div>
-
-              <div class="mind-core">
-                <small>BoardSports</small>
-                <strong>Snow</strong>
-              </div>
-
-              <span class="mind-node mind-node-surf">Surf</span>
-              <span class="mind-node mind-node-skate">Skate</span>
-              <span class="mind-node mind-node-skim">Skimboard</span>
-              <span class="mind-node mind-node-snow is-focus">Snowboard</span>
-              <span class="mind-node mind-node-sand">Sandboard</span>
-            </div>
-
-            <div class="mind-caption">
-              <span>04</span>
-              <h3>Snowboard</h3>
-            </div>
-          </article>
-
-          <article class="tunnel-slide tunnel-slide-map" data-tunnel-slide style="--mind-aura: rgba(255, 183, 77, 0.18); --mind-secondary: rgba(77, 166, 255, 0.12);">
-            <div class="mind-map">
-              <div class="mind-links" aria-hidden="true">
-                <span class="mind-connection mind-connection-surf"></span>
-                <span class="mind-connection mind-connection-skate"></span>
-                <span class="mind-connection mind-connection-skim"></span>
-                <span class="mind-connection mind-connection-snow"></span>
-                <span class="mind-connection mind-connection-sand is-focus"></span>
-              </div>
-
-              <div class="mind-core">
-                <small>BoardSports</small>
-                <strong>Sand</strong>
-              </div>
-
-              <span class="mind-node mind-node-surf">Surf</span>
-              <span class="mind-node mind-node-skate">Skate</span>
-              <span class="mind-node mind-node-skim">Skimboard</span>
-              <span class="mind-node mind-node-snow">Snowboard</span>
-              <span class="mind-node mind-node-sand is-focus">Sandboard</span>
-            </div>
-
-            <div class="mind-caption">
-              <span>05</span>
-              <h3>Sandboard</h3>
-            </div>
-          </article>
-        </div>
-      </div>
-    </div>
   </section>
 
   <section class="issue-grid" aria-label="Destaques visuais">
     <article class="issue-card issue-card-feature issue-card-image" style="--issue-image: url('assets/images/cover-skate.png');">
       <span>Street</span>
-      <h3>Noite urbana</h3>
-      <p>Luz, textura e cadencia visual mais limpa.</p>
+      <h3>Spots urbanos</h3>
+      <p>Explora spots ativos e entra logo na parte mais viva do mapa.</p>
     </article>
 
     <article class="issue-card issue-card-image" style="--issue-image: url('assets/images/skim.jpg');">
-      <span>Skim</span>
-      <h3>Agua rasa</h3>
-      <p>Uma segunda direcao visual dentro da mesma paleta.</p>
+      <span>Waterline</span>
+      <h3>Videos por spot</h3>
+      <p>Os videos aparecem com o spot certo e deixam a exploracao mais util.</p>
     </article>
 
     <article class="issue-card issue-card-image" style="--issue-image: url('assets/images/boardsports-mix.jpg');">
-      <span>Mix</span>
-      <h3>Board mix</h3>
-      <p>Menos efeito de revista, mais plataforma.</p>
+      <span>Crew</span>
+      <h3>Perfis simples</h3>
+      <p>Sem mercado, sem empresa, sem ruido fora do que interessa.</p>
     </article>
   </section>
 </main>
 
-<script src="js/landing_tunnel.js"></script>
 <script src="js/responsive.js"></script>
 <script type="module" src="js/site_header.js"></script>
 </body>

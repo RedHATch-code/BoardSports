@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS modalidades (
   ativo BOOLEAN DEFAULT TRUE
 );
 
--- Tabela de Produtos/Serviços
+-- Tabela de Produtos/ServiÃ§os
 CREATE TABLE IF NOT EXISTS produtos (
   id SERIAL PRIMARY KEY,
   empresa_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS produtos (
   ativo BOOLEAN DEFAULT TRUE
 );
 
--- Tabela de Eventos/Competições
+-- Tabela de Eventos/CompetiÃ§Ãµes
 CREATE TABLE IF NOT EXISTS eventos (
   id SERIAL PRIMARY KEY,
   nome VARCHAR(255) NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS eventos (
   ativo BOOLEAN DEFAULT TRUE
 );
 
--- Tabela de Participações em Eventos
+-- Tabela de ParticipaÃ§Ãµes em Eventos
 CREATE TABLE IF NOT EXISTS participacoes_eventos (
   id SERIAL PRIMARY KEY,
   evento_id INT NOT NULL REFERENCES eventos(id) ON DELETE CASCADE,
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS pedido_items (
   subtotal DECIMAL(10, 2) NOT NULL
 );
 
--- Tabela de Avaliações/Reviews
+-- Tabela de AvaliaÃ§Ãµes/Reviews
 CREATE TABLE IF NOT EXISTS avaliacoes (
   id SERIAL PRIMARY KEY,
   usuario_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -159,7 +159,18 @@ CREATE TABLE IF NOT EXISTS spots (
   ativo BOOLEAN DEFAULT TRUE
 );
 
--- Tabela de Solicitações de Publicação (Admin)
+-- Tabela de Videos publicados nos Spots
+CREATE TABLE IF NOT EXISTS spot_videos (
+  id SERIAL PRIMARY KEY,
+  spot_id INT NOT NULL REFERENCES spots(id) ON DELETE CASCADE,
+  autor_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  video_url VARCHAR(500) NOT NULL,
+  legenda TEXT,
+  data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  ativo BOOLEAN DEFAULT TRUE
+);
+
+-- Tabela de SolicitaÃ§Ãµes de PublicaÃ§Ã£o (Admin)
 CREATE TABLE IF NOT EXISTS solicitacoes_publicacao (
   id SERIAL PRIMARY KEY,
   spot_id INT NOT NULL REFERENCES spots(id) ON DELETE CASCADE,
@@ -177,9 +188,9 @@ ALTER TABLE solicitacoes_publicacao
   ADD COLUMN IF NOT EXISTS data_decisao TIMESTAMP;
 
 INSERT INTO modalidades (nome, descricao, ativo) VALUES
-('Surf', 'Desporto aquático de prancha com ondas', TRUE),
+('Surf', 'Desporto aquÃ¡tico de prancha com ondas', TRUE),
 ('Skate', 'Desporto sobre rodas com prancha', TRUE),
-('Skimboard', 'Desporto aquático em águas rasas', TRUE),
+('Skimboard', 'Desporto aquÃ¡tico em Ã¡guas rasas', TRUE),
 ('Snowboard', 'Desporto de neve sobre prancha', TRUE),
 ('Sandboard', 'Desporto em dunas de areia', TRUE)
 ON CONFLICT (nome) DO NOTHING;
@@ -190,70 +201,70 @@ ON CONFLICT (nome) DO NOTHING;
 
 -- SURF (id = 1)
 INSERT INTO categorias (modalidade_id, nome, descricao) VALUES
-(1, 'Shortboard', 'Manobras rápidas, aéreas'),
-(1, 'Fish', 'Mais largo, bom para ondas pequenas/médias'),
-(1, 'Funboard / Mini-malibu', 'Intermédio, fácil de apanhar ondas'),
-(1, 'Longboard', 'Estilo clássico, nose ride'),
-(1, 'Gun', 'Ondas grandes'),
-(1, 'Softboard', 'Espuma, iniciante'),
-(1, 'Big Wave', 'Ondas gigantes, tow-in às vezes'),
-(1, 'Tow-in Surf', 'Rebocado por mota de água'),
-(1, 'Bodyboard', 'Prancha curta, deitado'),
-(1, 'Bodysurf', 'Sem prancha'),
-(1, 'Stand Up Paddle (SUP Surf)', 'Em pé com pagaia')
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Shortboard', 'Manobras rÃ¡pidas, aÃ©reas'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Fish', 'Mais largo, bom para ondas pequenas/mÃ©dias'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Funboard / Mini-malibu', 'IntermÃ©dio, fÃ¡cil de apanhar ondas'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Longboard', 'Estilo clÃ¡ssico, nose ride'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Gun', 'Ondas grandes'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Softboard', 'Espuma, iniciante'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Big Wave', 'Ondas gigantes, tow-in Ã s vezes'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Tow-in Surf', 'Rebocado por mota de Ã¡gua'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Bodyboard', 'Prancha curta, deitado'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Bodysurf', 'Sem prancha'),
+((SELECT id FROM modalidades WHERE nome = 'Surf'), 'Stand Up Paddle (SUP Surf)', 'Em pÃ© com pagaia')
 ON CONFLICT (modalidade_id, nome) DO NOTHING;
 
 -- SKATE (id = 2)
 INSERT INTO categorias (modalidade_id, nome, descricao) VALUES
-(2, 'Street', 'Escadas, corrimões, gaps'),
-(2, 'Park', 'Skateparks, bowls pequenos, transições'),
-(2, 'Vert', 'Half-pipe alto'),
-(2, 'Bowl / Pool', 'Bacias/piscinas, transições fundas'),
-(2, 'Freestyle', 'Manobras técnicas/planas, old school vibe'),
-(2, 'Downhill', 'Alta velocidade a descer'),
-(2, 'Cruising', 'Passeio'),
-(2, 'Longboard – Dancing', 'Passos/coreografias na prancha'),
-(2, 'Longboard – Freeride', 'Slides controlados'),
-(2, 'Slalom', 'Cones, agilidade')
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Street', 'Escadas, corrimÃµes, gaps'),
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Park', 'Skateparks, bowls pequenos, transiÃ§Ãµes'),
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Vert', 'Half-pipe alto'),
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Bowl / Pool', 'Bacias/piscinas, transiÃ§Ãµes fundas'),
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Freestyle', 'Manobras tÃ©cnicas/planas, old school vibe'),
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Downhill', 'Alta velocidade a descer'),
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Cruising', 'Passeio'),
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Longboard â€“ Dancing', 'Passos/coreografias na prancha'),
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Longboard â€“ Freeride', 'Slides controlados'),
+((SELECT id FROM modalidades WHERE nome = 'Skate'), 'Slalom', 'Cones, agilidade')
 ON CONFLICT (modalidade_id, nome) DO NOTHING;
 
 -- SKIMBOARD (id = 3)
 INSERT INTO categorias (modalidade_id, nome, descricao) VALUES
-(3, 'Flatland', 'Em água rasa, manobras no plano'),
-(3, 'Wave Skimming', 'Apanhar ondas, mais parecido com surf'),
-(3, 'Freestyle', 'Shuvs, spins, geralmente flat'),
-(3, 'Technical / Tricks', 'Foco em manobras'),
-(3, 'Cruising / Recreativo', 'Uso casual em praia rasa')
+((SELECT id FROM modalidades WHERE nome = 'Skimboard'), 'Flatland', 'Em Ã¡gua rasa, manobras no plano'),
+((SELECT id FROM modalidades WHERE nome = 'Skimboard'), 'Wave Skimming', 'Apanhar ondas, mais parecido com surf'),
+((SELECT id FROM modalidades WHERE nome = 'Skimboard'), 'Freestyle', 'Shuvs, spins, geralmente flat'),
+((SELECT id FROM modalidades WHERE nome = 'Skimboard'), 'Technical / Tricks', 'Foco em manobras'),
+((SELECT id FROM modalidades WHERE nome = 'Skimboard'), 'Cruising / Recreativo', 'Uso casual em praia rasa')
 ON CONFLICT (modalidade_id, nome) DO NOTHING;
 
 -- SNOWBOARD (id = 4)
 INSERT INTO categorias (modalidade_id, nome, descricao) VALUES
-(4, 'Freeride', 'Fora de pista, natural'),
-(4, 'Freestyle', 'Manobras, park'),
-(4, 'Park', 'Rails, boxes, kickers'),
-(4, 'Jibbing', 'Slides em rails/caixas'),
-(4, 'Halfpipe', 'Pipe grande'),
-(4, 'Slopestyle', 'Linha com obstáculos e saltos'),
-(4, 'Big Air', 'Um salto enorme'),
-(4, 'Boardercross / Snowboard Cross', 'Corrida em pista com obstáculos'),
-(4, 'Alpine / Carving', 'Curvas agressivas, prancha mais rígida'),
-(4, 'Splitboard', 'Subida em modo ski e descida snowboard'),
-(4, 'Backcountry', 'Montanha, neve natural')
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Freeride', 'Fora de pista, natural'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Freestyle', 'Manobras, park'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Park', 'Rails, boxes, kickers'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Jibbing', 'Slides em rails/caixas'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Halfpipe', 'Pipe grande'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Slopestyle', 'Linha com obstÃ¡culos e saltos'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Big Air', 'Um salto enorme'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Boardercross / Snowboard Cross', 'Corrida em pista com obstÃ¡culos'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Alpine / Carving', 'Curvas agressivas, prancha mais rÃ­gida'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Splitboard', 'Subida em modo ski e descida snowboard'),
+((SELECT id FROM modalidades WHERE nome = 'Snowboard'), 'Backcountry', 'Montanha, neve natural')
 ON CONFLICT (modalidade_id, nome) DO NOTHING;
 
 -- SANDBOARD (id = 5)
 INSERT INTO categorias (modalidade_id, nome, descricao) VALUES
-(5, 'Freeride', 'Descer dunas, estilo livre'),
-(5, 'Downhill / Speed', 'Velocidade máxima'),
-(5, 'Freestyle', 'Saltos e manobras'),
-(5, 'Dune Jumping', 'Foco em airs/saltos'),
-(5, 'Carving', 'Curvas desenhadas, controlo'),
-(5, 'Boardercross', 'Pista com obstáculos/curvas, corrida'),
-(5, 'Sled / Sit-down', 'Variações sentado - mais recreativo')
+((SELECT id FROM modalidades WHERE nome = 'Sandboard'), 'Freeride', 'Descer dunas, estilo livre'),
+((SELECT id FROM modalidades WHERE nome = 'Sandboard'), 'Downhill / Speed', 'Velocidade mÃ¡xima'),
+((SELECT id FROM modalidades WHERE nome = 'Sandboard'), 'Freestyle', 'Saltos e manobras'),
+((SELECT id FROM modalidades WHERE nome = 'Sandboard'), 'Dune Jumping', 'Foco em airs/saltos'),
+((SELECT id FROM modalidades WHERE nome = 'Sandboard'), 'Carving', 'Curvas desenhadas, controlo'),
+((SELECT id FROM modalidades WHERE nome = 'Sandboard'), 'Boardercross', 'Pista com obstÃ¡culos/curvas, corrida'),
+((SELECT id FROM modalidades WHERE nome = 'Sandboard'), 'Sled / Sit-down', 'VariaÃ§Ãµes sentado - mais recreativo')
 ON CONFLICT (modalidade_id, nome) DO NOTHING;
 
 -- ============================================================
--- Índices para Performance
+-- Ãndices para Performance
 -- ============================================================
 
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles(role);
@@ -277,6 +288,9 @@ CREATE INDEX IF NOT EXISTS idx_mensagens_destinatario_id ON mensagens(destinatar
 CREATE INDEX IF NOT EXISTS idx_spots_criador_id ON spots(criador_id);
 CREATE INDEX IF NOT EXISTS idx_spots_modalidade_id ON spots(modalidade_id);
 CREATE INDEX IF NOT EXISTS idx_spots_publico ON spots(publico);
+CREATE INDEX IF NOT EXISTS idx_spot_videos_spot_id ON spot_videos(spot_id);
+CREATE INDEX IF NOT EXISTS idx_spot_videos_autor_id ON spot_videos(autor_id);
+CREATE INDEX IF NOT EXISTS idx_spot_videos_ativo ON spot_videos(ativo);
 CREATE INDEX IF NOT EXISTS idx_solicitacoes_publicacao_status ON solicitacoes_publicacao(status);
 
 -- ============================================================
@@ -478,7 +492,7 @@ $$;
 GRANT EXECUTE ON FUNCTION public.moderar_solicitacao_publicacao(INT, TEXT, TEXT) TO authenticated;
 
 -- ============================================================
--- RLS (Row Level Security) - Políticas de Segurança
+-- RLS (Row Level Security) - PolÃ­ticas de SeguranÃ§a
 -- ============================================================
 
 -- Habilitar RLS nas tabelas
@@ -491,46 +505,47 @@ ALTER TABLE pedido_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE avaliacoes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE mensagens ENABLE ROW LEVEL SECURITY;
 ALTER TABLE spots ENABLE ROW LEVEL SECURITY;
+ALTER TABLE spot_videos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE solicitacoes_publicacao ENABLE ROW LEVEL SECURITY;
 
--- Política: Utilizadores podem ver perfis públicos
-CREATE POLICY "Perfis públicos são visíveis" ON profiles
+-- PolÃ­tica: Utilizadores podem ver perfis pÃºblicos
+CREATE POLICY "Perfis pÃºblicos sÃ£o visÃ­veis" ON profiles
   FOR SELECT USING (ativo = TRUE OR auth.uid() = id);
 
--- Política: Utilizadores podem atualizar o seu próprio perfil
+-- PolÃ­tica: Utilizadores podem atualizar o seu prÃ³prio perfil
 CREATE POLICY "Utilizadores podem atualizar seu perfil" ON profiles
   FOR UPDATE USING (auth.uid() = id);
 
--- Política: Utilizadores podem inserir o seu próprio perfil (NOVO)
+-- PolÃ­tica: Utilizadores podem inserir o seu prÃ³prio perfil (NOVO)
 CREATE POLICY "Utilizadores podem inserir seu perfil" ON profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
--- Política: Empresas podem ver/editar seus produtos
+-- PolÃ­tica: Empresas podem ver/editar seus produtos
 CREATE POLICY "Empresas podem gerenciar seus produtos" ON produtos
   FOR ALL USING (auth.uid() = empresa_id);
 
--- Política: Todos podem ver produtos ativos
-CREATE POLICY "Produtos ativos são visíveis" ON produtos
+-- PolÃ­tica: Todos podem ver produtos ativos
+CREATE POLICY "Produtos ativos sÃ£o visÃ­veis" ON produtos
   FOR SELECT USING (ativo = TRUE);
 
--- Política: Todos podem ver eventos ativos
-CREATE POLICY "Eventos ativos são visíveis" ON eventos
+-- PolÃ­tica: Todos podem ver eventos ativos
+CREATE POLICY "Eventos ativos sÃ£o visÃ­veis" ON eventos
   FOR SELECT USING (ativo = TRUE);
 
--- Política: Utilizadores podem ver seus próprios pedidos
+-- PolÃ­tica: Utilizadores podem ver seus prÃ³prios pedidos
 CREATE POLICY "Utilizadores podem ver seus pedidos" ON pedidos
   FOR SELECT USING (auth.uid() = cliente_id OR auth.uid() = empresa_id);
 
--- Política: Utilizadores podem ver mensagens suas
+-- PolÃ­tica: Utilizadores podem ver mensagens suas
 CREATE POLICY "Utilizadores podem ver suas mensagens" ON mensagens
   FOR SELECT USING (auth.uid() = remetente_id OR auth.uid() = destinatario_id);
 
 -- ============================================================
--- Políticas para Spots (Lógica de Visibilidade)
+-- PolÃ­ticas para Spots (LÃ³gica de Visibilidade)
 -- ============================================================
 
--- 1. Empresas: spots criados por empresas são públicos
-CREATE POLICY "Spots de empresas são públicos" ON spots
+-- 1. Empresas: spots criados por empresas sÃ£o pÃºblicos
+CREATE POLICY "Spots de empresas sÃ£o pÃºblicos" ON spots
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM profiles 
@@ -538,8 +553,8 @@ CREATE POLICY "Spots de empresas são públicos" ON spots
     )
   );
 
--- 2. Atletas: visíveis para o criador e para quem o segue
-CREATE POLICY "Spots de atletas são visíveis para seguidores" ON spots
+-- 2. Atletas: visÃ­veis para o criador e para quem o segue
+CREATE POLICY "Spots de atletas sÃ£o visÃ­veis para seguidores" ON spots
   FOR SELECT USING (
     auth.uid() = criador_id OR
     EXISTS (
@@ -549,33 +564,33 @@ CREATE POLICY "Spots de atletas são visíveis para seguidores" ON spots
     )
   );
 
--- 3. Clientes: visíveis apenas para o próprio criador
-CREATE POLICY "Spots de clientes são privados" ON spots
+-- 3. Clientes: visÃ­veis apenas para o prÃ³prio criador
+CREATE POLICY "Spots de clientes sÃ£o privados" ON spots
   FOR SELECT USING (
     auth.uid() = criador_id AND EXISTS (
       SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'cliente'
     )
   );
 
--- 4. Público: spots aprovados pelo admin são visíveis para todos
-CREATE POLICY "Spots públicos aprovados são visíveis" ON spots
+-- 4. PÃºblico: spots aprovados pelo admin sÃ£o visÃ­veis para todos
+CREATE POLICY "Spots pÃºblicos aprovados sÃ£o visÃ­veis" ON spots
   FOR SELECT USING (publico = TRUE);
 
--- 5. Inserção: Todos podem inserir spots
+-- 5. InserÃ§Ã£o: Todos podem inserir spots
 CREATE POLICY "Qualquer utilizador pode criar spots" ON spots
   FOR INSERT WITH CHECK (auth.uid() = criador_id);
 
--- 6. Gestão: Apenas o criador pode editar/apagar
+-- 6. GestÃ£o: Apenas o criador pode editar/apagar
 CREATE POLICY "Criadores podem gerir seus spots" ON spots
   FOR ALL USING (auth.uid() = criador_id);
 
 -- ============================================================
--- Políticas para Solicitações
+-- PolÃ­ticas para SolicitaÃ§Ãµes
 -- ============================================================
-CREATE POLICY "Utilizadores podem ver suas solicitações" ON solicitacoes_publicacao
+CREATE POLICY "Utilizadores podem ver suas solicitaÃ§Ãµes" ON solicitacoes_publicacao
   FOR SELECT USING (auth.uid() = usuario_id);
 
-CREATE POLICY "Utilizadores podem criar solicitações" ON solicitacoes_publicacao
+CREATE POLICY "Utilizadores podem criar solicitaÃ§Ãµes" ON solicitacoes_publicacao
   FOR INSERT WITH CHECK (auth.uid() = usuario_id);
 
 -- ============================================================
@@ -792,6 +807,26 @@ CREATE POLICY mensagens_select_related ON mensagens
     OR public.is_admin_user(auth.uid())
   );
 
+DROP POLICY IF EXISTS mensagens_insert_sender ON mensagens;
+CREATE POLICY mensagens_insert_sender ON mensagens
+  FOR INSERT WITH CHECK (
+    auth.uid() = remetente_id
+    AND remetente_id <> destinatario_id
+  );
+
+DROP POLICY IF EXISTS mensagens_update_related ON mensagens;
+CREATE POLICY mensagens_update_related ON mensagens
+  FOR UPDATE USING (
+    auth.uid() = remetente_id
+    OR auth.uid() = destinatario_id
+    OR public.is_admin_user(auth.uid())
+  )
+  WITH CHECK (
+    auth.uid() = remetente_id
+    OR auth.uid() = destinatario_id
+    OR public.is_admin_user(auth.uid())
+  );
+
 DROP POLICY IF EXISTS spots_select_public_approved ON spots;
 CREATE POLICY spots_select_public_approved ON spots
   FOR SELECT USING (
@@ -807,6 +842,38 @@ CREATE POLICY spots_manage_own ON spots
   )
   WITH CHECK (
     auth.uid() = criador_id
+    OR public.is_admin_user(auth.uid())
+  );
+
+DROP POLICY IF EXISTS spot_videos_select_visible ON spot_videos;
+CREATE POLICY spot_videos_select_visible ON spot_videos
+  FOR SELECT USING (
+    ativo = TRUE
+    OR auth.uid() = autor_id
+    OR public.is_admin_user(auth.uid())
+  );
+
+DROP POLICY IF EXISTS spot_videos_insert_own ON spot_videos;
+CREATE POLICY spot_videos_insert_own ON spot_videos
+  FOR INSERT WITH CHECK (
+    auth.uid() = autor_id
+  );
+
+DROP POLICY IF EXISTS spot_videos_manage_own ON spot_videos;
+CREATE POLICY spot_videos_manage_own ON spot_videos
+  FOR UPDATE USING (
+    auth.uid() = autor_id
+    OR public.is_admin_user(auth.uid())
+  )
+  WITH CHECK (
+    auth.uid() = autor_id
+    OR public.is_admin_user(auth.uid())
+  );
+
+DROP POLICY IF EXISTS spot_videos_delete_own ON spot_videos;
+CREATE POLICY spot_videos_delete_own ON spot_videos
+  FOR DELETE USING (
+    auth.uid() = autor_id
     OR public.is_admin_user(auth.uid())
   );
 

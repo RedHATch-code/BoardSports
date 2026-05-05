@@ -1,1269 +1,627 @@
-﻿import { supabase } from './supabase.js';
-import { obterUsuarioAtual } from './auth_utils.js';
-import { Globe3D } from './globe_3d.js';
-import { showConfirm, showToast } from './ui_feedback.js';
+import { obterUsuarioAtual } from './auth_utils.js'
 import {
-    obterSpots,
-    criarSpot,
-    atualizarSpot,
-    apagarSpot,
-    criarSolicitacaoPublicacao,
-    obterCategoriasPorModalidade,
-    obterEventos,
-    criarEvento,
-    atualizarEvento,
-    apagarEvento,
-    obterParticipantesPorEventos,
-    atualizarParticipacaoEvento,
-    removerParticipacaoEvento
-} from './db_utils.js';
+  apagarSpot,
+  atualizarSpot,
+  criarSpot,
+  obterCategoriasPorModalidade,
+  obterGaleriaVideosSpots,
+  obterModalidades,
+  obterSpots,
+  publicarVideoSpot
+} from './db_utils.js'
+import { showConfirm, showToast } from './ui_feedback.js'
 
-let map;
-let spotMarkers = [];
-let eventMarkers = [];
-let userProfile = null;
-let currentPos = null;
-let userLocationLatLng = null;
-let userLocationMarker = null;
-let userLocationAccuracyCircle = null;
-let userLocationWatchId = null;
-let hasCenteredOnUserLocation = false;
-let spotEmEdicao = null;
-let eventoEmEdicao = null;
-let currentModalidadeFilter = 'all';
-let isEventMode = false;
-let currentSpots = [];
-let currentEventos = [];
-let currentEventParticipants = new Map();
-let globe = null;
-let currentGlobeMarkers = [];
-let globeUsingFallback = true;
-let activeGlobeMarkerKey = null;
-let hoveredGlobeMarkerKey = null;
-let hoveredGlobeContinentId = null;
+let map = null
+let user = null
+let currentModalidade = 'all'
+let currentCategoria = 'all'
+let currentSpots = []
+let currentVideos = []
+let spotEditingId = null
+let pickingLocation = false
+let activeVideoSpotId = null
+let userLocationMarker = null
 
-const GLOBE_CONFIG = {
-    atmosphereColor: '#4da6ff',
-    atmosphereIntensity: 20,
-    bumpScale: 5,
-    autoRotateSpeed: 0.3
-};
+const markerBySpotId = new Map()
+const videoCountBySpotId = new Map()
 
-const sampleMarkers = [
-    { lat: 40.7128, lng: -74.006, src: buildMarkerAvatar('New York', '#4da6ff', 'NY'), label: 'New York', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: 51.5074, lng: -0.1278, src: buildMarkerAvatar('London', '#4da6ff', 'LD'), label: 'London', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: 35.6762, lng: 139.6503, src: buildMarkerAvatar('Tokyo', '#4da6ff', 'TK'), label: 'Tokyo', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: -33.8688, lng: 151.2093, src: buildMarkerAvatar('Sydney', '#4da6ff', 'SY'), label: 'Sydney', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: 48.8566, lng: 2.3522, src: buildMarkerAvatar('Paris', '#4da6ff', 'PA'), label: 'Paris', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: 28.6139, lng: 77.209, src: buildMarkerAvatar('New Delhi', '#4da6ff', 'ND'), label: 'New Delhi', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: 55.7558, lng: 37.6173, src: buildMarkerAvatar('Moscow', '#4da6ff', 'MS'), label: 'Moscow', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: -22.9068, lng: -43.1729, src: buildMarkerAvatar('Rio de Janeiro', '#4da6ff', 'RJ'), label: 'Rio de Janeiro', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: 31.2304, lng: 121.4737, src: buildMarkerAvatar('Shanghai', '#4da6ff', 'SH'), label: 'Shanghai', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: 25.2048, lng: 55.2708, src: buildMarkerAvatar('Dubai', '#4da6ff', 'DU'), label: 'Dubai', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: -34.6037, lng: -58.3816, src: buildMarkerAvatar('Buenos Aires', '#4da6ff', 'BA'), label: 'Buenos Aires', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: 1.3521, lng: 103.8198, src: buildMarkerAvatar('Singapore', '#4da6ff', 'SG'), label: 'Singapore', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' },
-    { lat: 37.5665, lng: 126.978, src: buildMarkerAvatar('Seoul', '#4da6ff', 'SE'), label: 'Seoul', subtitle: 'Demo local', note: 'Marcador demo local para manter o globo funcional antes de existirem spots reais.', meta: 'Fallback local', color: '#4da6ff', kind: 'demo' }
-];
+const defaultModalidades = [
+  { id: 1, nome: 'Surf' },
+  { id: 2, nome: 'Skate' },
+  { id: 3, nome: 'Skimboard' },
+  { id: 4, nome: 'Snowboard' },
+  { id: 5, nome: 'Sandboard' }
+]
 
-const sampleRoutes = [
-    {
-        start: { lat: 64.2008, lng: -149.4937 },
-        end: { lat: 34.0522, lng: -118.2437 },
-        color: '#64c8ff',
-        label: 'Alaska / Los Angeles'
-    },
-    {
-        start: { lat: 64.2008, lng: -149.4937 },
-        end: { lat: -15.7975, lng: -47.8919 },
-        color: '#7ddf9c',
-        label: 'Alaska / Brasilia'
-    },
-    {
-        start: { lat: -15.7975, lng: -47.8919 },
-        end: { lat: 38.7223, lng: -9.1393 },
-        color: '#ffcf6b',
-        label: 'Brasilia / Lisboa'
-    },
-    {
-        start: { lat: 51.5074, lng: -0.1278 },
-        end: { lat: 28.6139, lng: 77.209 },
-        color: '#d68bff',
-        label: 'Londres / Nova Deli'
-    },
-    {
-        start: { lat: 28.6139, lng: 77.209 },
-        end: { lat: 43.1332, lng: 131.9113 },
-        color: '#58e4dd',
-        label: 'Nova Deli / Vladivostok'
-    },
-    {
-        start: { lat: 28.6139, lng: 77.209 },
-        end: { lat: -1.2921, lng: 36.8219 },
-        color: '#ff985c',
-        label: 'Nova Deli / Nairobi'
-    }
-];
-
-const CONTINENT_INFO = {
-    north_america: { label: 'America do Norte', abbr: 'NA', color: '#64c8ff' },
-    south_america: { label: 'America do Sul', abbr: 'SA', color: '#7ddf9c' },
-    europe: { label: 'Europa', abbr: 'EU', color: '#ffcf6b' },
-    africa: { label: 'Africa', abbr: 'AF', color: '#ff985c' },
-    asia: { label: 'Asia', abbr: 'AS', color: '#d68bff' },
-    oceania: { label: 'Oceania', abbr: 'OC', color: '#58e4dd' },
-    antarctica: { label: 'Antartida', abbr: 'AN', color: '#c5dbf7' }
-};
-
-async function initMap() {
-    try {
-        map = L.map('map').setView([39.5, -8.5], 7);
-
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-        }).addTo(map);
-
-        initUserLocationTracking();
-
-        userProfile = await obterUsuarioAtual();
-        setupVisibilityMessage();
-        initGlobe();
-
-        await Promise.all([loadSpots(), loadEventos()]);
-
-        subscribeToSpots();
-        subscribeToEventos();
-
-        map.on('click', handleMapClick);
-    } catch (error) {
-        console.error('Erro ao inicializar mapa:', error);
-    }
+const defaultCategoriasByModalidade = {
+  Surf: [
+    'Shortboard',
+    'Fish',
+    'Funboard / Mini-malibu',
+    'Longboard',
+    'Gun',
+    'Softboard',
+    'Big Wave',
+    'Tow-in Surf',
+    'Bodyboard',
+    'Bodysurf',
+    'Stand Up Paddle (SUP Surf)'
+  ],
+  Skate: [
+    'Street',
+    'Park',
+    'Vert',
+    'Bowl / Pool',
+    'Freestyle',
+    'Downhill',
+    'Cruising',
+    'Longboard - Dancing',
+    'Longboard - Freeride',
+    'Slalom'
+  ],
+  Skimboard: [
+    'Flatland',
+    'Wave Skimming',
+    'Freestyle',
+    'Technical / Tricks',
+    'Cruising / Recreativo'
+  ],
+  Snowboard: [
+    'Freeride',
+    'Freestyle',
+    'Park',
+    'Jibbing',
+    'Halfpipe',
+    'Slopestyle',
+    'Big Air',
+    'Boardercross / Snowboard Cross',
+    'Alpine / Carving',
+    'Splitboard',
+    'Backcountry'
+  ],
+  Sandboard: [
+    'Freeride',
+    'Downhill / Speed',
+    'Freestyle',
+    'Dune Jumping',
+    'Carving',
+    'Boardercross',
+    'Sled / Sit-down'
+  ]
 }
 
-function initUserLocationTracking() {
-    const button = document.getElementById('btn-my-location');
-
-    if (!('geolocation' in navigator)) {
-        if (button) {
-            button.disabled = true;
-            button.title = 'Geolocalizacao indisponivel neste browser.';
-        }
-        return;
-    }
-
-    userLocationWatchId = navigator.geolocation.watchPosition(
-        handleUserLocationSuccess,
-        handleUserLocationError,
-        {
-            enableHighAccuracy: true,
-            timeout: 12000,
-            maximumAge: 30000
-        }
-    );
-
-    if (button) {
-        button.onclick = () => focusUserLocation(true);
-    }
+const ui = {
+  totalSpots: document.getElementById('map-total-spots'),
+  totalVideos: document.getElementById('map-total-videos'),
+  filter: document.getElementById('filter-modalidade'),
+  categoryFilter: document.getElementById('filter-categoria'),
+  btnMyLocation: document.getElementById('btn-my-location'),
+  btnAddSpot: document.getElementById('btn-add-spot'),
+  spotsContainer: document.getElementById('spots-container'),
+  spotModal: document.getElementById('modal-spot'),
+  spotModalTitle: document.getElementById('spot-modal-title'),
+  spotForm: document.getElementById('form-spot'),
+  spotNome: document.getElementById('spot-nome'),
+  spotDescricao: document.getElementById('spot-descricao'),
+  spotModalidade: document.getElementById('spot-modalidade'),
+  spotCategoria: document.getElementById('spot-categoria'),
+  spotLat: document.getElementById('spot-lat'),
+  spotLng: document.getElementById('spot-lng'),
+  videoModal: document.getElementById('modal-video'),
+  videoModalTitle: document.getElementById('video-modal-title'),
+  videoModalCopy: document.getElementById('video-modal-spot-copy'),
+  videoForm: document.getElementById('form-video'),
+  videoUrl: document.getElementById('video-url'),
+  videoLegenda: document.getElementById('video-legenda')
 }
 
-function handleUserLocationSuccess(position) {
-    const lat = Number(position.coords.latitude);
-    const lng = Number(position.coords.longitude);
-    const accuracy = Number(position.coords.accuracy) || 0;
-
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-
-    userLocationLatLng = L.latLng(lat, lng);
-    renderUserLocationLayer(accuracy);
-    updateLocationButtonState(true);
-
-    if (!hasCenteredOnUserLocation && !spotMarkers.length && !eventMarkers.length) {
-        focusUserLocation(false);
-        hasCenteredOnUserLocation = true;
-    }
+async function initMapPage() {
+  initMap()
+  bindEvents()
+  user = await obterUsuarioAtual()
+  await loadModalidadeOptions()
+  await loadSpots()
 }
 
-function handleUserLocationError(error) {
-    console.warn('Nao foi possivel obter a localizacao atual:', error);
-    updateLocationButtonState(false, error);
+function initMap() {
+  map = L.map('map').setView([39.5, -8.5], 7)
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+  }).addTo(map)
+
+  map.on('click', handleMapClick)
 }
 
-function renderUserLocationLayer(accuracy) {
-    if (!map || !userLocationLatLng) return;
+function bindEvents() {
+  ui.filter?.addEventListener('change', async (event) => {
+    currentModalidade = event.target.value
+    currentCategoria = 'all'
+    await loadFilterCategorias(currentModalidade)
+    await loadSpots()
+  })
 
-    const locationIcon = L.divIcon({
-        className: 'user-location-icon',
-        html: '<div class="user-location-dot"></div>',
-        iconSize: [22, 22],
-        iconAnchor: [11, 11],
-        popupAnchor: [0, -14]
-    });
+  ui.categoryFilter?.addEventListener('change', async (event) => {
+    currentCategoria = event.target.value
+    await loadSpots()
+  })
 
-    if (!userLocationMarker) {
-        userLocationMarker = L.marker(userLocationLatLng, { icon: locationIcon }).addTo(map);
-        userLocationMarker.bindPopup('Esta e a tua localizacao atual.');
-    } else {
-        userLocationMarker.setLatLng(userLocationLatLng);
-    }
+  ui.btnAddSpot?.addEventListener('click', () => {
+    pickingLocation = true
+    showToast('Clica num ponto do mapa para definir a localizacao do spot.', { type: 'info' })
+  })
 
-    if (!userLocationAccuracyCircle) {
-        userLocationAccuracyCircle = L.circle(userLocationLatLng, {
-            radius: Math.min(Math.max(accuracy, 12), 250),
-            color: '#4da6ff',
-            weight: 1,
-            fillColor: '#4da6ff',
-            fillOpacity: 0.12
-        }).addTo(map);
-    } else {
-        userLocationAccuracyCircle.setLatLng(userLocationLatLng);
-        userLocationAccuracyCircle.setRadius(Math.min(Math.max(accuracy, 12), 250));
-    }
+  ui.btnMyLocation?.addEventListener('click', focusUserLocation)
 
-    userLocationMarker.bringToFront();
+  ui.spotModal.querySelectorAll('[data-close-spot]').forEach((button) => {
+    button.addEventListener('click', closeSpotModal)
+  })
+
+  ui.videoModal.querySelectorAll('[data-close-video]').forEach((button) => {
+    button.addEventListener('click', closeVideoModal)
+  })
+
+  ui.spotForm?.addEventListener('submit', submitSpotForm)
+  ui.videoForm?.addEventListener('submit', submitVideoForm)
+
+  ui.spotModalidade?.addEventListener('change', async (event) => {
+    const modalidadeId = event.target.value
+    await loadCategorias(modalidadeId)
+  })
+
+  window.addEventListener('click', (event) => {
+    if (event.target === ui.spotModal) closeSpotModal()
+    if (event.target === ui.videoModal) closeVideoModal()
+  })
 }
 
-function focusUserLocation(openPopup = true) {
-    if (!map) return;
+async function loadSpots() {
+  currentSpots = await obterSpots({
+    modalidade_id: currentModalidade,
+    categoria_id: isNumericId(currentCategoria) ? currentCategoria : 'all'
+  })
+  currentVideos = currentSpots.length
+    ? await obterGaleriaVideosSpots({ spot_ids: currentSpots.map((spot) => spot.id) })
+    : []
 
-    if (!userLocationLatLng) {
-        showToast('Ainda nao foi possivel obter a tua localizacao atual.', { type: 'warning' });
-        return;
-    }
-
-    map.setView(userLocationLatLng, 14);
-
-    if (openPopup && userLocationMarker) {
-        userLocationMarker.openPopup();
-    }
+  rebuildVideoCounts()
+  renderSummary()
+  renderMarkers()
+  renderSpotCards()
+  focusSpotFromQuery()
 }
 
-function updateLocationButtonState(isReady, error = null) {
-    const button = document.getElementById('btn-my-location');
-    if (!button) return;
+async function loadModalidadeOptions() {
+  const modalidades = await obterModalidades()
+  const options = modalidades.length ? modalidades : defaultModalidades
 
-    button.classList.toggle('is-ready', Boolean(isReady));
+  if (ui.filter) {
+    ui.filter.innerHTML = [
+      '<option value="all">Todas as modalidades</option>',
+      ...options.map((modalidade) => `<option value="${modalidade.id}">${escapeHtml(modalidade.nome)}</option>`)
+    ].join('')
+  }
 
-    if (isReady) {
-        button.title = 'Centrar o mapa na tua localizacao atual.';
-        return;
+  if (ui.spotModalidade) {
+    ui.spotModalidade.innerHTML = [
+      '<option value="">Selecionar modalidade</option>',
+      ...options.map((modalidade) => `<option value="${modalidade.id}">${escapeHtml(modalidade.nome)}</option>`)
+    ].join('')
+  }
+}
+
+function rebuildVideoCounts() {
+  videoCountBySpotId.clear()
+
+  currentSpots.forEach((spot) => {
+    if (spot.video_url) {
+      videoCountBySpotId.set(spot.id, 1)
     }
+  })
 
-    if (error?.code === 1) {
-        button.title = 'Permissao de localizacao recusada.';
-        return;
-    }
+  currentVideos.forEach((video) => {
+    const currentCount = videoCountBySpotId.get(video.spot_id) || 0
+    videoCountBySpotId.set(video.spot_id, currentCount + 1)
+  })
+}
 
-    button.title = 'Ainda a tentar obter a tua localizacao.';
+function renderSummary() {
+  ui.totalSpots.textContent = String(currentSpots.length)
+  ui.totalVideos.textContent = String([...videoCountBySpotId.values()].reduce((sum, count) => sum + count, 0))
+}
+
+function renderMarkers() {
+  markerBySpotId.forEach((marker) => map.removeLayer(marker))
+  markerBySpotId.clear()
+
+  currentSpots.forEach((spot, index) => {
+    const lat = Number(spot.coordenadas_lat)
+    const lng = Number(spot.coordenadas_long)
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return
+
+    const marker = L.marker([lat, lng], {
+      icon: L.divIcon({
+        className: 'map-spot-marker',
+        html: `<div style="width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#d66d24;color:#111;font-weight:800;border:2px solid #fff;">${index + 1}</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+        popupAnchor: [0, -24]
+      })
+    }).addTo(map)
+
+    marker.bindPopup(buildSpotPopup(spot))
+    markerBySpotId.set(spot.id, marker)
+  })
+
+  fitMapToVisibleSpots()
+}
+
+function buildSpotPopup(spot) {
+  const videoCount = videoCountBySpotId.get(spot.id) || 0
+  const canEdit = user && spot.criador_id === user.id
+
+  return `
+    <div style="min-width:220px;color:#f3f4f6;">
+      <strong style="display:block;font-size:1rem;margin-bottom:8px;">${escapeHtml(spot.nome)}</strong>
+      <p style="margin:0 0 6px;color:#c7c9d1;">${escapeHtml(spot.modalidades?.nome || 'Spot')} · ${escapeHtml(spot.categorias?.nome || 'Geral')}</p>
+      <p style="margin:0 0 10px;color:#9ca3af;">${escapeHtml(spot.descricao || 'Sem descricao adicional.')}</p>
+      <p style="margin:0 0 12px;color:#ffd6a3;">${videoCount} ${videoCount === 1 ? 'video ligado' : 'videos ligados'}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" onclick="window.focusSpotOnMap(${spot.id})" style="min-height:36px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#f3f4f6;cursor:pointer;">Focar</button>
+        <button type="button" onclick="window.openVideoPublishModal(${spot.id})" style="min-height:36px;padding:0 12px;border-radius:999px;border:0;background:linear-gradient(135deg,#f5d7b5 0%,#d66d24 100%);color:#141414;font-weight:700;cursor:pointer;">Publicar video</button>
+        ${canEdit ? `<button type="button" onclick="window.editSpot(${spot.id})" style="min-height:36px;padding:0 12px;border-radius:999px;border:0;background:#2f343d;color:#f3f4f6;cursor:pointer;">Editar</button>` : ''}
+      </div>
+    </div>
+  `
+}
+
+function renderSpotCards() {
+  if (!currentSpots.length) {
+    ui.spotsContainer.innerHTML = '<article class="map-empty-card"><p>Nao existem spots com este filtro.</p></article>'
+    return
+  }
+
+  ui.spotsContainer.innerHTML = currentSpots.map((spot) => {
+    const videoCount = videoCountBySpotId.get(spot.id) || 0
+    const canEdit = user && spot.criador_id === user.id
+
+    return `
+      <article class="spot-card">
+        <div class="spot-card-top">
+          <div>
+            <span class="spot-card-tag">${escapeHtml(spot.modalidades?.nome || 'Spot')}</span>
+          </div>
+          <small>${videoCount} ${videoCount === 1 ? 'video' : 'videos'}</small>
+        </div>
+
+        <div>
+          <h3>${escapeHtml(spot.nome)}</h3>
+        </div>
+
+        <p>${escapeHtml(spot.descricao || 'Sem descricao adicional para este spot.')}</p>
+
+        <div class="spot-card-meta">
+          <span>Categoria: ${escapeHtml(spot.categorias?.nome || 'Geral')}</span>
+          <span>Autor: ${escapeHtml(spot.profiles?.nome || spot.profiles?.email || 'Utilizador')}</span>
+          <span>Coordenadas: ${Number(spot.coordenadas_lat).toFixed(3)}, ${Number(spot.coordenadas_long).toFixed(3)}</span>
+        </div>
+
+        <div class="spot-card-actions">
+          <button type="button" class="map-focus-button" onclick="window.focusSpotOnMap(${spot.id})">Abrir no mapa</button>
+          <button type="button" class="map-video-button" onclick="window.openVideoPublishModal(${spot.id})">Publicar video</button>
+          ${canEdit ? `<button type="button" class="map-edit-button" onclick="window.editSpot(${spot.id})">Editar</button>` : ''}
+          ${canEdit ? `<button type="button" class="map-delete-button" onclick="window.deleteSpot(${spot.id})">Apagar</button>` : ''}
+        </div>
+      </article>
+    `
+  }).join('')
 }
 
 function handleMapClick(event) {
-    currentPos = event.latlng;
+  if (!pickingLocation) return
 
-    if (isEventMode) {
-        document.getElementById('event-lat').value = currentPos.lat;
-        document.getElementById('event-lng').value = currentPos.lng;
-        openEventModal();
-        return;
+  ui.spotLat.value = String(event.latlng.lat)
+  ui.spotLng.value = String(event.latlng.lng)
+  openSpotModal()
+  pickingLocation = false
+}
+
+async function submitSpotForm(event) {
+  event.preventDefault()
+
+  user = await obterUsuarioAtual()
+  if (!user) {
+    showToast('Faz login para criar ou editar spots.', { type: 'warning' })
+    return
+  }
+
+  const payload = {
+    nome: ui.spotNome.value.trim(),
+    descricao: ui.spotDescricao.value.trim(),
+    modalidade_id: Number(ui.spotModalidade.value),
+    categoria_id: isNumericId(ui.spotCategoria.value) ? Number(ui.spotCategoria.value) : null,
+    coordenadas_lat: Number(ui.spotLat.value),
+    coordenadas_long: Number(ui.spotLng.value),
+    criador_id: user.id
+  }
+
+  if (!payload.nome || !payload.modalidade_id || !Number.isFinite(payload.coordenadas_lat) || !Number.isFinite(payload.coordenadas_long)) {
+    showToast('Preenche os campos obrigatorios do spot.', { type: 'warning' })
+    return
+  }
+
+  if (spotEditingId) {
+    const updated = await atualizarSpot(spotEditingId, payload)
+    if (!updated) {
+      showToast('Nao foi possivel atualizar o spot.', { type: 'error' })
+      return
     }
 
-    document.getElementById('spot-lat').value = currentPos.lat;
-    document.getElementById('spot-lng').value = currentPos.lng;
-    openModal();
-}
-
-function setupVisibilityMessage() {
-    const msgEl = document.getElementById('visibility-msg');
-    const reqGroup = document.getElementById('public-request-group');
-    const btnEvent = document.getElementById('btn-add-event');
-
-    if (!userProfile) {
-        msgEl.style.display = 'none';
-        reqGroup.style.display = 'none';
-        if (btnEvent) btnEvent.style.display = 'none';
-        return;
+    showToast('Spot atualizado com sucesso.', { type: 'success' })
+  } else {
+    const created = await criarSpot(payload)
+    if (!created) {
+      showToast('Nao foi possivel criar o spot.', { type: 'error' })
+      return
     }
 
-    msgEl.style.display = 'block';
-    if (userProfile.perfil?.role === 'cliente') {
-        msgEl.textContent = 'Como cliente, os teus spots ficam privados e visiveis apenas para ti.';
-        reqGroup.style.display = 'block';
-        if (btnEvent) btnEvent.style.display = 'none';
-    } else if (userProfile.perfil?.role === 'atleta') {
-        msgEl.textContent = 'Como atleta, os teus spots ficam visiveis para ti e para os teus seguidores.';
-        reqGroup.style.display = 'block';
-        if (btnEvent) btnEvent.style.display = 'none';
-    } else if (userProfile.perfil?.role === 'empresa') {
-        msgEl.textContent = 'Como empresa, os teus spots ficam publicos e visiveis para todos.';
-        reqGroup.style.display = 'none';
-        if (btnEvent) btnEvent.style.display = 'inline-flex';
-    }
+    showToast('Spot criado com sucesso.', { type: 'success' })
+  }
+
+  closeSpotModal()
+  await loadSpots()
 }
 
-function initGlobe() {
-    const canvas = document.getElementById('globe-canvas');
-    if (!canvas) return;
+async function submitVideoForm(event) {
+  event.preventDefault()
 
-    globe = new Globe3D({
-        canvas,
-        markers: sampleMarkers,
-        routes: sampleRoutes,
-        config: GLOBE_CONFIG,
-        onMarkerClick: handleGlobeMarkerClick,
-        onMarkerHover: handleGlobeMarkerHover,
-        onContinentHover: handleGlobeContinentHover
-    });
+  user = await obterUsuarioAtual()
+  if (!user) {
+    showToast('Faz login para publicar videos num spot.', { type: 'warning' })
+    return
+  }
 
-    updateGlobeFromState();
+  const videoUrl = ui.videoUrl.value.trim()
+  if (!videoUrl) {
+    showToast('Indica o URL do video.', { type: 'warning' })
+    return
+  }
+
+  const resultado = await publicarVideoSpot({
+    spot_id: activeVideoSpotId,
+    autor_id: user.id,
+    video_url: videoUrl,
+    legenda: ui.videoLegenda.value.trim()
+  })
+
+  if (!resultado?.sucesso) {
+    showToast(resultado?.erro || 'Nao foi possivel publicar o video.', { type: 'error', duration: 4800 })
+    return
+  }
+
+  showToast('Video publicado com sucesso.', { type: 'success' })
+  closeVideoModal()
+  await loadSpots()
 }
 
-async function loadSpots(modalidadeId = 'all') {
-    try {
-        currentModalidadeFilter = modalidadeId;
-        const spots = await obterSpots({ modalidade_id: modalidadeId });
-        currentSpots = spots;
-        renderSpotMarkers(spots);
-        renderSpotsList(spots);
-        updateGlobeFromState();
-        return spots;
-    } catch (error) {
-        console.error('Erro ao carregar spots:', error);
-        return [];
-    }
+async function loadCategorias(modalidadeId, selectedCategoriaId = '') {
+  if (!modalidadeId) {
+    ui.spotCategoria.disabled = true
+    ui.spotCategoria.innerHTML = '<option value="">Selecionar categoria</option>'
+    return
+  }
+
+  const categorias = await loadCategoriasWithFallback(modalidadeId)
+  ui.spotCategoria.disabled = false
+  ui.spotCategoria.innerHTML = [
+    '<option value="">Selecionar categoria</option>',
+    ...categorias.map((categoria) => `<option value="${categoria.id}" ${String(selectedCategoriaId) === String(categoria.id) ? 'selected' : ''}>${escapeHtml(categoria.nome)}</option>`)
+  ].join('')
 }
 
-async function loadEventos() {
-    try {
-        const eventos = await obterEventos({});
-        const participacoes = await obterParticipantesPorEventos(eventos.map((evento) => evento.id));
+async function loadFilterCategorias(modalidadeId) {
+  if (!ui.categoryFilter) return
 
-        currentEventParticipants = new Map();
-        participacoes.forEach((participacao) => {
-            const currentList = currentEventParticipants.get(participacao.evento_id) || [];
-            currentList.push(participacao);
-            currentEventParticipants.set(participacao.evento_id, currentList);
-        });
+  if (!modalidadeId || modalidadeId === 'all') {
+    ui.categoryFilter.disabled = true
+    ui.categoryFilter.innerHTML = '<option value="all">Todas as categorias</option>'
+    return
+  }
 
-        currentEventos = eventos.map((evento) => ({
-            ...evento,
-            participantes: currentEventParticipants.get(evento.id) || []
-        }));
+  const categorias = await loadCategoriasWithFallback(modalidadeId)
+  ui.categoryFilter.disabled = false
+  ui.categoryFilter.innerHTML = [
+    '<option value="all">Todas as categorias</option>',
+    ...categorias.map((categoria) => `<option value="${categoria.id}">${escapeHtml(categoria.nome)}</option>`)
+  ].join('')
 
-        renderEventMarkers(currentEventos);
-        renderEventosList(currentEventos);
-        updateGlobeFromState();
-        return currentEventos;
-    } catch (error) {
-        console.error('Erro ao carregar eventos:', error);
-        return [];
-    }
+  if (!categorias.length) {
+    ui.categoryFilter.innerHTML = '<option value="all">Sem categorias nesta modalidade</option>'
+  }
 }
 
-function renderSpotMarkers(spots) {
-    spotMarkers.forEach(marker => map.removeLayer(marker));
-    spotMarkers = [];
+async function loadCategoriasWithFallback(modalidadeId) {
+  const categorias = await obterCategoriasPorModalidade(modalidadeId)
+  if (categorias.length) return categorias
 
-    spots.forEach((spot, index) => {
-        const lat = Number(spot.coordenadas_lat);
-        const lng = Number(spot.coordenadas_long);
+  const modalidade = getModalidadeFromSelect(modalidadeId)
+  const fallbackNames = defaultCategoriasByModalidade[modalidade?.nome] || []
 
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-            console.warn('Spot com coordenadas invalidas ignorado:', spot);
-            return;
-        }
-
-        const checkpointIcon = L.divIcon({
-            className: 'checkpoint-icon',
-            html: `<div class="checkpoint-marker">${index + 1}</div>`,
-            iconSize: [28, 28],
-            iconAnchor: [14, 28],
-            popupAnchor: [0, -24]
-        });
-
-        const marker = L.marker([lat, lng], { icon: checkpointIcon }).addTo(map);
-        marker.boardSportsId = spot.id;
-        marker.boardSportsKind = 'spot';
-
-        const canEdit = userProfile && spot.criador_id === userProfile.id;
-        const editBtn = canEdit ? `<button onclick="window.editarSpot(${spot.id})" style="background: #ff8c00; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Editar</button>` : '';
-        const deleteBtn = canEdit ? `<button onclick="window.apagarSpotMap(${spot.id})" style="background: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Apagar</button>` : '';
-        const videoLink = spot.video_url
-            ? `<p style="margin: 0 0 8px 0;"><a href="${spot.video_url}" target="_blank" style="color: #7ed6ff;">Ver video</a></p>`
-            : '';
-
-        marker.bindPopup(`
-            <div style="color: white; min-width: 200px;">
-                <h3 style="color: #ff8c00; margin: 0 0 5px 0;">${escapeHtml(spot.nome)}</h3>
-                <p style="margin: 0 0 5px 0; font-size: 0.9rem;">${escapeHtml(spot.modalidades?.nome || '')}${spot.categorias?.nome ? ` - ${escapeHtml(spot.categorias.nome)}` : ''}</p>
-                <p style="margin: 0 0 10px 0; font-size: 0.85rem;">${escapeHtml(spot.descricao || 'Sem descricao')}</p>
-                ${videoLink}
-                <small style="color: #888;">Por: ${escapeHtml(spot.profiles?.nome || 'Utilizador')}</small>
-                <div style="margin-top: 10px;">
-                    ${editBtn}
-                    ${deleteBtn}
-                </div>
-            </div>
-        `);
-
-        spotMarkers.push(marker);
-    });
-
-    updateMapBounds();
+  return fallbackNames.map((nome, index) => ({
+    id: `fallback-${modalidadeId}-${index}`,
+    nome
+  }))
 }
 
-function renderEventMarkers(eventos) {
-    eventMarkers.forEach(marker => map.removeLayer(marker));
-    eventMarkers = [];
-
-    eventos.forEach((evento) => {
-        const lat = Number(evento.coordenadas_lat);
-        const lng = Number(evento.coordenadas_long);
-
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-            return;
-        }
-
-        const eventIcon = L.divIcon({
-            className: 'checkpoint-icon',
-            html: '<div class="event-marker">EV</div>',
-            iconSize: [28, 28],
-            iconAnchor: [14, 28],
-            popupAnchor: [0, -24]
-        });
-
-        const marker = L.marker([lat, lng], { icon: eventIcon }).addTo(map);
-        marker.boardSportsId = evento.id;
-        marker.boardSportsKind = 'evento';
-
-        const dataInicio = evento.data_inicio ? new Date(evento.data_inicio).toLocaleString('pt-PT') : '';
-        const dataFim = evento.data_fim ? new Date(evento.data_fim).toLocaleString('pt-PT') : '';
-        const canManage = userProfile && evento.criador_id === userProfile.id;
-        const participantCount = Array.isArray(evento.participantes) ? evento.participantes.length : 0;
-        const editBtn = canManage ? `<button onclick="window.editarEvento(${evento.id})" style="background: #00b09b; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Editar</button>` : '';
-        const deleteBtn = canManage ? `<button onclick="window.apagarEventoMapa(${evento.id})" style="background: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Apagar</button>` : '';
-
-        marker.bindPopup(`
-            <div style="color: white; min-width: 220px;">
-                <h3 style="color: #00d1b2; margin: 0 0 5px 0;">${escapeHtml(evento.nome)}</h3>
-                <p style="margin: 0 0 5px 0; font-size: 0.9rem;">${escapeHtml(dataInicio)}${dataFim ? ` - ${escapeHtml(dataFim)}` : ''}</p>
-                <p style="margin: 0 0 5px 0; font-size: 0.85rem;">${escapeHtml(evento.localidade || 'Localidade por definir')}</p>
-                <p style="margin: 0; font-size: 0.85rem;">${escapeHtml(evento.descricao || 'Sem descricao')}</p>
-                <p style="margin: 8px 0 0; font-size: 0.8rem; color: #9fe8db;">${participantCount} ${participantCount === 1 ? 'participante' : 'participantes'}</p>
-                ${canManage ? `<div style="margin-top: 10px;">${editBtn}${deleteBtn}</div>` : ''}
-            </div>
-        `);
-
-        eventMarkers.push(marker);
-    });
-
-    updateMapBounds();
-}
-
-function updateMapBounds() {
-    const bounds = L.latLngBounds([]);
-    spotMarkers.forEach(marker => bounds.extend(marker.getLatLng()));
-    eventMarkers.forEach(marker => bounds.extend(marker.getLatLng()));
-    if (userLocationLatLng) bounds.extend(userLocationLatLng);
-
-    if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
-        return;
-    }
-
-    if (userLocationLatLng) {
-        map.setView(userLocationLatLng, 13);
-    }
-}
-
-function buildGlobeMarkers() {
-    const spotGlobeMarkers = currentSpots
-        .filter(spot => Number.isFinite(Number(spot.coordenadas_lat)) && Number.isFinite(Number(spot.coordenadas_long)))
-        .map((spot) => {
-            const lat = Number(spot.coordenadas_lat);
-            const lng = Number(spot.coordenadas_long);
-            const subtitleParts = [spot.modalidades?.nome, spot.categorias?.nome].filter(Boolean);
-
-            return {
-                kind: 'spot',
-                entityId: spot.id,
-                lat,
-                lng,
-                label: spot.nome || 'Spot sem nome',
-                subtitle: subtitleParts.join(' / ') || 'Spot',
-                note: spot.descricao || 'Spot guardado na plataforma e pronto para ser explorado no mapa principal.',
-                meta: `${lat.toFixed(2)}, ${lng.toFixed(2)}`,
-                color: '#ff8c00',
-                src: buildMarkerAvatar(spot.nome || 'Spot', '#ff8c00', getMarkerInitials(spot.nome, 'SP'))
-            };
-        });
-
-    const eventGlobeMarkers = currentEventos
-        .filter(evento => Number.isFinite(Number(evento.coordenadas_lat)) && Number.isFinite(Number(evento.coordenadas_long)))
-        .map((evento) => {
-            const lat = Number(evento.coordenadas_lat);
-            const lng = Number(evento.coordenadas_long);
-            const inicio = evento.data_inicio ? new Date(evento.data_inicio).toLocaleDateString('pt-PT') : 'Sem data';
-
-            return {
-                kind: 'evento',
-                entityId: evento.id,
-                lat,
-                lng,
-                label: evento.nome || 'Evento sem nome',
-                subtitle: 'Evento',
-                note: evento.descricao || 'Evento ativo no mapa. Ao clicar, o mapa principal abre diretamente o marcador.',
-                meta: [inicio, evento.localidade].filter(Boolean).join(' | '),
-                color: '#00d1b2',
-                src: buildMarkerAvatar(evento.nome || 'Evento', '#00b09b', getMarkerInitials(evento.nome, 'EV'))
-            };
-        });
-
-    return [...spotGlobeMarkers, ...eventGlobeMarkers];
-}
-
-function updateGlobeFromState() {
-    if (!globe) return;
-
-    const realMarkers = buildGlobeMarkers();
-    globeUsingFallback = realMarkers.length === 0;
-    currentGlobeMarkers = globeUsingFallback ? sampleMarkers : realMarkers;
-
-    globe.setMarkers(currentGlobeMarkers);
-    globe.setContinentStats(buildContinentSpotStats());
-    updateGlobeStats(currentGlobeMarkers, globeUsingFallback);
-
-    const activeMarker = getActiveGlobeMarker();
-    if (activeMarker) {
-        activeGlobeMarkerKey = getGlobeMarkerKey(activeMarker);
-    }
-    updateGlobeDetails(activeMarker);
-}
-
-function updateGlobeStats(markers, usingFallback) {
-    const markerCount = document.getElementById('globe-marker-count');
-    const sourceLabel = document.getElementById('globe-source-label');
-    const routeCount = document.getElementById('globe-route-count');
-
-    if (markerCount) markerCount.textContent = String(markers.length);
-    if (sourceLabel) sourceLabel.textContent = usingFallback ? 'Demo' : 'Tempo real';
-    if (routeCount) routeCount.textContent = String(sampleRoutes.length);
-}
-
-function updateGlobeDetails(item) {
-    const avatar = document.getElementById('globe-active-avatar');
-    const label = document.getElementById('globe-active-label');
-    const type = document.getElementById('globe-active-type');
-    const meta = document.getElementById('globe-active-meta');
-    const note = document.getElementById('globe-active-note');
-    const hoverLabel = document.getElementById('globe-hover-label');
-    const hoverSubtitle = document.getElementById('globe-hover-subtitle');
-
-    if (!item) {
-        if (label) label.textContent = 'A preparar o globo';
-        if (type) type.textContent = 'Sem marcador ativo';
-        if (meta) meta.textContent = 'Passa o cursor sobre o globo';
-        if (note) note.textContent = 'Os marcadores vao aparecer aqui com detalhe. Clica num spot ou evento real para focar automaticamente o mapa principal.';
-        if (hoverLabel) hoverLabel.textContent = 'Exploracao global';
-        if (hoverSubtitle) hoverSubtitle.textContent = 'Passa o cursor para inspecionar. Clica para focar.';
-        return;
-    }
-
-    if (item.kind === 'continent') {
-        const count = Number(item.spotCount || 0);
-        const plural = count === 1 ? 'spot' : 'spots';
-
-        if (avatar) {
-            avatar.src = buildMarkerAvatar(item.label, item.color || '#4da6ff', item.abbr || 'CT');
-            avatar.alt = item.label;
-        }
-        if (label) label.textContent = item.label;
-        if (type) type.textContent = 'Continente';
-        if (meta) meta.textContent = `${count} ${plural} nesta vista`;
-        if (note) {
-            note.textContent = count
-                ? `O globo encontrou ${count} ${plural} neste continente com o filtro atual. Continua a rodar para localizar os marcadores individuais.`
-                : 'Ainda nao ha spots visiveis neste continente com o filtro atual.';
-        }
-        if (hoverLabel) hoverLabel.textContent = item.label;
-        if (hoverSubtitle) hoverSubtitle.textContent = `${count} ${plural} nesta vista`;
-        return;
-    }
-
-    if (avatar) {
-        avatar.src = item.src || buildMarkerAvatar(item.label, item.color || '#4da6ff', getMarkerInitials(item.label, 'GL'));
-        avatar.alt = item.label;
-    }
-    if (label) label.textContent = item.label;
-    if (type) type.textContent = buildMarkerTypeLabel(item.kind);
-    if (meta) meta.textContent = item.meta || item.subtitle || 'Sem detalhe adicional';
-    if (note) note.textContent = item.note || 'Sem detalhe adicional para este marker.';
-    if (hoverLabel) hoverLabel.textContent = item.label;
-    if (hoverSubtitle) hoverSubtitle.textContent = item.subtitle || buildMarkerTypeLabel(item.kind);
-}
-
-function handleGlobeMarkerClick(marker) {
-    if (!marker) return;
-
-    activeGlobeMarkerKey = getGlobeMarkerKey(marker);
-    updateGlobeDetails(marker);
-
-    if (marker.kind === 'spot' || marker.kind === 'evento') {
-        focusMap(marker.lat, marker.lng, 14);
-        openLeafletMarker(marker.kind, marker.entityId);
-
-        const mapElement = document.getElementById('map');
-        if (mapElement) {
-            mapElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }
-}
-
-function handleGlobeMarkerHover(marker) {
-    hoveredGlobeMarkerKey = marker ? getGlobeMarkerKey(marker) : null;
-
-    if (marker) {
-        updateGlobeDetails(marker);
-        return;
-    }
-
-    if (hoveredGlobeContinentId) return;
-    updateGlobeDetails(getActiveGlobeMarker());
-}
-
-function handleGlobeContinentHover(continent) {
-    hoveredGlobeContinentId = continent ? continent.id : null;
-
-    if (hoveredGlobeMarkerKey) return;
-
-    if (continent) {
-        updateGlobeDetails({ ...continent, kind: 'continent' });
-        return;
-    }
-
-    updateGlobeDetails(getActiveGlobeMarker());
-}
-
-function openLeafletMarker(kind, entityId) {
-    const collection = kind === 'evento' ? eventMarkers : spotMarkers;
-    const leafletMarker = collection.find(marker => marker.boardSportsId === entityId);
-
-    if (leafletMarker) {
-        leafletMarker.openPopup();
-    }
-}
-
-function getGlobeMarkerKey(marker) {
-    return `${marker.kind || 'marker'}:${marker.entityId || marker.label}`;
-}
-
-function getActiveGlobeMarker() {
-    return currentGlobeMarkers.find(marker => getGlobeMarkerKey(marker) === activeGlobeMarkerKey) || currentGlobeMarkers[0] || null;
-}
-
-function buildMarkerTypeLabel(kind) {
-    if (kind === 'spot') return 'Spot em destaque';
-    if (kind === 'evento') return 'Evento em destaque';
-    return 'Marcador demo';
-}
-
-function buildContinentSpotStats() {
-    const stats = Object.fromEntries(
-        Object.entries(CONTINENT_INFO).map(([id, info]) => [
-            id,
-            {
-                id,
-                label: info.label,
-                abbr: info.abbr,
-                color: info.color,
-                spotCount: 0
-            }
-        ])
-    );
-
-    currentSpots.forEach((spot) => {
-        const lat = Number(spot.coordenadas_lat);
-        const lng = Number(spot.coordenadas_long);
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-
-        const continentId = getContinentIdForCoordinates(lat, lng);
-        if (!continentId || !stats[continentId]) return;
-        stats[continentId].spotCount += 1;
-    });
-
-    return stats;
-}
-
-function getContinentIdForCoordinates(lat, lng) {
-    if (lat <= -60) return 'antarctica';
-
-    if (lat >= 15 && lat <= 84 && lng >= -170 && lng <= -50) return 'north_america';
-    if (lat >= 7 && lat < 15 && lng >= -100 && lng <= -60) return 'north_america';
-
-    if (lat >= -58 && lat < 16 && lng >= -92 && lng <= -30) return 'south_america';
-
-    if (lat >= 35 && lat <= 72 && lng >= -25 && lng <= 45) return 'europe';
-
-    if (lat >= -35 && lat <= 37 && lng >= -20 && lng <= 55) return 'africa';
-
-    if (lat >= -50 && lat <= 20 && lng >= 110 && lng <= 180) return 'oceania';
-    if (lat >= -12 && lat <= 5 && (lng >= 95 && lng < 110)) return 'oceania';
-    if (lat >= -50 && lat <= -10 && lng <= -150) return 'oceania';
-
-    if (lat >= 5 && lat <= 82 && lng >= 25 && lng <= 180) return 'asia';
-    if (lat >= 0 && lat <= 35 && lng >= 45 && lng < 60) return 'asia';
-
-    return null;
-}
-
-function buildMarkerAvatar(label, backgroundColor, text) {
-    const safeText = escapeSvg(text);
-    const safeLabel = escapeSvg(label || 'Marker');
-    const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
-            <defs>
-                <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-                    <stop offset="0%" stop-color="${backgroundColor}" />
-                    <stop offset="100%" stop-color="#111827" />
-                </linearGradient>
-            </defs>
-            <rect width="72" height="72" rx="20" fill="url(#g)" />
-            <circle cx="36" cy="36" r="23" fill="rgba(255,255,255,0.14)" />
-            <text x="36" y="43" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">${safeText}</text>
-            <title>${safeLabel}</title>
-        </svg>
-    `;
-
-    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-function getMarkerInitials(label, fallback) {
-    const words = String(label || '')
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean);
-
-    if (!words.length) return fallback;
-    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-    return `${words[0][0] || ''}${words[1][0] || ''}`.toUpperCase();
-}
-
-function escapeSvg(value) {
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
-function subscribeToSpots() {
-    supabase
-        .channel('spots-realtime')
-        .on(
-            'postgres_changes',
-            { event: '*', schema: 'public', table: 'spots' },
-            () => {
-                loadSpots(currentModalidadeFilter);
-            }
-        )
-        .subscribe();
-}
-
-function subscribeToEventos() {
-    supabase
-        .channel('eventos-realtime')
-        .on(
-            'postgres_changes',
-            { event: '*', schema: 'public', table: 'eventos' },
-            () => {
-                loadEventos();
-            }
-        )
-        .subscribe();
-}
-
-function renderSpotsList(spots) {
-    const container = document.getElementById('spots-container');
-    if (spots.length === 0) {
-        container.innerHTML = '<div class="no-spots"><p>Nenhum spot encontrado com o filtro atual.</p></div>';
-        return;
-    }
-
-    container.innerHTML = spots.map((spot, index) => {
-        const canEdit = userProfile && spot.criador_id === userProfile.id;
-        const look = getSpotVisualLook(spot);
-        const modalidade = spot.modalidades?.nome || 'Spot';
-        const categoria = spot.categorias?.nome || 'Geral';
-        const descricao = escapeHtml(spot.descricao || 'Sem descricao disponivel');
-        const autor = escapeHtml(spot.profiles?.nome || 'Utilizador');
-        const lat = Number(spot.coordenadas_lat);
-        const lng = Number(spot.coordenadas_long);
-        return `
-            <div class="spot-card" data-spot-card style="--pin-accent:${look.accent}; --pin-accent-soft:${look.soft};" onclick="window.focusMap(${spot.coordenadas_lat}, ${spot.coordenadas_long})">
-                <div class="spot-card-shell">
-                    <div class="spot-card-surface">
-                        <div class="spot-card-titlebar">
-                            <div class="spot-card-link">/${escapeHtml(modalidade.toLowerCase())}/${spot.id}</div>
-                            <div class="checkpoint-badge">CP ${index + 1}</div>
-                        </div>
-
-                        <div class="spot-card-preview">
-                            <span class="spot-preview-icon">${look.icon}</span>
-                            <div class="spot-preview-meta">
-                                <div>
-                                    <strong>${escapeHtml(spot.nome)}</strong>
-                                    <span>${escapeHtml(modalidade)} / ${escapeHtml(categoria)}</span>
-                                </div>
-                                <span>${lat.toFixed(2)}, ${lng.toFixed(2)}</span>
-                            </div>
-                        </div>
-
-                        <div class="spot-card-header">
-                            <h3>${escapeHtml(spot.nome)}</h3>
-                        </div>
-                        <p><strong>${escapeHtml(modalidade)}</strong> | ${escapeHtml(categoria)}</p>
-                        <p>${descricao}</p>
-                        <p style="color: #888; font-size: 12px;">Por: ${autor}</p>
-                        ${canEdit ? `
-                            <div class="spot-actions">
-                                <button class="btn-edit" onclick="window.editarSpot(${spot.id}); event.stopPropagation();">Editar</button>
-                                <button class="btn-delete" onclick="window.apagarSpotMap(${spot.id}); event.stopPropagation();">Apagar</button>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-                <div class="spot-card-stem"></div>
-                <div class="spot-card-node"></div>
-                <div class="spot-card-pulse"></div>
-            </div>
-        `;
-    }).join('');
-
-    attachSpotPinInteractions(container);
-}
-
-function attachSpotPinInteractions(container) {
-    const cards = container.querySelectorAll('[data-spot-card]');
-
-    cards.forEach((card) => {
-        card.onpointermove = (event) => {
-            const rect = card.getBoundingClientRect();
-            const pointerX = event.clientX - rect.left;
-            const pointerY = event.clientY - rect.top;
-            const percentX = (pointerX / rect.width) - 0.5;
-            const percentY = (pointerY / rect.height) - 0.5;
-            const rotateY = percentX * 12;
-            const rotateX = percentY * -10;
-
-            card.style.setProperty('--pin-rotate-x', `${rotateX.toFixed(2)}deg`);
-            card.style.setProperty('--pin-rotate-y', `${rotateY.toFixed(2)}deg`);
-            card.style.setProperty('--pin-translate-y', '-10px');
-        };
-
-        card.onpointerleave = () => {
-            card.style.setProperty('--pin-rotate-x', '0deg');
-            card.style.setProperty('--pin-rotate-y', '0deg');
-            card.style.setProperty('--pin-translate-y', '0px');
-        };
-    });
-}
-
-function renderEventosList(eventos) {
-    const container = document.getElementById('eventos-container');
-    if (!container) return;
-
-    if (!eventos.length) {
-        container.innerHTML = '<div class="no-spots"><p>Ainda nao existem eventos registados.</p></div>';
-        return;
-    }
-
-    container.innerHTML = eventos.map((evento, index) => {
-        const canManage = userProfile && evento.criador_id === userProfile.id;
-        const look = getEventVisualLook();
-        const participantes = Array.isArray(evento.participantes) ? evento.participantes : [];
-        const inicio = formatShortDate(evento.data_inicio);
-        const fim = formatShortDate(evento.data_fim);
-        const periodo = fim ? `${inicio} - ${fim}` : inicio;
-        const participantCount = participantes.length;
-        const pendingCount = participantes.filter((item) => !item.confirmado).length;
-        const lat = Number(evento.coordenadas_lat);
-        const lng = Number(evento.coordenadas_long);
-
-        return `
-            <div class="spot-card" data-spot-card style="--pin-accent:${look.accent}; --pin-accent-soft:${look.soft};" onclick="window.focusMap(${evento.coordenadas_lat}, ${evento.coordenadas_long})">
-                <div class="spot-card-shell">
-                    <div class="spot-card-surface">
-                        <div class="spot-card-titlebar">
-                            <div class="spot-card-link">/eventos/${evento.id}</div>
-                            <div class="checkpoint-badge">EV ${index + 1}</div>
-                        </div>
-
-                        <div class="spot-card-preview">
-                            <span class="spot-preview-icon">${look.icon}</span>
-                            <div class="spot-preview-meta">
-                                <div>
-                                    <strong>${escapeHtml(evento.nome)}</strong>
-                                    <span>${escapeHtml(evento.modalidade || evento.modalidades?.nome || 'Evento')} / ${escapeHtml(evento.localidade || 'Local a definir')}</span>
-                                </div>
-                                <span>${Number.isFinite(lat) && Number.isFinite(lng) ? `${lat.toFixed(2)}, ${lng.toFixed(2)}` : 'Sem ponto'}</span>
-                            </div>
-                        </div>
-
-                        <div class="spot-card-header">
-                            <h3>${escapeHtml(evento.nome)}</h3>
-                        </div>
-                        <p><strong>${escapeHtml(periodo)}</strong> | ${escapeHtml(evento.localidade || 'Localidade por definir')}</p>
-                        <p>${escapeHtml(evento.descricao || 'Sem descricao disponivel')}</p>
-                        <p style="color: #9fe8db; font-size: 12px;">${participantCount} ${participantCount === 1 ? 'participante' : 'participantes'}${canManage && pendingCount ? ` | ${pendingCount} por confirmar` : ''}</p>
-                        ${canManage ? `
-                            <div class="spot-actions">
-                                <button class="btn-edit" onclick="window.editarEvento(${evento.id}); event.stopPropagation();">Editar</button>
-                                <button class="btn-delete" onclick="window.apagarEventoMapa(${evento.id}); event.stopPropagation();">Apagar</button>
-                            </div>
-                            <div class="event-participants">
-                                <div class="event-participants-head">
-                                    <strong>Participantes</strong>
-                                    <span>${participantCount}</span>
-                                </div>
-                                ${buildEventParticipantsMarkup(participantes)}
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-                <div class="spot-card-stem"></div>
-                <div class="spot-card-node"></div>
-                <div class="spot-card-pulse"></div>
-            </div>
-        `;
-    }).join('');
-
-    attachSpotPinInteractions(container);
-}
-
-function buildEventParticipantsMarkup(participantes) {
-    if (!participantes.length) {
-        return '<p class="event-participants-empty">Ainda nao ha atletas inscritos.</p>';
-    }
-
-    return participantes.map((participacao) => `
-        <div class="event-participant">
-            <div>
-                <strong>${escapeHtml(participacao.atleta?.nome || participacao.atleta?.email || 'Atleta')}</strong>
-                <span>${participacao.confirmado ? 'Confirmado' : 'A aguardar confirmacao'}</span>
-            </div>
-            <div class="event-participant-actions">
-                ${!participacao.confirmado ? `<button class="btn-edit" onclick="window.confirmarParticipacaoEvento(${participacao.id}); event.stopPropagation();">Confirmar</button>` : ''}
-                <button class="btn-delete" onclick="window.removerParticipacaoEventoMapa(${participacao.id}); event.stopPropagation();">Remover</button>
-            </div>
-        </div>
-    `).join('');
-}
-
-function getEventVisualLook() {
+function getModalidadeFromSelect(modalidadeId) {
+  const selectedOption = ui.spotModalidade?.querySelector(`option[value="${modalidadeId}"]`)
+    || ui.filter?.querySelector(`option[value="${modalidadeId}"]`)
+
+  if (selectedOption) {
     return {
-        accent: '#00d1b2',
-        soft: 'rgba(0, 209, 178, 0.22)',
-        icon: 'EV'
-    };
+      id: Number(modalidadeId),
+      nome: selectedOption.textContent.trim()
+    }
+  }
+
+  return defaultModalidades.find((modalidade) => String(modalidade.id) === String(modalidadeId)) || null
 }
 
-function formatShortDate(value) {
-    if (!value) return 'Sem data';
-    return new Date(value).toLocaleString('pt-PT', {
-        dateStyle: 'medium',
-        timeStyle: 'short'
-    });
+function isNumericId(value) {
+  return /^\d+$/.test(String(value || ''))
 }
 
-function getSpotVisualLook(spot) {
-    const modalidade = (spot.modalidades?.nome || '').toLowerCase();
-
-    if (modalidade.includes('surf')) {
-        return {
-            accent: '#1fb6ff',
-            soft: 'rgba(31, 182, 255, 0.24)',
-            icon: '🏄'
-        };
-    }
-
-    if (modalidade.includes('skate')) {
-        return {
-            accent: '#ff8c00',
-            soft: 'rgba(255, 140, 0, 0.24)',
-            icon: '🛹'
-        };
-    }
-
-    if (modalidade.includes('snow')) {
-        return {
-            accent: '#d8efff',
-            soft: 'rgba(216, 239, 255, 0.24)',
-            icon: '🏂'
-        };
-    }
-
-    if (modalidade.includes('sand')) {
-        return {
-            accent: '#d6a14a',
-            soft: 'rgba(214, 161, 74, 0.24)',
-            icon: '🏜️'
-        };
-    }
-
-    if (modalidade.includes('skim')) {
-        return {
-            accent: '#32d7c8',
-            soft: 'rgba(50, 215, 200, 0.24)',
-            icon: '🌊'
-        };
-    }
-
-    return {
-        accent: '#ff8c00',
-        soft: 'rgba(255, 140, 0, 0.24)',
-        icon: '📍'
-    };
+function openSpotModal() {
+  ui.spotModal.hidden = false
+  ui.spotModalTitle.textContent = spotEditingId ? 'Editar spot' : 'Novo spot'
 }
 
-function focusMap(lat, lng, zoom = 14) {
-    if (!map) return;
-    map.setView([lat, lng], zoom);
+function closeSpotModal() {
+  ui.spotModal.hidden = true
+  ui.spotForm.reset()
+  ui.spotCategoria.disabled = true
+  ui.spotCategoria.innerHTML = '<option value="">Selecionar categoria</option>'
+  spotEditingId = null
 }
 
-window.focusMap = focusMap;
+function openVideoModal(spot) {
+  if (!spot) return
 
-const spotForm = document.getElementById('form-spot');
-const eventForm = document.getElementById('form-event');
-const filterModalidade = document.getElementById('filter-modalidade');
-const modal = document.getElementById('modal-spot');
-const btnAdd = document.getElementById('btn-add-spot');
-const spanClose = document.getElementsByClassName('close-modal')[0];
-const modalEvent = document.getElementById('modal-event');
-const btnEvent = document.getElementById('btn-add-event');
-const closeEvent = document.getElementById('close-event');
-const cancelEvent = document.getElementById('cancel-event');
-
-spotForm.onsubmit = async (event) => {
-    event.preventDefault();
-
-    const user = await obterUsuarioAtual();
-    if (!user) {
-        showToast('Deves estar ligado para adicionar spots.', { type: 'warning' });
-        return;
-    }
-
-    const videoUrl = document.getElementById('spot-video').value.trim();
-    const spotData = {
-        nome: document.getElementById('spot-nome').value,
-        descricao: document.getElementById('spot-descricao').value,
-        modalidade_id: parseInt(document.getElementById('spot-modalidade').value, 10),
-        categoria_id: document.getElementById('spot-categoria').value ? parseInt(document.getElementById('spot-categoria').value, 10) : null,
-        coordenadas_lat: parseFloat(document.getElementById('spot-lat').value),
-        coordenadas_long: parseFloat(document.getElementById('spot-lng').value),
-        criador_id: user.id,
-        ...(videoUrl ? { video_url: videoUrl } : {})
-    };
-
-    let spot;
-
-    if (spotEmEdicao) {
-        const resultado = await atualizarSpot(spotEmEdicao, spotData);
-        if (!resultado) {
-            showToast('Erro ao atualizar spot.', { type: 'error' });
-            return;
-        }
-        showToast('Spot atualizado com sucesso.', { type: 'success' });
-        spotEmEdicao = null;
-    } else {
-        spot = await criarSpot(spotData);
-        if (!spot) {
-            showToast('Erro ao guardar spot.', { type: 'error' });
-            return;
-        }
-
-        if (document.getElementById('request-public').checked) {
-            await criarSolicitacaoPublicacao(spot.id, user.id);
-            showToast('Spot guardado e enviado para moderacao.', { type: 'success', duration: 3800 });
-        } else {
-            showToast('Spot guardado com sucesso.', { type: 'success' });
-        }
-
-        await loadSpots(currentModalidadeFilter);
-        focusMap(spotData.coordenadas_lat, spotData.coordenadas_long, 14);
-    }
-
-    closeModal();
-    loadSpots(currentModalidadeFilter);
-};
-
-eventForm.onsubmit = async (event) => {
-    event.preventDefault();
-
-    const user = await obterUsuarioAtual();
-    if (!user) {
-        showToast('Deves estar ligado para adicionar eventos.', { type: 'warning' });
-        return;
-    }
-    if (!userProfile || userProfile.perfil?.role !== 'empresa') {
-        showToast('Apenas empresas podem adicionar eventos.', { type: 'warning' });
-        return;
-    }
-
-    const eventoData = {
-        nome: document.getElementById('event-nome').value,
-        descricao: document.getElementById('event-descricao').value,
-        modalidade_id: parseInt(document.getElementById('event-modalidade').value, 10),
-        data_inicio: document.getElementById('event-data-inicio').value,
-        data_fim: document.getElementById('event-data-fim').value,
-        localidade: document.getElementById('event-localidade').value,
-        coordenadas_lat: parseFloat(document.getElementById('event-lat').value),
-        coordenadas_long: parseFloat(document.getElementById('event-lng').value),
-        criador_id: user.id
-    };
-
-    const evento = await criarEvento(eventoData);
-    if (!evento) {
-        showToast('Erro ao guardar evento.', { type: 'error' });
-        return;
-    }
-
-    showToast('Evento guardado com sucesso.', { type: 'success' });
-    closeEventModal();
-    await loadEventos();
-    focusMap(eventoData.coordenadas_lat, eventoData.coordenadas_long, 14);
-};
-
-document.getElementById('spot-modalidade').onchange = async (event) => {
-    const modId = event.target.value;
-    const catSelect = document.getElementById('spot-categoria');
-
-    if (!modId) {
-        catSelect.disabled = true;
-        catSelect.innerHTML = '<option value="">Selecionar Categoria</option>';
-        return;
-    }
-
-    const cats = await obterCategoriasPorModalidade(modId);
-    catSelect.disabled = false;
-    catSelect.innerHTML = '<option value="">Selecionar Categoria</option>' +
-        cats.map(categoria => `<option value="${categoria.id}">${escapeHtml(categoria.nome)}</option>`).join('');
-};
-
-filterModalidade.onchange = (event) => {
-    loadSpots(event.target.value);
-};
-
-function openModal() {
-    isEventMode = false;
-    modal.style.display = 'flex';
-    document.getElementById('modal-title').textContent = spotEmEdicao ? 'Editar Spot' : 'Criar Novo Spot';
+  activeVideoSpotId = spot.id
+  ui.videoForm.reset()
+  ui.videoModal.hidden = false
+  ui.videoModalTitle.textContent = spot.nome || 'Spot selecionado'
+  ui.videoModalCopy.textContent = `O video vai ficar ligado ao spot ${spot.nome || 'selecionado'} e passa a aparecer na galeria publica de videos.`
 }
 
-function closeModal() {
-    modal.style.display = 'none';
-    spotForm.reset();
-    spotEmEdicao = null;
-    isEventMode = false;
+function closeVideoModal() {
+  ui.videoModal.hidden = true
+  ui.videoForm.reset()
+  activeVideoSpotId = null
 }
 
-window.closeModal = closeModal;
+async function editSpot(spotId) {
+  const spot = currentSpots.find((item) => item.id === spotId)
+  if (!spot) return
 
-btnAdd.onclick = () => {
-    isEventMode = false;
-    showToast('Clica num ponto do mapa para definir a localizacao do spot.', { type: 'info' });
-};
-
-spanClose.onclick = closeModal;
-window.addEventListener('click', (event) => {
-    if (event.target === modal) closeModal();
-});
-
-function openEventModal() {
-    modalEvent.style.display = 'flex';
+  spotEditingId = spot.id
+  ui.spotNome.value = spot.nome || ''
+  ui.spotDescricao.value = spot.descricao || ''
+  ui.spotModalidade.value = String(spot.modalidade_id || '')
+  ui.spotLat.value = String(spot.coordenadas_lat || '')
+  ui.spotLng.value = String(spot.coordenadas_long || '')
+  await loadCategorias(spot.modalidade_id, spot.categoria_id)
+  openSpotModal()
 }
 
-function closeEventModal() {
-    modalEvent.style.display = 'none';
-    eventForm.reset();
-    isEventMode = false;
+async function deleteSpot(spotId) {
+  const confirmed = await showConfirm({
+    title: 'Apagar spot',
+    message: 'Queres mesmo apagar este spot?',
+    confirmText: 'Apagar',
+    danger: true
+  })
+
+  if (!confirmed) return
+
+  const deleted = await apagarSpot(spotId)
+  if (!deleted) {
+    showToast('Nao foi possivel apagar o spot.', { type: 'error' })
+    return
+  }
+
+  showToast('Spot apagado com sucesso.', { type: 'success' })
+  await loadSpots()
 }
 
-window.closeEventModal = closeEventModal;
+function focusSpotOnMap(spotId) {
+  const marker = markerBySpotId.get(spotId)
+  const spot = currentSpots.find((item) => item.id === spotId)
 
-if (btnEvent) {
-    btnEvent.onclick = () => {
-        if (!userProfile || userProfile.perfil?.role !== 'empresa') {
-            showToast('Apenas empresas podem adicionar eventos.', { type: 'warning' });
-            return;
-        }
-        isEventMode = true;
-        showToast('Clica num ponto do mapa para definir a localizacao do evento.', { type: 'info' });
-    };
+  if (spot) {
+    map.setView([Number(spot.coordenadas_lat), Number(spot.coordenadas_long)], 14)
+  }
+
+  marker?.openPopup()
 }
 
-if (closeEvent) closeEvent.onclick = closeEventModal;
-if (cancelEvent) cancelEvent.onclick = closeEventModal;
-window.addEventListener('click', (event) => {
-    if (event.target === modalEvent) closeEventModal();
-});
+function focusSpotFromQuery() {
+  const url = new URL(window.location.href)
+  const spotId = Number(url.searchParams.get('spot'))
+  if (!Number.isFinite(spotId) || spotId <= 0) return
 
-window.editarSpot = async (spotId) => {
-    const spots = await obterSpots({});
-    const spot = spots.find(item => item.id === spotId);
+  const marker = markerBySpotId.get(spotId)
+  const spot = currentSpots.find((item) => item.id === spotId)
+  if (!marker || !spot) return
 
-    if (!spot) {
-        showToast('Spot nao encontrado.', { type: 'error' });
-        return;
-    }
-
-    spotEmEdicao = spotId;
-    document.getElementById('spot-nome').value = spot.nome;
-    document.getElementById('spot-descricao').value = spot.descricao || '';
-    document.getElementById('spot-video').value = spot.video_url || '';
-    document.getElementById('spot-modalidade').value = spot.modalidade_id;
-    document.getElementById('spot-lat').value = spot.coordenadas_lat;
-    document.getElementById('spot-lng').value = spot.coordenadas_long;
-
-    const cats = await obterCategoriasPorModalidade(spot.modalidade_id);
-    const catSelect = document.getElementById('spot-categoria');
-    catSelect.innerHTML = '<option value="">Selecionar Categoria</option>' +
-        cats.map(categoria => `<option value="${categoria.id}" ${categoria.id === spot.categoria_id ? 'selected' : ''}>${escapeHtml(categoria.nome)}</option>`).join('');
-    catSelect.disabled = false;
-
-    openModal();
-};
-
-window.apagarSpotMap = async (spotId) => {
-    const confirmed = await showConfirm({
-        title: 'Apagar spot',
-        message: 'Tem a certeza que quer apagar este spot?',
-        confirmText: 'Apagar',
-        danger: true
-    });
-    if (!confirmed) return;
-
-    const resultado = await apagarSpot(spotId);
-    if (resultado) {
-        showToast('Spot apagado com sucesso.', { type: 'success' });
-        loadSpots(currentModalidadeFilter);
-    } else {
-        showToast('Erro ao apagar spot.', { type: 'error' });
-    }
-};
-
-function escapeHtml(value) {
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+  map.setView([Number(spot.coordenadas_lat), Number(spot.coordenadas_long)], 14)
+  marker.openPopup()
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initMap();
-});
+function fitMapToVisibleSpots() {
+  const latLngs = currentSpots
+    .map((spot) => {
+      const lat = Number(spot.coordenadas_lat)
+      const lng = Number(spot.coordenadas_long)
+      return Number.isFinite(lat) && Number.isFinite(lng) ? [lat, lng] : null
+    })
+    .filter(Boolean)
 
-window.addEventListener('beforeunload', () => {
-    if (userLocationWatchId !== null && 'geolocation' in navigator) {
-        navigator.geolocation.clearWatch(userLocationWatchId);
-    }
-});
+  if (!latLngs.length) {
+    map.setView([39.5, -8.5], 7)
+    return
+  }
+
+  map.fitBounds(latLngs, { padding: [32, 32], maxZoom: 14 })
+}
+
+function focusUserLocation() {
+  if (!('geolocation' in navigator)) {
+    showToast('Geolocalizacao indisponivel neste browser.', { type: 'warning' })
+    return
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = Number(position.coords.latitude)
+      const lng = Number(position.coords.longitude)
+      map.setView([lat, lng], 14)
+
+      if (userLocationMarker) {
+        userLocationMarker.setLatLng([lat, lng])
+      } else {
+        userLocationMarker = L.marker([lat, lng]).addTo(map)
+      }
+
+      userLocationMarker.bindPopup('Esta e a tua localizacao atual.').openPopup()
+    },
+    () => {
+      showToast('Nao foi possivel obter a tua localizacao.', { type: 'error' })
+    },
+    { enableHighAccuracy: true, timeout: 12000 }
+  )
+}
+
+function escapeHtml(value = '') {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
+window.focusSpotOnMap = focusSpotOnMap
+window.openVideoPublishModal = (spotId) => {
+  if (!user) {
+    showToast('Faz login para publicar videos num spot.', { type: 'warning' })
+    return
+  }
+  const spot = currentSpots.find((item) => item.id === spotId)
+  if (!spot) return
+  openVideoModal(spot)
+}
+window.editSpot = editSpot
+window.deleteSpot = deleteSpot
+
+document.addEventListener('DOMContentLoaded', initMapPage)

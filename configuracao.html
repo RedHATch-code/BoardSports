@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuracao do Perfil - BoardSports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/profile-page.css">
+</head>
+<body class="profile-page profile-settings-page">
+
+<div class="profile-shell">
+  <section class="profile-hero">
+    <div>
+      <span class="profile-kicker">Configuracao</span>
+      <h1 id="profile-hero-name">Configuracao do perfil</h1>
+      <p id="profile-hero-copy">
+        Atualiza a identidade visual, a bio e a seguranca da conta sem carregar a pagina publica do perfil.
+      </p>
+    </div>
+
+    <div class="profile-hero-meta">
+      <strong id="profile-role-badge">membro</strong>
+      <span id="profile-admin-link-wrapper" hidden><a href="moderacao.html">Abrir moderacao</a></span>
+      <a href="perfil.html" class="profile-secondary-button">Voltar ao perfil</a>
+    </div>
+  </section>
+
+  <section class="profile-panel">
+    <div class="profile-photo-section">
+      <div class="profile-avatar-shell">
+        <img id="avatar-image" class="profile-avatar-image" alt="Foto de perfil">
+        <span id="avatar-fallback" class="profile-avatar-fallback">BS</span>
+      </div>
+
+      <div class="profile-photo-copy">
+        <h2>Identidade visual</h2>
+        <p>Adiciona uma imagem e ajusta a apresentacao do teu perfil.</p>
+
+        <div class="profile-photo-actions">
+          <label class="profile-primary-button" for="foto-perfil">Escolher foto</label>
+          <button type="button" class="profile-secondary-button" id="remove-photo-btn">Remover foto</button>
+        </div>
+
+        <input type="file" id="foto-perfil" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+        <div class="profile-photo-meta" id="photo-meta">JPG, PNG, WebP ou GIF ate 5 MB.</div>
+      </div>
+    </div>
+
+    <form id="profile-form" class="profile-form">
+      <label class="profile-field">
+        <span>Nome</span>
+        <input type="text" id="nome" placeholder="Nome completo">
+      </label>
+
+      <div class="profile-form-columns">
+        <label class="profile-field">
+          <span>Email</span>
+          <input type="email" id="email" placeholder="email@dominio.com" disabled>
+        </label>
+
+        <label class="profile-field">
+          <span>Tipo XP</span>
+          <input type="text" id="role" placeholder="Tipo de utilizador" disabled>
+        </label>
+      </div>
+
+      <div class="profile-form-columns">
+        <label class="profile-field">
+          <span>Telefone</span>
+          <input type="tel" id="telefone" placeholder="+351 000 000 000">
+        </label>
+
+        <label class="profile-field">
+          <span>Localidade</span>
+          <input type="text" id="localidade" placeholder="Cidade ou regiao">
+        </label>
+      </div>
+
+      <label class="profile-field">
+        <span>Bio</span>
+        <textarea id="bio" rows="5" placeholder="Conta-nos como participas no universo BoardSports."></textarea>
+      </label>
+
+      <button type="submit" class="profile-primary-button">Guardar alteracoes</button>
+      <div id="msg" class="profile-inline-message" hidden></div>
+    </form>
+
+    <section class="profile-security-section">
+      <div class="profile-section-head">
+        <h2>Seguranca da conta</h2>
+        <span>Password</span>
+      </div>
+      <p class="profile-security-copy">Atualiza a palavra-passe sem sair da area de configuracao.</p>
+
+      <form id="password-form" class="profile-form">
+        <div class="profile-form-columns">
+          <label class="profile-field">
+            <span>Nova palavra-passe</span>
+            <input type="password" id="nova-password" autocomplete="new-password" placeholder="Minimo de 6 caracteres">
+          </label>
+
+          <label class="profile-field">
+            <span>Confirmar nova palavra-passe</span>
+            <input type="password" id="confirmar-password" autocomplete="new-password" placeholder="Repete a password">
+          </label>
+        </div>
+
+        <button type="submit" class="profile-secondary-button">Atualizar palavra-passe</button>
+        <div id="password-msg" class="profile-inline-message" hidden></div>
+      </form>
+    </section>
+  </section>
+</div>
+
+<script type="module" src="js/configuracao_page.js"></script>
+<script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
+</body>
+</html>

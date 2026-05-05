@@ -4,6 +4,7 @@ const modalidadeMeta = {
   Surf: {
     emoji: '🏄',
     gradient: 'linear-gradient(135deg, #0c7abf 0%, #14b8ff 46%, #ffb703 100%)',
+    image: 'assets/images/boardsports-mix.jpg',
     chip: 'Agua e leitura de ondas',
     terrain: 'Costa e mar',
     focus: 'Linhas, leitura e fluidez',
@@ -12,6 +13,7 @@ const modalidadeMeta = {
   Skate: {
     emoji: '🛹',
     gradient: 'linear-gradient(135deg, #1f1f24 0%, #50555c 44%, #ff7b00 100%)',
+    image: 'assets/images/cover-skate.png',
     chip: 'Rua, park e transicao',
     terrain: 'Cidade e skatepark',
     focus: 'Truques e precisao',
@@ -19,7 +21,8 @@ const modalidadeMeta = {
   },
   Skimboard: {
     emoji: '🌊',
-    gradient: 'linear-gradient(135deg, #153243 0%, #2d8f85 48%, #ffd166 100%)',
+    gradient: 'linear-gradient(135deg, #153243 0%, #2d8f85 48%, #d9c2a1 100%)',
+    image: 'assets/images/skim.jpg',
     chip: 'Praia rasa e resposta rapida',
     terrain: 'Areia molhada',
     focus: 'Aceleracao e timing',
@@ -28,6 +31,7 @@ const modalidadeMeta = {
   Snowboard: {
     emoji: '🏂',
     gradient: 'linear-gradient(135deg, #183153 0%, #4f6d8c 48%, #dfe7f3 100%)',
+    image: 'assets/images/snowboard.jpg',
     chip: 'Neve, park e montanha',
     terrain: 'Pistas e backcountry',
     focus: 'Controle e adaptacao',
@@ -36,6 +40,7 @@ const modalidadeMeta = {
   Sandboard: {
     emoji: '🏜️',
     gradient: 'linear-gradient(135deg, #5a3718 0%, #c07a2d 50%, #f2c078 100%)',
+    image: 'assets/images/boardsports-mix.jpg',
     chip: 'Dunas e descida tecnica',
     terrain: 'Areia seca',
     focus: 'Equilibrio e leitura da inclinacao',
@@ -45,7 +50,8 @@ const modalidadeMeta = {
 
 const fallbackMeta = {
   emoji: '🏄',
-  gradient: 'linear-gradient(135deg, #2b2b31 0%, #43454f 45%, #ff8c00 100%)',
+  gradient: 'linear-gradient(135deg, #2b2b31 0%, #43454f 45%, #d66d24 100%)',
+  image: 'assets/images/boardsports-mix.jpg',
   chip: 'Disciplina em destaque',
   terrain: 'Terreno variavel',
   focus: 'Tecnica e progressao',
@@ -145,7 +151,7 @@ function renderCards() {
     const previewCategorias = modalidade.categorias.slice(0, 3)
     const extraCategorias = Math.max(modalidade.categorias.length - previewCategorias.length, 0)
     const resumo = construirResumoCurto(modalidade)
-    const cardStyle = `--card-gradient:${modalidade.meta.gradient};`
+    const cardStyle = `--card-gradient:${modalidade.meta.gradient}; --card-image: url('${modalidade.meta.image}');`
 
     return `
       <article
@@ -348,3 +354,4 @@ function escapeHtml(value) {
 }
 
 document.addEventListener('DOMContentLoaded', inicializarModalidades)
+

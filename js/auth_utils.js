@@ -4,6 +4,22 @@ const PENDING_SIGNUP_EMAIL_KEY = 'boardsports.pending-signup-email'
 const PENDING_RECOVERY_EMAIL_KEY = 'boardsports.pending-recovery-email'
 const AUTH_REDIRECT_TYPES = new Set(['signup', 'recovery', 'invite', 'magiclink', 'email_change', 'email'])
 
+function normalizeProfileRole(value) {
+  const normalized = String(value || '').trim().toLowerCase()
+  if (['empresa', 'atleta', 'cliente'].includes(normalized)) return normalized
+  return 'atleta'
+}
+
+function normalizeBoardSportsType(value) {
+  const normalized = String(value || '').trim().toLowerCase()
+  if (normalized === 'pro') return 'pro'
+  if (normalized === 'intermedio' || normalized === 'intermédio') return 'intermedio'
+  if (normalized === 'principiante') return 'principiante'
+  if (normalized === 'atleta') return 'principiante'
+  if (normalized === 'cliente') return 'principiante'
+  return 'principiante'
+}
+
 function normalizeOptionalString(value) {
   const text = String(value || '').trim()
   return text || null
@@ -34,9 +50,34 @@ function buildAuthRedirectUrl(pathname) {
   return `${window.location.origin}${pathname}`
 }
 
-function buildProfileDraft(role, dadosAdicionais = {}, email = '') {
+export function obterUrlRecuperacaoPassword() {
+  return buildAuthRedirectUrl('/reset-password.html')
+}
+
+function getLegacyProfilePayload(payload) {
+  const legacy = { ...payload }
+  delete legacy.tipo_user
+  delete legacy.xp_total
+  delete legacy.nivel_xp
+  return legacy
+}
+
+function isMissingProfileXpColumn(error) {
+  const message = error?.message?.toLowerCase?.() || ''
+  return error?.code === '42703'
+    || message.includes('tipo_user')
+    || message.includes('xp_total')
+    || message.includes('nivel_xp')
+}
+
+function buildProfileDraft(tipoUser, dadosAdicionais = {}, email = '') {
+  const boardSportsType = 'principiante'
+
   return {
-    role: normalizeOptionalString(role) || 'cliente',
+    role: normalizeProfileRole(dadosAdicionais.role || 'atleta'),
+    tipo_user: boardSportsType,
+    xp_total: Number(dadosAdicionais.xp_total || 0),
+    nivel_xp: Number(dadosAdicionais.nivel_xp || 1),
     nome: normalizeOptionalString(dadosAdicionais.nome),
     telefone: normalizeOptionalString(dadosAdicionais.telefone),
     localidade: normalizeOptionalString(dadosAdicionais.localidade),
@@ -60,15 +101,26 @@ function buildProfilePayload(user, existingProfile = null, fallbackProfile = {})
   const metadata = user?.user_metadata || {}
   const metadataProfile = metadata.profile || {}
 
-  const role = normalizeOptionalString(existingProfile?.role)
-    || normalizeOptionalString(fallbackProfile.role)
-    || normalizeOptionalString(metadataProfile.role)
-    || normalizeOptionalString(metadata.role)
-    || 'cliente'
+  const role = normalizeProfileRole(
+    normalizeOptionalString(existingProfile?.role)
+      || normalizeOptionalString(fallbackProfile.role)
+      || normalizeOptionalString(metadataProfile.role)
+      || normalizeOptionalString(metadata.role)
+      || 'cliente'
+  )
 
   return {
     id: user.id,
     role,
+    tipo_user: normalizeBoardSportsType(
+      normalizeOptionalString(existingProfile?.tipo_user)
+        || normalizeOptionalString(fallbackProfile.tipo_user)
+        || normalizeOptionalString(metadataProfile.tipo_user)
+        || normalizeOptionalString(metadata.tipo_user)
+        || 'principiante'
+    ),
+    xp_total: Number(existingProfile?.xp_total ?? fallbackProfile.xp_total ?? metadataProfile.xp_total ?? metadata.xp_total ?? 0),
+    nivel_xp: Number(existingProfile?.nivel_xp ?? fallbackProfile.nivel_xp ?? metadataProfile.nivel_xp ?? metadata.nivel_xp ?? 1),
     nome: normalizeOptionalString(existingProfile?.nome)
       || normalizeOptionalString(fallbackProfile.nome)
       || normalizeOptionalString(metadataProfile.nome)
@@ -177,11 +229,22 @@ export async function garantirPerfilUtilizador(user = null, fallbackProfile = {}
 
     const payload = buildProfilePayload(currentUser, existingProfile, fallbackProfile)
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('profiles')
       .upsert(payload, { onConflict: 'id' })
       .select('*')
       .single()
+
+    if (error && isMissingProfileXpColumn(error)) {
+      const retry = await supabase
+        .from('profiles')
+        .upsert(getLegacyProfilePayload(payload), { onConflict: 'id' })
+        .select('*')
+        .single()
+
+      data = retry.data
+      error = retry.error
+    }
 
     if (error) throw error
     return data
@@ -251,13 +314,32 @@ export async function fazerLogin(email, password) {
 
     return { sucesso: true, data }
   } catch (error) {
-    return { sucesso: false, erro: error.message }
+    const rawMessage = error.message || ''
+    const normalizedMessage = rawMessage.toLowerCase()
+
+    if (normalizedMessage.includes('email not confirmed')) {
+      return {
+        sucesso: false,
+        codigo: 'email_not_confirmed',
+        erro: 'Tens de confirmar o email antes de entrar. Enviei novamente o link de confirmacao.'
+      }
+    }
+
+    if (normalizedMessage.includes('invalid login credentials')) {
+      return {
+        sucesso: false,
+        codigo: 'invalid_credentials',
+        erro: 'Email ou palavra-passe incorretos.'
+      }
+    }
+
+    return { sucesso: false, erro: rawMessage || 'Nao foi possivel iniciar sessao.' }
   }
 }
 
-export async function fazerRegistro(email, password, role, dadosAdicionais = {}) {
+export async function fazerRegistro(email, password, tipoUser, dadosAdicionais = {}) {
   try {
-    const profileDraft = buildProfileDraft(role, dadosAdicionais, email)
+    const profileDraft = buildProfileDraft(tipoUser, dadosAdicionais, email)
 
     const { data, error: authError } = await supabase.auth.signUp({
       email,
@@ -266,6 +348,9 @@ export async function fazerRegistro(email, password, role, dadosAdicionais = {})
         emailRedirectTo: buildAuthRedirectUrl('/verify-email.html'),
         data: {
           role: profileDraft.role,
+          tipo_user: profileDraft.tipo_user,
+          xp_total: profileDraft.xp_total,
+          nivel_xp: profileDraft.nivel_xp,
           nome: profileDraft.nome,
           telefone: profileDraft.telefone,
           localidade: profileDraft.localidade,
@@ -297,16 +382,30 @@ export async function fazerRegistro(email, password, role, dadosAdicionais = {})
 
 export async function pedirRecuperacaoPassword(email) {
   try {
+    const redirectTo = obterUrlRecuperacaoPassword()
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: buildAuthRedirectUrl('/reset-password.html')
+      redirectTo
     })
 
     if (error) throw error
 
     guardarEmailRecuperacaoPendente(email)
-    return { sucesso: true }
+    return { sucesso: true, redirectTo }
   } catch (error) {
-    return { sucesso: false, erro: error.message }
+    const rawMessage = error.message || ''
+    const normalizedMessage = rawMessage.toLowerCase()
+
+    if (normalizedMessage.includes('redirect') || normalizedMessage.includes('not allowed')) {
+      return {
+        sucesso: false,
+        codigo: 'redirect_not_allowed',
+        redirectTo: obterUrlRecuperacaoPassword(),
+        erro: `O Supabase ainda nao permite o URL de recuperacao: ${obterUrlRecuperacaoPassword()}`
+      }
+    }
+
+    return { sucesso: false, erro: rawMessage || 'Nao foi possivel enviar o email de recuperacao.' }
   }
 }
 

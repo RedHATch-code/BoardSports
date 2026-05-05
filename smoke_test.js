@@ -11,19 +11,23 @@ const checks = [
   },
   {
     path: '/perfil.html',
-    markers: ['id="profile-form"', 'id="orders-list"', 'id="registrations-list"']
+    markers: ['id="publications-list"', 'id="followers-list"', 'id="message-form"']
+  },
+  {
+    path: '/configuracao.html',
+    markers: ['id="profile-form"', 'id="password-form"', 'id="avatar-image"']
   },
   {
     path: '/mapa.html',
-    markers: ['id="globe-canvas"', 'id="map"']
+    markers: ['id="map"', 'id="spots-container"', 'id="form-video"']
   },
   {
-    path: '/empresa.html',
-    markers: ['id="form-produto"', 'id="produtos-empresa"', 'id="btn-guardar-perfil"']
+    path: '/videos.html',
+    markers: ['id="videos-grid"', 'id="videos-search"', 'id="videos-modalidade-filter"']
   },
   {
-    path: '/produtos.html',
-    markers: ['id="cart-items"', 'id="checkout-form"', 'id="review-form"']
+    path: '/leaderboard.html',
+    markers: ['id="leaderboard-list"', 'id="leaderboard-filter"', 'id="xp-levels-grid"']
   },
   {
     path: '/moderacao.html',

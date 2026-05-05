@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Videos dos Spots - BoardSports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/videos-page.css">
+</head>
+<body class="videos-page">
+
+<main class="videos-shell">
+  <section class="videos-hero">
+    <div class="videos-hero-copy">
+      <span class="videos-kicker">Galeria BoardSports</span>
+      <h1>Videos publicados nos spots da comunidade.</h1>
+      <p>Esta pagina junta os videos que ja foram publicados e mostra em que spot aparecem, com ligacao direta ao mapa para voltar ao local certo.</p>
+    </div>
+
+    <div class="videos-stats">
+      <article class="videos-stat-card">
+        <strong id="videos-total-count">0</strong>
+        <span>Videos visiveis</span>
+      </article>
+      <article class="videos-stat-card">
+        <strong id="videos-total-spots">0</strong>
+        <span>Spots com videos</span>
+      </article>
+    </div>
+  </section>
+
+  <section class="videos-toolbar">
+    <label class="videos-field">
+      <span>Procurar</span>
+      <input type="search" id="videos-search" placeholder="Spot, legenda ou autor">
+    </label>
+
+    <label class="videos-field">
+      <span>Modalidade</span>
+      <select id="videos-modalidade-filter">
+        <option value="all">Todas as modalidades</option>
+      </select>
+    </label>
+  </section>
+
+  <section class="videos-grid" id="videos-grid" aria-live="polite">
+    <article class="videos-empty-card">
+      <p>A carregar videos...</p>
+    </article>
+  </section>
+</main>
+
+<script type="module" src="js/videos_page.js"></script>
+<script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
+</body>
+</html>

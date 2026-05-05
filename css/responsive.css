@@ -32,7 +32,7 @@
 
 .navbar-toggle:hover {
   transform: scale(1.1);
-  color: #ff8c00;
+  color: var(--brand-orange);
 }
 
 .navbar-toggle.active {
@@ -132,7 +132,7 @@
 
   .navbar-menu a:hover {
     padding-left: 20px;
-    background: rgba(255, 140, 0, 0.1);
+    background: rgba(214, 109, 36, 0.12);
   }
 
   .navbar-user {
@@ -544,7 +544,7 @@
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #ff8c00;
+    background: var(--brand-orange);
   }
 }
 
@@ -560,3 +560,369 @@
     font-size: 16px !important;
   }
 }
+
+/* ============================================================
+   DEVICE-SPECIFIC EXPERIENCE LAYER
+   Desktop keeps the side dock. Tablet becomes a top-bar layout.
+   Mobile becomes an app-style bottom navigation layout.
+   ============================================================ */
+
+:root {
+  --content-max: 1240px;
+  --device-gap: 22px;
+  --device-pad: 24px;
+}
+
+main,
+.profile-shell,
+.map-page-shell,
+.videos-shell,
+.modalidades-shell,
+.auth-container {
+  min-width: 0;
+}
+
+.hero-shell,
+.map-page-hero,
+.map-toolbar,
+.map-panel,
+.spots-panel,
+.videos-hero,
+.videos-toolbar,
+.videos-card,
+.profile-overview-hero,
+.profile-panel,
+.moderation-hero,
+.moderation-panel,
+.auth-card,
+.modalidades-hero,
+.modalidade-card {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  min-width: 0;
+}
+
+@media (min-width: 769px) and (max-width: 1180px) {
+  :root {
+    --device-gap: 18px;
+    --device-pad: 22px;
+  }
+
+  .landing-main,
+  .profile-shell,
+  .map-page-shell,
+  .videos-shell,
+  .moderation-shell {
+    width: min(100% - 32px, 980px);
+    padding-top: 28px;
+    padding-bottom: 54px;
+  }
+
+  .modalidades-shell {
+    width: min(100% - 32px, 980px);
+    margin-top: 28px;
+    margin-bottom: 54px;
+  }
+
+  .hero-shell,
+  .map-page-hero,
+  .videos-hero,
+  .profile-overview-hero,
+  .moderation-hero,
+  .modalidades-hero {
+    border-radius: 26px;
+    padding: var(--device-pad);
+  }
+
+  .map-page-hero,
+  .videos-hero,
+  .profile-overview-hero,
+  .profile-overview-grid,
+  .moderation-hero {
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+  }
+
+  .profile-overview-head {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
+
+  .profile-overview-avatar {
+    width: 112px;
+    height: 112px;
+  }
+
+  .profile-stat-grid,
+  .map-page-stats,
+  .videos-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .map-toolbar,
+  .videos-toolbar {
+    position: sticky;
+    top: 92px;
+    z-index: 100;
+  }
+
+  .videos-grid,
+  .spots-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #map {
+    height: 560px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --device-gap: 14px;
+    --device-pad: 16px;
+  }
+
+  body {
+    background:
+      linear-gradient(180deg, #101923 0%, #111923 58%, #0f131a 100%);
+  }
+
+  .landing-main,
+  .profile-shell,
+  .map-page-shell,
+  .videos-shell,
+  .moderation-shell {
+    width: min(100% - 14px, 480px);
+    padding-top: 12px;
+    padding-bottom: calc(22px + env(safe-area-inset-bottom));
+    gap: var(--device-gap);
+  }
+
+  .modalidades-shell {
+    width: min(100% - 14px, 480px);
+    margin-top: 12px;
+    margin-bottom: calc(22px + env(safe-area-inset-bottom));
+  }
+
+  .hero-shell,
+  .map-page-hero,
+  .map-toolbar,
+  .map-panel,
+  .spots-panel,
+  .videos-hero,
+  .videos-toolbar,
+  .videos-card,
+  .profile-overview-hero,
+  .profile-panel,
+  .moderation-hero,
+  .moderation-panel,
+  .auth-card,
+  .modalidades-hero {
+    border-radius: 20px;
+    padding: var(--device-pad);
+  }
+
+  .landing-header,
+  .map-section-head,
+  .profile-section-head,
+  .moderation-panel-head,
+  .videos-card-top,
+  .spot-card-top,
+  .moderation-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .landing-header-nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .landing-header-nav a {
+    justify-content: center;
+    text-align: center;
+    padding: 10px 8px;
+  }
+
+  .brand-visual {
+    grid-template-columns: 54px minmax(0, 1fr);
+    column-gap: 12px;
+    width: 100%;
+  }
+
+  .brand-logo {
+    height: 54px;
+  }
+
+  .brand-mark {
+    align-self: end;
+    letter-spacing: 0.12em;
+  }
+
+  .brand-name {
+    grid-column: 2;
+    font-size: 1.65rem;
+  }
+
+  .hero-copy h1,
+  .map-page-hero h1,
+  .videos-hero h1,
+  .profile-overview-copy h1,
+  .profile-hero h1,
+  .moderation-hero h1,
+  .modalidades-title {
+    font-size: 2.45rem !important;
+    line-height: 0.98;
+    letter-spacing: 0;
+    max-width: none;
+  }
+
+  .feature-card h2,
+  .issue-card h3,
+  .network-showcase-intro h2 {
+    font-size: 1.65rem;
+    letter-spacing: 0;
+  }
+
+  .map-page-hero,
+  .videos-hero,
+  .profile-overview-hero,
+  .profile-overview-grid,
+  .profile-grid,
+  .moderation-hero,
+  .videos-toolbar,
+  .map-form-grid,
+  .profile-form-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .map-page-stats,
+  .videos-stats,
+  .profile-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .map-stat-card,
+  .videos-stat-card,
+  .profile-stat-card,
+  .moderation-stat-card {
+    padding: 14px;
+  }
+
+  .map-stat-card strong,
+  .videos-stat-card strong,
+  .profile-stat-card strong {
+    font-size: 1.55rem;
+  }
+
+  .map-toolbar,
+  .videos-toolbar {
+    position: sticky;
+    top: 8px;
+    z-index: 300;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+  }
+
+  .map-toolbar-actions,
+  .map-form-actions,
+  .videos-card-actions,
+  .profile-overview-actions,
+  .profile-photo-actions,
+  .moderation-toolbar,
+  .moderation-actions,
+  .modalidade-modal-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .map-toolbar-actions button,
+  .map-form-actions button,
+  .videos-card-actions a,
+  .profile-overview-actions a,
+  .profile-primary-button,
+  .profile-secondary-button,
+  .moderation-actions button,
+  .modalidade-modal-actions a,
+  .modalidade-modal-actions button {
+    width: 100%;
+  }
+
+  .videos-grid,
+  .spots-grid,
+  .profile-publication-list,
+  .profile-follower-list,
+  .profile-message-list,
+  .moderation-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .videos-card,
+  .spot-card,
+  .profile-publication-card,
+  .profile-follower-card,
+  .profile-message-card,
+  .moderation-card {
+    border-radius: 18px;
+  }
+
+  #map {
+    height: min(62vh, 420px) !important;
+    min-height: 320px;
+    border-radius: 18px;
+  }
+
+  .map-modal {
+    align-items: end;
+    padding: 10px;
+  }
+
+  .map-modal-card {
+    width: 100%;
+    max-height: 88vh;
+    overflow: auto;
+    border-radius: 22px;
+  }
+
+  .auth-container {
+    width: min(100% - 14px, 460px);
+    padding: 18px 0 calc(22px + env(safe-area-inset-bottom));
+  }
+
+  .auth-header h1 {
+    font-size: 2.25rem !important;
+    letter-spacing: 0;
+  }
+
+  .auth-card::before {
+    letter-spacing: 0.1em;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-copy h1,
+  .map-page-hero h1,
+  .videos-hero h1,
+  .profile-overview-copy h1,
+  .profile-hero h1,
+  .moderation-hero h1,
+  .modalidades-title {
+    font-size: 2.08rem !important;
+  }
+
+  .map-page-stats,
+  .videos-stats,
+  .profile-stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

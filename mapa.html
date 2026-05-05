@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
@@ -6,1206 +6,168 @@
   <title>Mapa de Spots - BoardSports</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/responsive.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
   <link rel="stylesheet" href="css/floating-dock.css">
-  <style>
-    body {
-      background:
-        radial-gradient(circle at top left, rgba(255, 140, 0, 0.12), transparent 22%),
-        radial-gradient(circle at top right, rgba(77, 166, 255, 0.1), transparent 26%),
-        linear-gradient(180deg, #101317 0%, #161b24 100%);
-      color: #ededed;
-      font-family: var(--ui-font-sans, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
-    }
-
-    .mapa-container {
-      max-width: 1360px;
-      margin: 0 auto;
-      padding: 104px 16px 40px;
-    }
-
-    .mapa-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 18px;
-      padding: 24px;
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background:
-        radial-gradient(circle at top right, rgba(77, 166, 255, 0.08), transparent 30%),
-        radial-gradient(circle at bottom left, rgba(255, 140, 0, 0.1), transparent 32%),
-        rgba(18, 22, 30, 0.9);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
-    }
-
-    .mapa-heading {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-width: 760px;
-    }
-
-    .mapa-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      align-self: flex-start;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #dff2ff;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .mapa-eyebrow::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #ff8c00;
-      box-shadow: 0 0 14px rgba(255, 140, 0, 0.6);
-    }
-
-    .mapa-header h1 {
-      color: #ff8c00;
-      margin: 0;
-      font-size: clamp(34px, 4vw, 46px);
-      line-height: 0.95;
-      letter-spacing: -0.03em;
-    }
-
-    .mapa-heading p {
-      margin: 0;
-      max-width: 64ch;
-      color: #a9afbb;
-      line-height: 1.7;
-    }
-
-    .controls {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .controls select {
-      min-height: 46px;
-      padding: 10px 15px;
-      background-color: rgba(255, 255, 255, 0.04);
-      color: #ededed;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 14px;
-      cursor: pointer;
-      font-size: 14px;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    }
-
-    .controls button {
-      min-height: 46px;
-      padding: 10px 18px;
-      background-color: #ff8c00;
-      color: white;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
-    }
-
-    .controls button:hover {
-      background-color: #e67e00;
-      transform: translateY(-1px);
-    }
-
-    .controls button.btn-evento {
-      background-color: #00b09b;
-    }
-
-    .controls button.btn-evento:hover {
-      background-color: #009e8a;
-    }
-
-    .controls button.btn-location {
-      background-color: #2f333d;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: none;
-    }
-
-    .controls button.btn-location:hover {
-      background-color: #3a404d;
-      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
-    }
-
-    .controls button.btn-location.is-ready {
-      border-color: rgba(77, 166, 255, 0.45);
-      box-shadow: 0 0 0 1px rgba(77, 166, 255, 0.18);
-    }
-
-    .globe-section {
-      display: grid;
-      grid-template-columns: minmax(320px, 0.95fr) minmax(420px, 1.25fr);
-      gap: 24px;
-      margin-bottom: 30px;
-      padding: 22px;
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at top right, rgba(77, 166, 255, 0.12), transparent 32%),
-        radial-gradient(circle at bottom left, rgba(255, 140, 0, 0.1), transparent 38%),
-        linear-gradient(180deg, rgba(19, 24, 32, 0.96), rgba(12, 16, 22, 0.98));
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
-      overflow: hidden;
-    }
-
-    .globe-copy {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .globe-kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      align-self: flex-start;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #dff2ff;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .globe-kicker::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #4da6ff;
-      box-shadow: 0 0 16px rgba(77, 166, 255, 0.6);
-    }
-
-    .globe-copy h2 {
-      margin: 0;
-      font-size: clamp(28px, 4vw, 42px);
-      line-height: 0.95;
-      color: #f6f7fb;
-      max-width: 12ch;
-    }
-
-    .globe-copy p {
-      margin: 0;
-      color: #a8acb7;
-      line-height: 1.7;
-    }
-
-    .globe-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-    }
-
-    .globe-stat {
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .globe-stat strong {
-      display: block;
-      color: #ffffff;
-      font-size: 22px;
-      margin-bottom: 6px;
-    }
-
-    .globe-stat span {
-      color: #9ca3b1;
-      font-size: 13px;
-    }
-
-    .globe-active-card {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      padding: 18px;
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.025));
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .globe-active-top {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .globe-active-avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      object-fit: cover;
-      background: linear-gradient(135deg, #3c4656, #1a1a1b);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      flex-shrink: 0;
-    }
-
-    .globe-active-text strong {
-      display: block;
-      font-size: 18px;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .globe-active-text span {
-      display: block;
-      color: #90c7ff;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-
-    .globe-active-text small {
-      color: #8e93a1;
-      font-size: 12px;
-    }
-
-    .globe-active-note {
-      color: #c2c6cf;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .globe-stage {
-      position: relative;
-      min-height: 440px;
-      border-radius: 20px;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at center, rgba(113, 164, 228, 0.1), transparent 42%),
-        radial-gradient(circle at top center, rgba(255, 255, 255, 0.045), transparent 28%),
-        linear-gradient(180deg, rgba(9, 13, 20, 0.94), rgba(6, 8, 13, 0.99));
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    }
-
-    .globe-stage::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 26%),
-        repeating-linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.028) 0,
-          rgba(255, 255, 255, 0.028) 1px,
-          transparent 1px,
-          transparent 16px
-        );
-      pointer-events: none;
-    }
-
-    #globe-canvas {
-      width: 100%;
-      height: 100%;
-      min-height: 440px;
-      display: block;
-      cursor: grab;
-    }
-
-    .globe-stage-footer {
-      position: absolute;
-      left: 18px;
-      right: 18px;
-      bottom: 18px;
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      align-items: flex-end;
-      pointer-events: none;
-    }
-
-    .globe-stage-chip,
-    .globe-stage-hint {
-      padding: 10px 14px;
-      border-radius: 14px;
-      background: rgba(8, 10, 16, 0.58);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(8px);
-    }
-
-    .globe-stage-chip strong,
-    .globe-stage-hint strong {
-      display: block;
-      color: #ffffff;
-      margin-bottom: 4px;
-      font-size: 13px;
-    }
-
-    .globe-stage-chip span,
-    .globe-stage-hint span {
-      color: #aeb4c1;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .globe-stage-chip {
-      max-width: 210px;
-    }
-
-    .globe-stage-hint {
-      max-width: 460px;
-    }
-
-    .map-panel,
-    .spots-panel {
-      margin-bottom: 30px;
-      padding: 22px;
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at top right, rgba(77, 166, 255, 0.08), transparent 30%),
-        linear-gradient(180deg, rgba(18, 22, 30, 0.96), rgba(12, 15, 20, 0.98));
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
-    }
-
-    .section-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .section-heading h2 {
-      margin: 0;
-      color: #ff8c00;
-      font-size: 26px;
-    }
-
-    .section-heading p {
-      margin: 0;
-      color: #9da4b1;
-      line-height: 1.6;
-      max-width: 62ch;
-    }
-
-    @media (max-width: 980px) {
-      .globe-section {
-        grid-template-columns: 1fr;
-      }
-
-      .mapa-header {
-        align-items: flex-start;
-      }
-
-      .controls {
-        justify-content: flex-start;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .globe-section {
-        padding: 18px;
-        border-radius: 20px;
-      }
-
-      #globe-canvas,
-      .globe-stage {
-        min-height: 360px;
-      }
-
-      .globe-stage-footer {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .map-panel,
-      .spots-panel {
-        padding: 18px;
-        border-radius: 20px;
-      }
-
-      .controls {
-        width: 100%;
-      }
-
-      .controls select,
-      .controls button {
-        width: 100%;
-      }
-    }
-
-    #map {
-      height: 600px;
-      border-radius: 18px;
-      margin-bottom: 0;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
-    }
-
-    .checkpoint-icon {
-      background: none;
-      border: none;
-    }
-
-    .checkpoint-marker {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: #ff8c00;
-      color: #111;
-      font-weight: bold;
-      font-size: 12px;
-      line-height: 26px;
-      text-align: center;
-      border: 2px solid #fff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-    }
-
-    .event-marker {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      background: #00d1b2;
-      color: #111;
-      font-weight: bold;
-      font-size: 12px;
-      line-height: 28px;
-      text-align: center;
-      border: 2px solid #fff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-    }
-
-    .user-location-icon {
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-    }
-
-    .user-location-dot {
-      position: relative;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #4da6ff;
-      border: 2px solid #fff;
-      box-shadow: 0 0 0 5px rgba(77, 166, 255, 0.18);
-    }
-
-    .user-location-dot::after {
-      content: "";
-      position: absolute;
-      inset: -7px;
-      border-radius: 50%;
-      border: 2px solid rgba(77, 166, 255, 0.45);
-      animation: user-location-pulse 1.9s ease-out infinite;
-    }
-
-    @keyframes user-location-pulse {
-      0% {
-        transform: scale(0.65);
-        opacity: 0.95;
-      }
-
-      75% {
-        transform: scale(1.35);
-        opacity: 0;
-      }
-
-      100% {
-        transform: scale(1.45);
-        opacity: 0;
-      }
-    }
-
-    .spots-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 18px;
-      align-items: start;
-      padding-top: 8px;
-    }
-
-    .spot-card {
-      position: relative;
-      display: block;
-      cursor: pointer;
-      perspective: 700px;
-      padding-bottom: 52px;
-      --pin-accent: #ff8c00;
-      --pin-accent-soft: rgba(255, 140, 0, 0.2);
-      --pin-rotate-x: 0deg;
-      --pin-rotate-y: 0deg;
-      --pin-translate-y: 0px;
-    }
-
-    .spot-card-shell {
-      position: relative;
-      transform-style: preserve-3d;
-      transform:
-        rotateX(var(--pin-rotate-x))
-        rotateY(var(--pin-rotate-y))
-        translateY(var(--pin-translate-y));
-      transition: transform 0.18s ease, filter 0.24s ease;
-      filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.24));
-    }
-
-    .spot-card:hover .spot-card-shell {
-      --pin-translate-y: -4px;
-      filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.28));
-    }
-
-    .spot-card-surface {
-      position: relative;
-      overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(24, 28, 36, 0.98), rgba(15, 18, 24, 1)),
-        #2a2a2b;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 18px 18px 20px;
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.04),
-        0 10px 20px rgba(0, 0, 0, 0.18);
-      transform: translateZ(42px);
-    }
-
-    .spot-card-surface::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top right, rgba(255, 140, 0, 0.12), transparent 32%),
-        linear-gradient(140deg, rgba(255, 255, 255, 0.03), transparent 35%);
-      pointer-events: none;
-    }
-
-    .spot-card-titlebar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .spot-card-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #dcefff;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .spot-card-link::before {
-      content: "";
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--pin-accent);
-      box-shadow: 0 0 8px var(--pin-accent);
-    }
-
-    .spot-card-preview {
-      position: relative;
-      min-height: 120px;
-      border-radius: 16px;
-      margin-bottom: 16px;
-      padding: 16px;
-      background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), transparent 28%),
-        linear-gradient(135deg, var(--pin-accent), #15202c 82%);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-    }
-
-    .spot-card-preview::after {
-      content: "";
-      position: absolute;
-      inset: auto -28px -34px auto;
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      filter: blur(2px);
-    }
-
-    .spot-preview-icon {
-      font-size: 30px;
-      line-height: 1;
-      margin-bottom: 28px;
-      display: block;
-    }
-
-    .spot-preview-meta {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.86);
-    }
-
-    .spot-preview-meta strong {
-      display: block;
-      color: #fff;
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-
-    .spot-card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .checkpoint-badge {
-      background-color: var(--pin-accent);
-      color: #111;
-      font-weight: bold;
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px var(--pin-accent-soft);
-      white-space: nowrap;
-    }
-
-    .spot-card h3 {
-      color: var(--pin-accent);
-      margin: 0 0 10px 0;
-      font-size: 18px;
-    }
-
-    .spot-card p {
-      color: #aaa;
-      margin: 5px 0;
-      font-size: 14px;
-    }
-
-    .spot-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 15px;
-      justify-content: flex-end;
-    }
-
-    .spot-actions button {
-      padding: 6px 12px;
-      font-size: 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .spot-card-stem {
-      position: absolute;
-      left: 50%;
-      bottom: 16px;
-      width: 2px;
-      height: 44px;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, var(--pin-accent) 0%, rgba(255, 255, 255, 0.75) 24%, rgba(255, 255, 255, 0.04) 100%);
-      box-shadow: 0 0 10px rgba(255, 140, 0, 0.16);
-      opacity: 0.74;
-    }
-
-    .spot-card-node {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      width: 14px;
-      height: 14px;
-      transform: translateX(-50%);
-      border-radius: 50%;
-      background: radial-gradient(circle, #ffffff 0%, var(--pin-accent) 58%, rgba(255, 255, 255, 0.12) 100%);
-      box-shadow:
-        0 0 10px rgba(255, 140, 0, 0.3),
-        0 0 22px rgba(255, 140, 0, 0.14);
-      z-index: 1;
-    }
-
-    .spot-card-pulse {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      width: 70px;
-      height: 22px;
-      transform: translateX(-50%);
-      border-radius: 999px;
-      border: 1px solid var(--pin-accent-soft);
-      background: radial-gradient(circle, var(--pin-accent-soft), transparent 70%);
-      opacity: 0.55;
-      animation: spotPinPulse 2.6s ease-out infinite;
-    }
-
-    .spot-card-pulse::after {
-      content: "";
-      position: absolute;
-      inset: 6px 18px;
-      border-radius: inherit;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      opacity: 0.55;
-    }
-
-    @keyframes spotPinPulse {
-      0% {
-        transform: translateX(-50%) scale(0.72);
-        opacity: 0.85;
-      }
-      70% {
-        transform: translateX(-50%) scale(1.08);
-        opacity: 0.15;
-      }
-      100% {
-        transform: translateX(-50%) scale(1.14);
-        opacity: 0;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .spots-container {
-        gap: 22px;
-      }
-
-      .spot-card {
-        padding-bottom: 64px;
-      }
-
-      .spot-card-preview {
-        min-height: 108px;
-      }
-    }
-
-    .btn-edit {
-      background-color: #ff8c00;
-      color: white;
-    }
-
-    .btn-edit:hover {
-      background-color: #e67e00;
-    }
-
-    .btn-delete {
-      background-color: #d9534f;
-      color: white;
-    }
-
-    .btn-delete:hover {
-      background-color: #c9302c;
-    }
-
-    /* MODAL */
-    .modal-spot {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-content {
-      background: linear-gradient(180deg, rgba(20, 24, 31, 0.98), rgba(13, 16, 22, 0.99));
-      padding: 26px;
-      border-radius: 20px;
-      max-width: 500px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .modal-header h2 {
-      color: #ff8c00;
-      margin: 0;
-    }
-
-    .close-modal {
-      color: #aaa;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-    }
-
-    .close-modal:hover {
-      color: #ededed;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      color: #ededed;
-      font-weight: 500;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 12px 14px;
-      background-color: rgba(255, 255, 255, 0.04);
-      color: #ededed;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 14px;
-      font-family: inherit;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #ff8c00;
-      box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.14);
-    }
-
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .checkbox-group input[type="checkbox"] {
-      width: auto;
-      cursor: pointer;
-    }
-
-    .form-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .form-buttons button {
-      flex: 1;
-      padding: 12px;
-      font-weight: bold;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 14px;
-    }
-
-    .btn-submit {
-      background-color: #ff8c00;
-      color: white;
-    }
-
-    .btn-submit:hover {
-      background-color: #e67e00;
-    }
-
-    .btn-cancel {
-      background-color: #555;
-      color: white;
-    }
-
-    .btn-cancel:hover {
-      background-color: #666;
-    }
-
-    #visibility-msg {
-      background:
-        linear-gradient(180deg, rgba(255, 140, 0, 0.13), rgba(255, 140, 0, 0.08));
-      border-left: 4px solid #ff8c00;
-      padding: 14px 16px;
-      border-radius: 14px;
-      margin-bottom: 18px;
-      color: #ff8c00;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .no-spots {
-      text-align: center;
-      padding: 40px 20px;
-      color: #888;
-    }
-
-    .no-spots p {
-      font-size: 16px;
-      margin: 0;
-    }
-  </style>
+  <link rel="stylesheet" href="css/map-page.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 </head>
-<body>
+<body class="map-page">
 
-<div class="mapa-container">
-  <div class="mapa-header">
-    <div class="mapa-heading">
-      <span class="mapa-eyebrow">Exploracao em direto</span>
-      <h1>Mapa de Spots</h1>
-      <p>Descobre spots, eventos e a tua localizacao atual num unico fluxo, com leitura global no globo e detalhe imediato no mapa.</p>
+<main class="map-page-shell">
+  <section class="map-page-hero">
+    <div class="map-page-copy">
+      <span class="map-page-kicker">Mapa principal</span>
+      <h1>Explora spots e publica videos no local certo.</h1>
+      <p>Cada spot pode ser aberto diretamente no mapa e qualquer utilizador autenticado pode publicar um video nesse spot sem sair desta pagina.</p>
     </div>
-    <div class="controls">
+
+    <div class="map-page-stats">
+      <article class="map-stat-card">
+        <strong id="map-total-spots">0</strong>
+        <span>Spots visiveis</span>
+      </article>
+      <article class="map-stat-card">
+        <strong id="map-total-videos">0</strong>
+        <span>Videos ligados aos spots</span>
+      </article>
+    </div>
+  </section>
+
+  <section class="map-toolbar">
+    <label class="map-field">
+      <span>Modalidade</span>
       <select id="filter-modalidade">
-        <option value="all">Todas as Modalidades</option>
+        <option value="all">Todas as modalidades</option>
         <option value="1">Surf</option>
         <option value="2">Skate</option>
         <option value="3">Skimboard</option>
         <option value="4">Snowboard</option>
         <option value="5">Sandboard</option>
       </select>
-      <button id="btn-my-location" class="btn-location" type="button">📍 Minha localização</button>
-      <button id="btn-add-spot">➕ Novo Spot</button>
-      <button id="btn-add-event" class="btn-evento">📅 Novo Evento</button>
-    </div>
-  </div>
+    </label>
 
-  <div id="visibility-msg" style="display: none;"></div>
+    <label class="map-field">
+      <span>Categoria</span>
+      <select id="filter-categoria" disabled>
+        <option value="all">Todas as categorias</option>
+      </select>
+    </label>
 
-  <section class="globe-section">
-    <div class="globe-copy">
-      <span class="globe-kicker">Globo 3D</span>
-      <h2>Le o globo antes de entrares no mapa.</h2>
-      <p>
-        Esta vista transforma spots e eventos em marcadores globais e mistura leitura territorial com rotas animadas. Quando ainda nao ha dados reais, o globo usa um conjunto demo para a experiencia nunca ficar vazia.
-      </p>
-
-      <div class="globe-stats">
-        <div class="globe-stat">
-          <strong id="globe-marker-count">0</strong>
-          <span>Marcadores ativos</span>
-        </div>
-        <div class="globe-stat">
-          <strong id="globe-source-label">Demo</strong>
-          <span>Fonte atual</span>
-        </div>
-        <div class="globe-stat">
-          <strong id="globe-route-count">0</strong>
-          <span>Rotas ativas</span>
-        </div>
-      </div>
-
-      <div class="globe-active-card">
-        <div class="globe-active-top">
-          <img id="globe-active-avatar" class="globe-active-avatar" alt="Marcador ativo">
-          <div class="globe-active-text">
-            <strong id="globe-active-label">A preparar o globo</strong>
-            <span id="globe-active-type">Sem marcador ativo</span>
-            <small id="globe-active-meta">Passa o cursor sobre o globo</small>
-          </div>
-        </div>
-        <p id="globe-active-note" class="globe-active-note">
-          Os marcadores, continentes e rotas vao aparecer aqui com detalhe. Ao passar por um continente, o globo mostra quantos spots existem nessa regiao.
-        </p>
-      </div>
-    </div>
-
-    <div class="globe-stage">
-      <canvas id="globe-canvas" aria-label="Globo 3D com marcadores"></canvas>
-      <div class="globe-stage-footer">
-        <div class="globe-stage-chip">
-          <strong id="globe-hover-label">Exploracao global</strong>
-          <span id="globe-hover-subtitle">Passa o cursor para ver marcadores e continentes. Clica para focar.</span>
-        </div>
-        <div class="globe-stage-hint">
-          <strong>Interacao</strong>
-          <span>Arrasta para rodar. Passar o cursor num continente mostra quantos spots existem la. As rotas animadas correm por cima da esfera e os marcadores continuam clicaveis.</span>
-        </div>
-      </div>
+    <div class="map-toolbar-actions">
+      <button id="btn-my-location" class="map-secondary-button" type="button">Minha localizacao</button>
+      <button id="btn-add-spot" class="map-primary-button" type="button">Novo spot</button>
     </div>
   </section>
 
   <section class="map-panel">
-    <div class="section-heading">
+    <div class="map-section-head">
       <div>
-        <h2>Mapa principal</h2>
-        <p>Os checkpoints dos spots e eventos aparecem aqui com foco rapido. O teu ponto atual tambem entra nos limites do mapa quando a geolocalizacao esta disponivel.</p>
+        <h2>Mapa</h2>
+        <p>Clica num spot para abrir detalhes ou usa "Novo spot" e depois escolhe um ponto no mapa. Para publicar um video, abre um spot existente e usa o botao dedicado.</p>
       </div>
     </div>
     <div id="map"></div>
   </section>
 
-  <section id="spots-list" class="spots-panel">
-    <div class="section-heading">
+  <section class="spots-panel">
+    <div class="map-section-head">
       <div>
         <h2>Spots encontrados</h2>
-        <p>Seleciona um card para focar o ponto correspondente no mapa. Os teus spots continuam editaveis diretamente a partir desta lista.</p>
+        <p>Os cards mostram o essencial e deixam-te abrir o ponto no mapa, editar o teu spot ou publicar um novo video diretamente nesse local.</p>
       </div>
     </div>
-    <div id="spots-container" class="spots-container"></div>
+    <div id="spots-container" class="spots-grid">
+      <article class="map-empty-card">
+        <p>A carregar spots...</p>
+      </article>
+    </div>
   </section>
-</div>
+</main>
 
-<!-- MODAL PARA CRIAR/EDITAR SPOTS -->
-<div id="modal-spot" class="modal-spot">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="modal-title">Criar Novo Spot</h2>
-      <button class="close-modal">&times;</button>
+<div id="modal-spot" class="map-modal" hidden>
+  <div class="map-modal-card">
+    <div class="map-modal-head">
+      <h2 id="spot-modal-title">Novo spot</h2>
+      <button type="button" class="map-modal-close" data-close-spot>&times;</button>
     </div>
 
-    <form id="form-spot">
-      <div class="form-group">
-        <label for="spot-nome">Nome do Spot *</label>
+    <form id="form-spot" class="map-form">
+      <label class="map-field">
+        <span>Nome do spot</span>
         <input type="text" id="spot-nome" required placeholder="Ex: Praia da Aguda">
+      </label>
+
+      <label class="map-field">
+        <span>Descricao</span>
+        <textarea id="spot-descricao" rows="4" placeholder="O que define este spot?"></textarea>
+      </label>
+
+      <div class="map-form-grid">
+        <label class="map-field">
+          <span>Modalidade</span>
+          <select id="spot-modalidade" required>
+            <option value="">Selecionar modalidade</option>
+            <option value="1">Surf</option>
+            <option value="2">Skate</option>
+            <option value="3">Skimboard</option>
+            <option value="4">Snowboard</option>
+            <option value="5">Sandboard</option>
+          </select>
+        </label>
+
+        <label class="map-field">
+          <span>Categoria</span>
+          <select id="spot-categoria" disabled>
+            <option value="">Selecionar categoria</option>
+          </select>
+        </label>
       </div>
 
-      <div class="form-group">
-        <label for="spot-descricao">Descricao</label>
-        <textarea id="spot-descricao" placeholder="Descreva o spot..."></textarea>
+      <div class="map-form-grid">
+        <label class="map-field">
+          <span>Latitude</span>
+          <input type="number" id="spot-lat" step="0.0001" required readonly placeholder="Escolhe no mapa">
+        </label>
+
+        <label class="map-field">
+          <span>Longitude</span>
+          <input type="number" id="spot-lng" step="0.0001" required readonly placeholder="Escolhe no mapa">
+        </label>
       </div>
 
-      <div class="form-group">
-        <label for="spot-video">Video (opcional)</label>
-        <input type="url" id="spot-video" placeholder="Link do video (YouTube, Vimeo, etc.)">
-      </div>
-
-      <div class="form-group">
-        <label for="spot-modalidade">Modalidade *</label>
-        <select id="spot-modalidade" required>
-          <option value="">Selecionar Modalidade</option>
-          <option value="1">Surf</option>
-          <option value="2">Skate</option>
-          <option value="3">Skimboard</option>
-          <option value="4">Snowboard</option>
-          <option value="5">Sandboard</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="spot-categoria">Categoria</label>
-        <select id="spot-categoria" disabled>
-          <option value="">Selecionar Categoria</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="spot-lat">Latitude *</label>
-        <input type="number" id="spot-lat" step="0.0001" required readonly placeholder="Clique no mapa">
-      </div>
-
-      <div class="form-group">
-        <label for="spot-lng">Longitude *</label>
-        <input type="number" id="spot-lng" step="0.0001" required readonly placeholder="Clique no mapa">
-      </div>
-
-      <div id="public-request-group" class="form-group checkbox-group" style="display: none;">
-        <input type="checkbox" id="request-public">
-        <label for="request-public" style="margin: 0;">Solicitar publicacao como spot publico</label>
-      </div>
-
-      <div class="form-buttons">
-        <button type="submit" class="btn-submit">Guardar</button>
-        <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <div class="map-form-actions">
+        <button type="button" class="map-secondary-button" data-close-spot>Cancelar</button>
+        <button type="submit" class="map-primary-button">Guardar spot</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- MODAL PARA CRIAR EVENTO -->
-<div id="modal-event" class="modal-spot">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Criar Novo Evento</h2>
-      <button class="close-modal" id="close-event">&times;</button>
+<div id="modal-video" class="map-modal" hidden>
+  <div class="map-modal-card">
+    <div class="map-modal-head">
+      <div>
+        <span class="map-modal-kicker">Publicar video</span>
+        <h2 id="video-modal-title">Spot selecionado</h2>
+      </div>
+      <button type="button" class="map-modal-close" data-close-video>&times;</button>
     </div>
 
-    <form id="form-event">
-      <div class="form-group">
-        <label for="event-nome">Nome do Evento *</label>
-        <input type="text" id="event-nome" required placeholder="Ex: Open Surf Porto">
-      </div>
+    <form id="form-video" class="map-form">
+      <p id="video-modal-spot-copy" class="map-modal-copy">O video vai ficar ligado a este spot e passa a aparecer na galeria de videos.</p>
 
-      <div class="form-group">
-        <label for="event-descricao">Descricao</label>
-        <textarea id="event-descricao" placeholder="Descreva o evento..."></textarea>
-      </div>
+      <label class="map-field">
+        <span>URL do video</span>
+        <input type="url" id="video-url" required placeholder="https://youtube.com/...">
+      </label>
 
-      <div class="form-group">
-        <label for="event-modalidade">Modalidade *</label>
-        <select id="event-modalidade" required>
-          <option value="">Selecionar Modalidade</option>
-          <option value="1">Surf</option>
-          <option value="2">Skate</option>
-          <option value="3">Skimboard</option>
-          <option value="4">Snowboard</option>
-          <option value="5">Sandboard</option>
-        </select>
-      </div>
+      <label class="map-field">
+        <span>Legenda</span>
+        <textarea id="video-legenda" rows="4" placeholder="Adiciona uma descricao curta para este video."></textarea>
+      </label>
 
-      <div class="form-group">
-        <label for="event-data-inicio">Data Inicio *</label>
-        <input type="datetime-local" id="event-data-inicio" required>
-      </div>
-
-      <div class="form-group">
-        <label for="event-data-fim">Data Fim *</label>
-        <input type="datetime-local" id="event-data-fim" required>
-      </div>
-
-      <div class="form-group">
-        <label for="event-localidade">Localidade</label>
-        <input type="text" id="event-localidade" placeholder="Ex: Porto, Portugal">
-      </div>
-
-      <div class="form-group">
-        <label for="event-lat">Latitude *</label>
-        <input type="number" id="event-lat" step="0.0001" required readonly placeholder="Clique no mapa">
-      </div>
-
-      <div class="form-group">
-        <label for="event-lng">Longitude *</label>
-        <input type="number" id="event-lng" step="0.0001" required readonly placeholder="Clique no mapa">
-      </div>
-
-      <div class="form-buttons">
-        <button type="submit" class="btn-submit">Guardar</button>
-        <button type="button" class="btn-cancel" id="cancel-event">Cancelar</button>
+      <div class="map-form-actions">
+        <button type="button" class="map-secondary-button" data-close-video>Cancelar</button>
+        <button type="submit" class="map-primary-button">Publicar video</button>
       </div>
     </form>
   </div>
@@ -1217,4 +179,3 @@
 <script type="module" src="js/site_header.js"></script>
 </body>
 </html>
-

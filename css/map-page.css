@@ -1,0 +1,358 @@
+:root {
+  --map-bg: #101319;
+  --map-surface: rgba(23, 28, 35, 0.94);
+  --map-surface-soft: rgba(255, 255, 255, 0.04);
+  --map-border: rgba(242, 231, 214, 0.12);
+  --map-text: #f5e9d7;
+  --map-muted: #b8ad9f;
+  --map-shadow: 0 22px 52px rgba(0, 0, 0, 0.3);
+}
+
+body.map-page {
+  min-height: 100vh;
+  color: var(--map-text);
+  background:
+    radial-gradient(circle at top left, rgba(214, 109, 36, 0.11), transparent 22%),
+    radial-gradient(circle at top right, rgba(47, 158, 163, 0.12), transparent 24%),
+    linear-gradient(180deg, #101319 0%, #151b24 100%);
+}
+
+.map-page-shell {
+  width: min(1240px, calc(100vw - 28px));
+  margin: 0 auto;
+  padding: 112px 0 48px;
+  display: grid;
+  gap: 22px;
+}
+
+.map-page-hero,
+.map-toolbar,
+.map-panel,
+.spots-panel,
+.map-modal-card,
+.map-stat-card,
+.spot-card,
+.map-empty-card {
+  border: 1px solid var(--map-border);
+  background: var(--map-surface);
+  box-shadow: var(--map-shadow);
+}
+
+.map-page-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.8fr);
+  gap: 18px;
+  padding: 26px;
+  border-radius: 28px;
+}
+
+.map-page-kicker,
+.map-modal-kicker {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(214, 109, 36, 0.12);
+  color: #ffe2be;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.map-page-hero h1 {
+  margin: 12px 0 10px;
+  font-family: var(--ui-font-display);
+  font-size: clamp(2.1rem, 5vw, 3.8rem);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+}
+
+.map-page-hero p,
+.map-section-head p,
+.spot-card p,
+.map-modal-copy {
+  margin: 0;
+  color: var(--map-muted);
+  line-height: 1.7;
+}
+
+.map-page-stats {
+  display: grid;
+  gap: 14px;
+}
+
+.map-stat-card {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.map-stat-card strong {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.map-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+  flex-wrap: wrap;
+  padding: 18px;
+  border-radius: 22px;
+}
+
+.map-toolbar-actions,
+.map-form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.map-field {
+  display: grid;
+  gap: 8px;
+}
+
+.map-field span {
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e4d8c9;
+}
+
+.map-field input,
+.map-field select,
+.map-field textarea {
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--map-surface-soft);
+  color: var(--map-text);
+  padding: 12px 14px;
+  font: inherit;
+}
+
+.map-field textarea {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.map-primary-button,
+.map-secondary-button {
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 0;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.map-primary-button {
+  background: linear-gradient(135deg, #f5d7b5 0%, #d66d24 100%);
+  color: #141414;
+}
+
+.map-secondary-button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--map-text);
+}
+
+.map-panel,
+.spots-panel {
+  padding: 22px;
+  border-radius: 24px;
+}
+
+.map-section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  align-items: end;
+}
+
+.map-section-head h2 {
+  margin: 0 0 6px;
+  font-size: 1.4rem;
+}
+
+#map {
+  height: 600px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.spots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.spot-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 22px;
+}
+
+.spot-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.spot-card-tag {
+  display: inline-flex;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(214, 109, 36, 0.12);
+  color: #ffd9a6;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.spot-card h3 {
+  margin: 0;
+  font-size: 1.22rem;
+}
+
+.spot-card-meta {
+  display: grid;
+  gap: 6px;
+  color: var(--map-muted);
+  font-size: 0.92rem;
+}
+
+.spot-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.spot-card-actions button {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+}
+
+.spot-card-actions .map-focus-button {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--map-text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.spot-card-actions .map-video-button,
+.spot-card-actions .map-edit-button {
+  background: linear-gradient(135deg, #f5d7b5 0%, #d66d24 100%);
+  color: #141414;
+}
+
+.spot-card-actions .map-delete-button {
+  background: linear-gradient(135deg, #fca5a5 0%, #dc2626 100%);
+  color: #fff7f7;
+}
+
+.map-empty-card {
+  padding: 24px;
+  border-radius: 20px;
+  text-align: center;
+  grid-column: 1 / -1;
+}
+
+.map-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(4, 7, 12, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.map-modal[hidden] {
+  display: none;
+}
+
+.map-modal-card {
+  width: min(560px, 100%);
+  padding: 24px;
+  border-radius: 26px;
+}
+
+.map-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.map-modal-head h2 {
+  margin: 8px 0 0;
+}
+
+.map-modal-close {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--map-text);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.map-form {
+  display: grid;
+  gap: 14px;
+}
+
+.map-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 920px) {
+  .map-page-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .map-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .map-toolbar {
+    align-items: stretch;
+  }
+
+  .map-toolbar-actions {
+    width: 100%;
+  }
+
+  .map-toolbar-actions button,
+  .map-field,
+  .map-field input,
+  .map-field select {
+    width: 100%;
+  }
+
+  #map {
+    height: 460px;
+  }
+}

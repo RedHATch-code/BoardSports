@@ -27,13 +27,13 @@ function mostrarSucesso() {
 
   statusMessage.className = 'status-message success'
   statusText.textContent = 'Email confirmado com sucesso.'
-  loadingText.textContent = 'Redirecionamento automatico para o dashboard em 3 segundos.'
+  loadingText.textContent = 'Redirecionamento automatico para o mapa em 3 segundos.'
 
   verifyButtons.style.display = 'flex'
   errorButtons.style.display = 'none'
 
   setTimeout(() => {
-    window.location.href = '/dashboard.html'
+    window.location.href = '/mapa.html'
   }, 3000)
 }
 
@@ -105,7 +105,7 @@ async function verificarEmail() {
 }
 
 document.getElementById('goto-dashboard').addEventListener('click', () => {
-  window.location.href = '/dashboard.html'
+  window.location.href = '/mapa.html'
 })
 
 document.getElementById('resend-email').addEventListener('click', async () => {

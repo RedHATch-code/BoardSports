@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard XP - BoardSports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/xp-system.css">
+</head>
+<body class="xp-page">
+
+<main class="xp-shell">
+  <section class="xp-hero">
+    <div>
+      <span class="xp-kicker">BoardSports XP System</span>
+      <h1>Ranking estilo Tony Hawk.</h1>
+      <p>XP por spots, manobras, combos, likes e conquistas validadas pela moderacao.</p>
+    </div>
+
+    <div class="xp-hero-card">
+      <strong id="leaderboard-top-xp">0 XP</strong>
+      <span>Top rider atual</span>
+      <p id="leaderboard-top-name">A carregar ranking...</p>
+    </div>
+  </section>
+
+  <section class="xp-panel">
+    <div class="xp-panel-head">
+      <div>
+        <h2>Leaderboard</h2>
+        <p>Alterna entre ranking global, semanal, mensal e por desporto.</p>
+      </div>
+
+      <div class="xp-toolbar">
+        <select id="leaderboard-filter" class="xp-filter">
+          <option value="global">Global</option>
+          <option value="semanal">Semanal</option>
+          <option value="mensal">Mensal</option>
+          <option value="desporto">Por desporto</option>
+        </select>
+        <select id="leaderboard-modalidade" class="xp-filter" hidden>
+          <option value="">Selecionar modalidade</option>
+        </select>
+        <button type="button" id="leaderboard-refresh" class="xp-secondary-button">Atualizar</button>
+      </div>
+    </div>
+
+    <div id="leaderboard-list" class="leaderboard-list">
+      <article class="xp-empty-card">
+        <p>A carregar leaderboard...</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="xp-panel">
+    <div class="xp-panel-head">
+      <div>
+        <h2>Niveis e tipos</h2>
+        <p>O tipo do rider e calculado automaticamente pelo XP total.</p>
+      </div>
+    </div>
+
+    <div id="xp-levels-grid" class="xp-levels-grid"></div>
+  </section>
+</main>
+
+<script type="module" src="js/leaderboard_page.js"></script>
+<script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
+</body>
+</html>

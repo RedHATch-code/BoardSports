@@ -660,6 +660,195 @@ export async function atualizarPerfil(usuario_id, updates) {
   }
 }
 
+export async function obterSeguidoresPerfil(usuario_id) {
+  try {
+    const { data: seguimentos, error } = await supabase
+      .from('seguimentos')
+      .select('id, seguidor_id, seguido_id, data_criacao')
+      .eq('seguido_id', usuario_id)
+      .order('data_criacao', { ascending: false })
+
+    if (error) throw error
+
+    const seguidorIds = [...new Set((seguimentos || []).map((item) => item.seguidor_id).filter(Boolean))]
+    const { data: perfis, error: perfisError } = seguidorIds.length
+      ? await supabase
+          .from('profiles')
+          .select('id, nome, email, foto_perfil, role, bio')
+          .in('id', seguidorIds)
+      : { data: [], error: null }
+
+    if (perfisError) throw perfisError
+
+    const perfisMap = new Map((perfis || []).map((perfil) => [perfil.id, perfil]))
+
+    return (seguimentos || []).map((item) => ({
+      ...item,
+      perfil: perfisMap.get(item.seguidor_id) || null
+    }))
+  } catch (error) {
+    console.error('Erro ao obter seguidores do perfil:', error)
+    return []
+  }
+}
+
+export async function obterPerfilPorEmail(email, excludeUserId = '') {
+  try {
+    const normalizedEmail = String(email || '').trim().toLowerCase()
+    if (!normalizedEmail) return null
+
+    let query = supabase
+      .from('profiles')
+      .select('id, nome, email, foto_perfil, role, bio')
+      .ilike('email', normalizedEmail)
+      .limit(1)
+
+    if (excludeUserId) {
+      query = query.neq('id', excludeUserId)
+    }
+
+    const { data, error } = await query
+    if (error) throw error
+
+    return data?.[0] || null
+  } catch (error) {
+    console.error('Erro ao obter perfil por email:', error)
+    return null
+  }
+}
+
+export async function obterMensagensUsuario(usuario_id, limite = 20) {
+  try {
+    const { data: mensagens, error } = await supabase
+      .from('mensagens')
+      .select('id, remetente_id, destinatario_id, conteudo, data_envio, lido')
+      .or(`remetente_id.eq.${usuario_id},destinatario_id.eq.${usuario_id}`)
+      .order('data_envio', { ascending: false })
+      .limit(limite)
+
+    if (error) throw error
+
+    const profileIds = [...new Set((mensagens || [])
+      .flatMap((mensagem) => [mensagem.remetente_id, mensagem.destinatario_id])
+      .filter(Boolean))]
+
+    const { data: perfis, error: perfisError } = profileIds.length
+      ? await supabase
+          .from('profiles')
+          .select('id, nome, email, foto_perfil, role')
+          .in('id', profileIds)
+      : { data: [], error: null }
+
+    if (perfisError) throw perfisError
+
+    const perfisMap = new Map((perfis || []).map((perfil) => [perfil.id, perfil]))
+
+    return (mensagens || []).map((mensagem) => ({
+      ...mensagem,
+      remetente: perfisMap.get(mensagem.remetente_id) || null,
+      destinatario: perfisMap.get(mensagem.destinatario_id) || null
+    }))
+  } catch (error) {
+    console.error('Erro ao obter mensagens do utilizador:', error)
+    return []
+  }
+}
+
+export async function enviarMensagem(remetente_id, destinatario_id, conteudo) {
+  try {
+    const payload = {
+      remetente_id,
+      destinatario_id,
+      conteudo: String(conteudo || '').trim()
+    }
+
+    if (!payload.remetente_id || !payload.destinatario_id || !payload.conteudo) {
+      return null
+    }
+
+    const { data, error } = await supabase
+      .from('mensagens')
+      .insert([payload])
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Erro ao enviar mensagem:', error)
+    return null
+  }
+}
+
+export async function obterPublicacoesPerfil(usuario_id, role = '') {
+  try {
+    const [spots, videos] = await Promise.all([
+      obterSpots({ criador_id: usuario_id }),
+      obterGaleriaVideosSpots({ autor_id: usuario_id })
+    ])
+    const eventos = []
+    const produtos = []
+
+    const publicacoes = [
+      ...(spots || []).map((spot) => ({
+        id: `spot-${spot.id}`,
+        tipo: 'Spot',
+        titulo: spot.nome || 'Spot',
+        descricao: spot.descricao || '',
+        destaque: [spot.modalidades?.nome, spot.publico ? 'Publico' : 'Privado'].filter(Boolean).join(' · '),
+        url: 'mapa.html',
+        data: spot.data_criacao || null
+      })),
+      ...(eventos || []).map((evento) => ({
+        id: `evento-${evento.id}`,
+        tipo: 'Evento',
+        titulo: evento.nome || 'Evento',
+        descricao: evento.descricao || '',
+        destaque: [evento.modalidade, evento.localidade].filter(Boolean).join(' · '),
+        url: 'mapa.html',
+        data: evento.data_inicio || evento.data_criacao || null
+      })),
+      ...(produtos || []).map((produto) => ({
+        id: `produto-${produto.id}`,
+        tipo: 'Produto',
+        titulo: produto.nome || 'Produto',
+        descricao: produto.descricao || '',
+        destaque: [produto.modalidade_nome, formatarMontante(produto.preco)].filter(Boolean).join(' · '),
+        url: 'produtos.html',
+        data: produto.data_criacao || null
+      })),
+      ...(videos || []).map((video) => ({
+        id: `video-${video.id}`,
+        tipo: 'Video',
+        titulo: video.spot?.nome || 'Video de spot',
+        descricao: video.legenda || 'Video publicado num spot da comunidade.',
+        destaque: [video.spot?.modalidades?.nome, video.spot?.nome].filter(Boolean).join(' · '),
+        url: video.spot?.id ? `videos.html?spot=${video.spot.id}` : 'videos.html',
+        data: video.data_criacao || null
+      }))
+    ]
+
+    return publicacoes.sort((first, second) => {
+      const firstValue = first.data ? new Date(first.data).getTime() : 0
+      const secondValue = second.data ? new Date(second.data).getTime() : 0
+      return secondValue - firstValue
+    })
+  } catch (error) {
+    console.error('Erro ao obter publicacoes do perfil:', error)
+    return []
+  }
+}
+
+function formatarMontante(value) {
+  const amount = Number(value)
+  if (!Number.isFinite(amount)) return ''
+
+  return new Intl.NumberFormat('pt-PT', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(amount)
+}
+
 const PROFILE_AVATAR_BUCKETS = ['avatars', 'profile-photos', 'profiles']
 const PROFILE_AVATAR_MAX_SIZE = 5 * 1024 * 1024
 const PROFILE_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -865,6 +1054,15 @@ function isMissingColumnError(error, columnName) {
   const normalizedColumn = String(columnName || '').toLowerCase()
   return error?.code === '42703'
     || (message.includes(normalizedColumn) && message.includes('does not exist'))
+    || (message.includes(normalizedColumn) && message.includes('could not find'))
+}
+
+function isMissingRelationError(error, relationName) {
+  const message = error?.message?.toLowerCase?.() || ''
+  const normalizedRelation = String(relationName || '').toLowerCase()
+  return error?.code === 'PGRST205'
+    || error?.code === '42P01'
+    || (message.includes(normalizedRelation) && message.includes('does not exist'))
 }
 
 function buildSpotsBaseSelect(includeVideoUrl = true) {
@@ -890,6 +1088,9 @@ export async function obterSpots(filtros = {}) {
       if (filtros.modalidade_id && filtros.modalidade_id !== 'all') {
         query = query.eq('modalidade_id', parseInt(filtros.modalidade_id))
       }
+      if (filtros.categoria_id && filtros.categoria_id !== 'all') {
+        query = query.eq('categoria_id', parseInt(filtros.categoria_id))
+      }
       if (Array.isArray(filtros.ids) && filtros.ids.length) {
         query = query.in('id', filtros.ids)
       }
@@ -906,7 +1107,9 @@ export async function obterSpots(filtros = {}) {
         .order('data_criacao', { ascending: false })
     )
 
-    let includeVideoUrl = true
+    // The active Supabase schema used by the static site still lacks
+    // spots.video_url, so we avoid the initial 400 on every map load.
+    let includeVideoUrl = false
     let { data, error } = await runSpotsQuery(includeVideoUrl)
 
     if (error && isMissingColumnError(error, 'video_url')) {
@@ -990,6 +1193,197 @@ export async function criarSpot(spotData) {
   } catch (error) {
     console.error('Erro ao criar spot:', error)
     return null
+  }
+}
+
+async function hydrateSpotVideos(items = []) {
+  const spotIds = [...new Set((items || []).map((item) => item.spot_id).filter(Boolean))]
+  const autorIds = [...new Set((items || []).map((item) => item.autor_id).filter(Boolean))]
+
+  const [spots, autoresRes] = await Promise.all([
+    spotIds.length ? obterSpots({ ids: spotIds }) : Promise.resolve([]),
+    autorIds.length
+      ? supabase.from('profiles').select('id, nome, email, foto_perfil, role').in('id', autorIds)
+      : Promise.resolve({ data: [], error: null })
+  ])
+
+  if (autoresRes.error) throw autoresRes.error
+
+  const spotMap = new Map((spots || []).map((spot) => [spot.id, spot]))
+  const autorMap = new Map((autoresRes.data || []).map((perfil) => [perfil.id, perfil]))
+
+  return (items || []).map((item) => ({
+    ...item,
+    spot: spotMap.get(item.spot_id) || null,
+    autor: autorMap.get(item.autor_id) || null
+  }))
+}
+
+async function obterVideosSpotsLegacy(filtros = {}) {
+  const spots = await obterSpots({
+    ids: filtros.spot_ids,
+    criador_id: filtros.autor_id
+  })
+
+  return (spots || [])
+    .filter((spot) => {
+      if (!spot.video_url) return false
+      if (filtros.spot_id && Number(spot.id) !== Number(filtros.spot_id)) return false
+      if (filtros.modalidade_id && filtros.modalidade_id !== 'all' && Number(spot.modalidade_id) !== Number(filtros.modalidade_id)) return false
+      return true
+    })
+    .map((spot) => ({
+      id: `legacy-${spot.id}`,
+      spot_id: spot.id,
+      autor_id: spot.criador_id,
+      video_url: spot.video_url,
+      legenda: spot.descricao || '',
+      data_criacao: spot.data_criacao || null,
+      ativo: true,
+      spot,
+      autor: spot.profiles || null
+    }))
+}
+
+const LOCAL_SPOT_VIDEOS_KEY = 'boardsports.local-spot-videos'
+
+function readLocalSpotVideos() {
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SPOT_VIDEOS_KEY)
+    if (!raw) return []
+
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch (error) {
+    console.warn('Nao foi possivel ler videos locais dos spots:', error)
+    return []
+  }
+}
+
+function writeLocalSpotVideos(items = []) {
+  try {
+    window.localStorage.setItem(LOCAL_SPOT_VIDEOS_KEY, JSON.stringify(items))
+    return true
+  } catch (error) {
+    console.warn('Nao foi possivel guardar videos locais dos spots:', error)
+    return false
+  }
+}
+
+function filterSpotVideoItems(items = [], filtros = {}) {
+  return (items || []).filter((item) => {
+    if (!item?.ativo) return false
+    if (filtros.spot_id && Number(item.spot_id) !== Number(filtros.spot_id)) return false
+    if (Array.isArray(filtros.spot_ids) && filtros.spot_ids.length && !filtros.spot_ids.map(Number).includes(Number(item.spot_id))) return false
+    if (filtros.autor_id && String(item.autor_id) !== String(filtros.autor_id)) return false
+    return true
+  })
+}
+
+async function obterVideosSpotsLocal(filtros = {}) {
+  const items = filterSpotVideoItems(readLocalSpotVideos(), filtros)
+  return hydrateSpotVideos(items)
+}
+
+function guardarVideoSpotLocal(payload) {
+  const nextItem = {
+    id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    spot_id: payload.spot_id,
+    autor_id: payload.autor_id,
+    video_url: payload.video_url,
+    legenda: payload.legenda || null,
+    data_criacao: new Date().toISOString(),
+    ativo: true
+  }
+
+  const currentItems = readLocalSpotVideos()
+  currentItems.unshift(nextItem)
+  return writeLocalSpotVideos(currentItems) ? nextItem : null
+}
+
+export async function obterGaleriaVideosSpots(filtros = {}) {
+  try {
+    let query = supabase
+      .from('spot_videos')
+      .select('id, spot_id, autor_id, video_url, legenda, data_criacao, ativo')
+      .eq('ativo', true)
+      .order('data_criacao', { ascending: false })
+
+    if (filtros.spot_id) {
+      query = query.eq('spot_id', filtros.spot_id)
+    }
+
+    if (Array.isArray(filtros.spot_ids) && filtros.spot_ids.length) {
+      query = query.in('spot_id', filtros.spot_ids)
+    }
+
+    if (filtros.autor_id) {
+      query = query.eq('autor_id', filtros.autor_id)
+    }
+
+    const { data, error } = await query
+
+    if (error && isMissingRelationError(error, 'spot_videos')) {
+      const [legacyItems, localItems] = await Promise.all([
+        obterVideosSpotsLegacy(filtros),
+        obterVideosSpotsLocal(filtros)
+      ])
+
+      return [...localItems, ...legacyItems].sort((first, second) => {
+        const firstValue = first?.data_criacao ? new Date(first.data_criacao).getTime() : 0
+        const secondValue = second?.data_criacao ? new Date(second.data_criacao).getTime() : 0
+        return secondValue - firstValue
+      })
+    }
+
+    if (error) throw error
+    return hydrateSpotVideos(data || [])
+  } catch (error) {
+    console.error('Erro ao obter galeria de videos dos spots:', error)
+    return []
+  }
+}
+
+export async function publicarVideoSpot({ spot_id, autor_id, video_url, legenda = '' }) {
+  try {
+    const payload = {
+      spot_id,
+      autor_id,
+      video_url: String(video_url || '').trim(),
+      legenda: String(legenda || '').trim() || null
+    }
+
+    if (!payload.spot_id || !payload.autor_id || !payload.video_url) {
+      return { sucesso: false, erro: 'Preenche o URL do video antes de publicar.' }
+    }
+
+    const { data, error } = await supabase
+      .from('spot_videos')
+      .insert([payload])
+      .select()
+      .single()
+
+    if (error && isMissingRelationError(error, 'spot_videos')) {
+      const localItem = guardarVideoSpotLocal(payload)
+      if (!localItem) {
+        return {
+          sucesso: false,
+          erro: 'A base ativa ainda nao suporta a tabela de videos e o fallback local tambem falhou neste browser.'
+        }
+      }
+
+      return {
+        sucesso: true,
+        data: localItem,
+        modoFallback: 'local'
+      }
+    }
+
+    if (error) throw error
+    return { sucesso: true, data }
+  } catch (error) {
+    console.error('Erro ao publicar video no spot:', error)
+    return { sucesso: false, erro: error.message || 'Nao foi possivel publicar o video neste spot.' }
   }
 }
 
@@ -1138,6 +1532,245 @@ export async function apagarSpot(id) {
   } catch (error) {
     console.error('Erro ao apagar spot:', error)
     return false
+  }
+}
+
+// ============================================================
+// 10. BOARDSports XP SYSTEM
+// ============================================================
+
+export const XP_LEVELS = [
+  { level: 1, name: 'Rookie Rider', xp: 0, tipo_user: 'principiante' },
+  { level: 2, name: 'Street Starter', xp: 250, tipo_user: 'principiante' },
+  { level: 3, name: 'Local Shredder', xp: 600, tipo_user: 'principiante' },
+  { level: 4, name: 'Flow Rider', xp: 1000, tipo_user: 'intermedio' },
+  { level: 5, name: 'Trick Hunter', xp: 1600, tipo_user: 'intermedio' },
+  { level: 6, name: 'Spot Explorer', xp: 2400, tipo_user: 'intermedio' },
+  { level: 7, name: 'Combo Maker', xp: 3500, tipo_user: 'intermedio' },
+  { level: 8, name: 'Style Master', xp: 5000, tipo_user: 'pro' },
+  { level: 9, name: 'Pro Rider', xp: 7500, tipo_user: 'pro' },
+  { level: 10, name: 'BoardSports Legend', xp: 10000, tipo_user: 'pro' }
+]
+
+export const XP_SOURCES = {
+  spot_facil: 50,
+  spot_medio: 120,
+  spot_dificil: 250,
+  manobra_facil: 25,
+  manobra_media: 75,
+  manobra_dificil: 150,
+  novo_spot_aprovado: 100,
+  like: 2,
+  destaque_admin: 300
+}
+
+function getLevelForXp(xpValue = 0) {
+  const xp = Number(xpValue || 0)
+  return [...XP_LEVELS].reverse().find((level) => xp >= level.xp) || XP_LEVELS[0]
+}
+
+export function obterResumoXp(perfil = {}) {
+  const xpTotal = Number(perfil?.xp_total || 0)
+  const currentLevel = getLevelForXp(xpTotal)
+  const nextLevel = XP_LEVELS.find((level) => level.level === currentLevel.level + 1) || null
+  const currentFloor = currentLevel.xp
+  const nextFloor = nextLevel?.xp ?? currentFloor
+  const progress = nextLevel
+    ? Math.max(0, Math.min(100, Math.round(((xpTotal - currentFloor) / (nextFloor - currentFloor)) * 100)))
+    : 100
+
+  return {
+    xp_total: xpTotal,
+    nivel_xp: currentLevel.level,
+    nivel_nome: currentLevel.name,
+    tipo_user: currentLevel.tipo_user,
+    proximo_nivel: nextLevel,
+    xp_para_proximo: nextLevel ? Math.max(0, nextLevel.xp - xpTotal) : 0,
+    progresso_percentagem: progress
+  }
+}
+
+export function calcularComboXp(manobras = []) {
+  const baseXp = (manobras || []).reduce((total, manobra) => total + Number(manobra?.xp || 0), 0)
+  const count = manobras.length
+  const multiplier = count >= 5 ? 3 : count === 4 ? 2 : count === 3 ? 1.5 : count === 2 ? 1.2 : 1
+  return {
+    base_xp: baseXp,
+    multiplicador: multiplier,
+    xp_total: Math.round(baseXp * multiplier)
+  }
+}
+
+export async function obterLeaderboardXp(filtro = 'global', modalidadeId = null) {
+  try {
+    if (filtro === 'semanal' || filtro === 'mensal') {
+      const start = new Date()
+      if (filtro === 'semanal') {
+        start.setDate(start.getDate() - 7)
+      } else {
+        start.setDate(1)
+        start.setHours(0, 0, 0, 0)
+      }
+
+      let query = supabase
+        .from('xp_logs')
+        .select('user_id, xp_ganho, data_registo')
+        .gte('data_registo', start.toISOString())
+
+      const { data: logs, error } = await query
+      if (error) throw error
+
+      const totals = new Map()
+      ;(logs || []).forEach((log) => {
+        totals.set(log.user_id, (totals.get(log.user_id) || 0) + Number(log.xp_ganho || 0))
+      })
+
+      const ids = [...totals.keys()]
+      if (!ids.length) return []
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, nome, email, foto_perfil, xp_total, nivel_xp, tipo_user')
+        .in('id', ids)
+
+      if (profilesError) throw profilesError
+
+      return (profiles || [])
+        .map((profile) => ({
+          ...profile,
+          periodo_xp: totals.get(profile.id) || 0,
+          xp_ranking: totals.get(profile.id) || 0
+        }))
+        .sort((first, second) => second.xp_ranking - first.xp_ranking)
+    }
+
+    let query = supabase
+      .from('profiles')
+      .select('id, nome, email, foto_perfil, xp_total, nivel_xp, tipo_user')
+      .eq('ativo', true)
+      .order('xp_total', { ascending: false })
+      .limit(50)
+
+    if (filtro === 'desporto' && modalidadeId) {
+      query = supabase.rpc('leaderboard_por_desporto', { p_modalidade_id: Number(modalidadeId) })
+      const { data, error } = await query
+      if (error) throw error
+      return data || []
+    }
+
+    const { data, error } = await query
+    if (error) throw error
+    return (data || []).map((profile) => ({ ...profile, xp_ranking: Number(profile.xp_total || 0) }))
+  } catch (error) {
+    if (isMissingRelationError(error, 'xp_logs') || isMissingColumnError(error, 'xp_total')) {
+      console.warn('BoardSports XP System ainda nao esta aplicado na base de dados.')
+      return []
+    }
+
+    console.error('Erro ao obter leaderboard XP:', error)
+    return []
+  }
+}
+
+export async function obterManobras(filtros = {}) {
+  try {
+    let query = supabase
+      .from('manobras')
+      .select('id, modalidade_id, nome, dificuldade, xp, descricao, ativo, modalidades(nome)')
+      .eq('ativo', true)
+      .order('modalidade_id')
+      .order('dificuldade')
+      .order('nome')
+
+    if (filtros.modalidade_id) query = query.eq('modalidade_id', filtros.modalidade_id)
+    if (filtros.dificuldade) query = query.eq('dificuldade', filtros.dificuldade)
+
+    const { data, error } = await query
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    if (isMissingRelationError(error, 'manobras')) return []
+    console.error('Erro ao obter manobras:', error)
+    return []
+  }
+}
+
+export async function criarSubmissaoXp(payload) {
+  try {
+    const { data, error } = await supabase
+      .from('submissoes')
+      .insert([payload])
+      .select()
+      .single()
+
+    if (error) throw error
+    return { sucesso: true, data }
+  } catch (error) {
+    console.error('Erro ao criar submissao XP:', error)
+    return { sucesso: false, erro: error.message || 'Nao foi possivel criar a submissao.' }
+  }
+}
+
+export async function obterSubmissoesModeracao(filtros = {}) {
+  try {
+    let query = supabase
+      .from('submissoes')
+      .select('id, user_id, spot_id, manobra_id, combo_id, tipo, prova_url, latitude, longitude, distancia_spot_metros, estado, motivo_rejeicao, xp_previsto, xp_atribuido, data_submissao, data_validacao')
+      .order('data_submissao', { ascending: false })
+
+    if (filtros.estado) query = query.eq('estado', filtros.estado)
+
+    const { data: submissoes, error } = await query
+    if (error) throw error
+    if (!submissoes?.length) return []
+
+    const userIds = [...new Set(submissoes.map((item) => item.user_id).filter(Boolean))]
+    const spotIds = [...new Set(submissoes.map((item) => item.spot_id).filter(Boolean))]
+    const manobraIds = [...new Set(submissoes.map((item) => item.manobra_id).filter(Boolean))]
+
+    const [profilesRes, spots, manobrasRes] = await Promise.all([
+      userIds.length
+        ? supabase.from('profiles').select('id, nome, email, tipo_user, xp_total, nivel_xp').in('id', userIds)
+        : Promise.resolve({ data: [], error: null }),
+      spotIds.length ? obterSpots({ ids: spotIds }) : Promise.resolve([]),
+      manobraIds.length
+        ? supabase.from('manobras').select('id, modalidade_id, nome, dificuldade, xp, modalidades(nome)').in('id', manobraIds)
+        : Promise.resolve({ data: [], error: null })
+    ])
+
+    if (profilesRes.error) throw profilesRes.error
+    if (manobrasRes.error) throw manobrasRes.error
+
+    const profileMap = new Map((profilesRes.data || []).map((profile) => [profile.id, profile]))
+    const spotMap = new Map((spots || []).map((spot) => [spot.id, spot]))
+    const manobraMap = new Map((manobrasRes.data || []).map((manobra) => [manobra.id, manobra]))
+
+    return submissoes.map((submissao) => ({
+      ...submissao,
+      usuario: profileMap.get(submissao.user_id) || null,
+      spot: spotMap.get(submissao.spot_id) || null,
+      manobra: manobraMap.get(submissao.manobra_id) || null
+    }))
+  } catch (error) {
+    if (isMissingRelationError(error, 'submissoes')) return []
+    console.error('Erro ao obter submissoes XP:', error)
+    return []
+  }
+}
+
+export async function moderarSubmissaoXp(submissaoId, estado, motivo = '') {
+  try {
+    const { data, error } = await supabase.rpc('moderar_submissao_xp', {
+      p_submissao_id: submissaoId,
+      p_estado: estado,
+      p_motivo_rejeicao: motivo || null
+    })
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Erro ao moderar submissao XP:', error)
+    return null
   }
 }
 

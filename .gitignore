@@ -1,4 +1,7 @@
 node_modules/
+apps/web/.next/
+apps/web/node_modules/
+*.tsbuildinfo
 *.log
 desktop.ini
 Desktop.ini

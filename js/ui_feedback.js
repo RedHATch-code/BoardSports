@@ -106,7 +106,7 @@ function ensureStyles() {
     }
 
     .boardsports-confirm__button--primary {
-      background: linear-gradient(135deg, #ffb55f 0%, #ff8c00 100%);
+      background: linear-gradient(135deg, #d9c2a1 0%, #d66d24 100%);
       border-color: rgba(255, 181, 95, 0.44);
       color: #141414;
     }
@@ -200,3 +200,5 @@ export function showConfirm(options = {}) {
     document.body.appendChild(overlay)
   })
 }
+
+

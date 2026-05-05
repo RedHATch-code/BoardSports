@@ -9,133 +9,111 @@
   <link rel="stylesheet" href="css/responsive.css">
   <link rel="stylesheet" href="css/profile-page.css">
 </head>
-<body class="profile-page">
+<body class="profile-page profile-overview-page">
 
 <div class="profile-shell">
-  <section class="profile-hero">
-    <div>
-      <span class="profile-kicker">Conta BoardSports</span>
-      <h1 id="profile-hero-name">O teu perfil e atividade.</h1>
-      <p id="profile-hero-copy">
-        Atualiza a identidade publica, acompanha pedidos e gere as inscricoes que fizeste em eventos.
-      </p>
+  <section class="profile-overview-hero">
+    <div class="profile-overview-head">
+      <div class="profile-avatar-shell profile-overview-avatar">
+        <img id="avatar-image" class="profile-avatar-image" alt="Foto de perfil">
+        <span id="avatar-fallback" class="profile-avatar-fallback">BS</span>
+      </div>
+
+      <div class="profile-overview-copy">
+        <span class="profile-kicker">Perfil BoardSports</span>
+        <h1 id="profile-display-name">A carregar perfil</h1>
+        <p id="profile-display-bio">A tua bio vai aparecer aqui assim que o perfil estiver carregado.</p>
+      </div>
     </div>
 
-    <div class="profile-hero-meta">
-      <strong id="profile-role-badge">membro</strong>
-      <span id="profile-admin-link-wrapper" hidden><a href="moderacao.html">Abrir moderacao</a></span>
-      <small>As alteracoes aqui refletem-se no header e no resto da plataforma.</small>
+    <div class="profile-overview-side">
+      <div class="profile-stat-grid">
+        <article class="profile-stat-card">
+          <strong id="publications-count">0</strong>
+          <span>Publicacoes</span>
+        </article>
+        <article class="profile-stat-card">
+          <strong id="followers-count">0</strong>
+          <span>Seguidores</span>
+        </article>
+      </div>
+
+      <article class="profile-xp-card">
+        <div class="profile-xp-head">
+          <span id="profile-xp-type">Principiante</span>
+          <strong id="profile-xp-level">Nivel 1</strong>
+        </div>
+        <h2 id="profile-xp-name">Rookie Rider</h2>
+        <div class="profile-xp-bar" aria-label="Progresso XP">
+          <span id="profile-xp-progress"></span>
+        </div>
+        <p id="profile-xp-meta">0 XP total</p>
+      </article>
+
+      <div class="profile-overview-actions">
+        <a href="configuracao.html" class="profile-primary-button">Editar perfil</a>
+        <a href="leaderboard.html" class="profile-secondary-button">Leaderboard</a>
+        <strong id="profile-role-badge" class="profile-overview-role">membro</strong>
+      </div>
+
+      <span id="profile-admin-link-wrapper" hidden>
+        <a href="moderacao.html" class="profile-secondary-button">Abrir moderacao</a>
+      </span>
     </div>
   </section>
 
-  <div class="profile-grid">
+  <div class="profile-overview-grid">
     <section class="profile-panel">
-      <div class="profile-photo-section">
-        <div class="profile-avatar-shell">
-          <img id="avatar-image" class="profile-avatar-image" alt="Foto de perfil">
-          <span id="avatar-fallback" class="profile-avatar-fallback">BS</span>
-        </div>
-
-        <div class="profile-photo-copy">
-          <h2>Identidade visual</h2>
-          <p>Adiciona uma imagem para personalizar o perfil e o dock de navegacao.</p>
-
-          <div class="profile-photo-actions">
-            <label class="profile-primary-button" for="foto-perfil">Escolher foto</label>
-            <button type="button" class="profile-secondary-button" id="remove-photo-btn">Remover foto</button>
-          </div>
-
-          <input type="file" id="foto-perfil" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
-          <div class="profile-photo-meta" id="photo-meta">JPG, PNG, WebP ou GIF ate 5 MB.</div>
-        </div>
+      <div class="profile-section-head">
+        <h2>Publicacoes</h2>
+        <span id="publications-meta">0 itens</span>
       </div>
 
-      <form id="profile-form" class="profile-form">
-        <label class="profile-field">
-          <span>Nome</span>
-          <input type="text" id="nome" placeholder="Nome completo">
-        </label>
-
-        <div class="profile-form-columns">
-          <label class="profile-field">
-            <span>Email</span>
-            <input type="email" id="email" placeholder="email@dominio.com" disabled>
-          </label>
-
-          <label class="profile-field">
-            <span>Tipo</span>
-            <input type="text" id="role" placeholder="Tipo de utilizador" disabled>
-          </label>
-        </div>
-
-        <div class="profile-form-columns">
-          <label class="profile-field">
-            <span>Telefone</span>
-            <input type="tel" id="telefone" placeholder="+351 000 000 000">
-          </label>
-
-          <label class="profile-field">
-            <span>Localidade</span>
-            <input type="text" id="localidade" placeholder="Cidade ou regiao">
-          </label>
-        </div>
-
-        <label class="profile-field">
-          <span>Bio</span>
-          <textarea id="bio" rows="5" placeholder="Conta-nos como participas no universo BoardSports."></textarea>
-        </label>
-
-        <button type="submit" class="profile-primary-button">Guardar alteracoes</button>
-        <div id="msg" class="profile-inline-message" hidden></div>
-      </form>
-
-      <section class="profile-security-section">
-        <div class="profile-section-head">
-          <h2>Seguranca da conta</h2>
-          <span>Password</span>
-        </div>
-        <p class="profile-security-copy">Atualiza a palavra-passe sem sair da area pessoal.</p>
-
-        <form id="password-form" class="profile-form">
-          <div class="profile-form-columns">
-            <label class="profile-field">
-              <span>Nova palavra-passe</span>
-              <input type="password" id="nova-password" autocomplete="new-password" placeholder="Minimo de 6 caracteres">
-            </label>
-
-            <label class="profile-field">
-              <span>Confirmar nova palavra-passe</span>
-              <input type="password" id="confirmar-password" autocomplete="new-password" placeholder="Repete a password">
-            </label>
-          </div>
-
-          <button type="submit" class="profile-secondary-button">Atualizar palavra-passe</button>
-          <div id="password-msg" class="profile-inline-message" hidden></div>
-        </form>
-      </section>
+      <div id="publications-list" class="profile-publication-list">
+        <article class="profile-empty-card">
+          <p>A carregar publicacoes...</p>
+        </article>
+      </div>
     </section>
 
     <aside class="profile-panel profile-panel-side">
       <section class="profile-activity-section">
         <div class="profile-section-head">
-          <h2>Pedidos recentes</h2>
-          <span id="orders-count">0 pedidos</span>
+          <h2>Seguidores</h2>
+          <span id="followers-meta">0 seguidores</span>
         </div>
-        <div id="orders-list" class="profile-activity-list">
+
+        <div id="followers-list" class="profile-follower-list">
           <article class="profile-empty-card">
-            <p>A carregar pedidos...</p>
+            <p>A carregar seguidores...</p>
           </article>
         </div>
       </section>
 
       <section class="profile-activity-section">
         <div class="profile-section-head">
-          <h2>Eventos inscritos</h2>
-          <span id="registrations-count">0 inscricoes</span>
+          <h2>Mensagens</h2>
+          <span id="messages-meta">0 mensagens</span>
         </div>
-        <div id="registrations-list" class="profile-activity-list">
+
+        <form id="message-form" class="profile-message-form">
+          <label class="profile-field">
+            <span>Email do utilizador</span>
+            <input type="email" id="message-recipient" placeholder="destinatario@dominio.com" autocomplete="email">
+          </label>
+
+          <label class="profile-field">
+            <span>Mensagem</span>
+            <textarea id="message-content" rows="4" placeholder="Escreve uma mensagem curta e direta."></textarea>
+          </label>
+
+          <button type="submit" class="profile-primary-button">Enviar mensagem</button>
+          <div id="message-feedback" class="profile-inline-message" hidden></div>
+        </form>
+
+        <div id="messages-list" class="profile-message-list">
           <article class="profile-empty-card">
-            <p>A carregar inscricoes...</p>
+            <p>A carregar mensagens...</p>
           </article>
         </div>
       </section>

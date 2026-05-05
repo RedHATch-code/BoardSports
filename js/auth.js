@@ -1,8 +1,13 @@
-import { fazerLogin, pedirRecuperacaoPassword } from './auth_utils.js'
+import {
+  fazerLogin,
+  pedirRecuperacaoPassword,
+  resendEmailConfirmation
+} from './auth_utils.js'
 
 const emailInput = document.getElementById('email')
 const passwordInput = document.getElementById('password')
 const loginForm = document.getElementById('login-form')
+const loginButton = document.getElementById('login-btn')
 const msgDiv = document.getElementById('msg')
 const forgotPasswordButton = document.getElementById('forgot-password')
 
@@ -17,35 +22,66 @@ function mostrarMensagem(texto, tipo) {
   }
 }
 
+function definirEstadoBotao(botao, ativo, texto) {
+  if (!botao) return
+
+  if (!botao.dataset.originalLabel) {
+    botao.dataset.originalLabel = botao.innerHTML
+  }
+
+  botao.disabled = ativo
+
+  if (ativo && texto) {
+    botao.innerHTML = texto
+    return
+  }
+
+  botao.innerHTML = botao.dataset.originalLabel
+}
+
+function definirEstadoProcessamento() {
+  definirEstadoBotao(loginButton, true, '<span>A entrar...</span>')
+  forgotPasswordButton.disabled = true
+}
+
+function limparEstadoProcessamento() {
+  definirEstadoBotao(loginButton, false)
+  forgotPasswordButton.disabled = false
+}
+
+function redirecionarParaDashboard() {
+  setTimeout(() => {
+    window.location.href = '/mapa.html'
+  }, 900)
+}
+
 loginForm.onsubmit = async (event) => {
   event.preventDefault()
 
   const email = emailInput.value.trim()
-  const password = passwordInput.value.trim()
+  const password = passwordInput.value
 
   if (!email || !password) {
     mostrarMensagem('Preenche email e palavra-passe.', 'error')
     return
   }
 
-  const loginBtn = document.getElementById('login-btn')
-  const textoOriginal = loginBtn.innerHTML
-  loginBtn.disabled = true
-  loginBtn.innerHTML = '<span>A entrar...</span>'
+  definirEstadoProcessamento()
 
   const resultado = await fazerLogin(email, password)
 
   if (resultado.sucesso) {
     mostrarMensagem('Login realizado. A redirecionar...', 'success')
-    setTimeout(() => {
-      window.location.href = '/dashboard.html'
-    }, 1200)
+    redirecionarParaDashboard()
     return
   }
 
+  if (resultado.codigo === 'email_not_confirmed') {
+    await resendEmailConfirmation(email).catch(() => null)
+  }
+
   mostrarMensagem(`Falha no login: ${resultado.erro}`, 'error')
-  loginBtn.disabled = false
-  loginBtn.innerHTML = textoOriginal
+  limparEstadoProcessamento()
 }
 
 forgotPasswordButton?.addEventListener('click', async () => {
@@ -64,7 +100,7 @@ forgotPasswordButton?.addEventListener('click', async () => {
   const resultado = await pedirRecuperacaoPassword(email)
 
   if (resultado.sucesso) {
-    mostrarMensagem('Email de recuperacao enviado. Verifica a tua caixa de entrada.', 'success')
+    mostrarMensagem('Pedido enviado. Se a conta existir, vais receber o email de recuperacao. Verifica tambem Spam/Promocoes.', 'success')
   } else {
     mostrarMensagem(`Falha ao enviar recuperacao: ${resultado.erro}`, 'error')
   }

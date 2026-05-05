@@ -1,6 +1,8 @@
 import { inicializarPaginaProtegida, obterUsuarioAtual } from './auth_utils.js'
 import {
   moderarSolicitacaoPublicacao,
+  moderarSubmissaoXp,
+  obterSubmissoesModeracao,
   obterSolicitacoesPublicacao
 } from './db_utils.js'
 import { showConfirm, showToast } from './ui_feedback.js'
@@ -8,6 +10,7 @@ import { showConfirm, showToast } from './ui_feedback.js'
 const state = {
   user: null,
   solicitacoes: [],
+  submissoesXp: [],
   filters: {
     status: 'pendente',
     search: ''
@@ -24,7 +27,9 @@ const ui = {
   search: null,
   pendingCount: null,
   approvedCount: null,
-  rejectedCount: null
+  rejectedCount: null,
+  xpRefresh: null,
+  xpList: null
 }
 
 async function initModeracaoPage() {
@@ -41,7 +46,10 @@ async function initModeracaoPage() {
   }
 
   ui.userLabel.textContent = state.user.perfil?.nome || state.user.email || 'Admin'
-  await carregarSolicitacoes()
+  await Promise.all([
+    carregarSolicitacoes(),
+    carregarSubmissoesXp()
+  ])
 }
 
 function cacheDom() {
@@ -55,11 +63,15 @@ function cacheDom() {
   ui.pendingCount = document.getElementById('moderation-pending-count')
   ui.approvedCount = document.getElementById('moderation-approved-count')
   ui.rejectedCount = document.getElementById('moderation-rejected-count')
+  ui.xpRefresh = document.getElementById('xp-submissions-refresh')
+  ui.xpList = document.getElementById('xp-submissions-list')
 }
 
 function bindEvents() {
   ui.refresh.addEventListener('click', carregarSolicitacoes)
   ui.list.addEventListener('click', onModerationListClick)
+  ui.xpRefresh.addEventListener('click', carregarSubmissoesXp)
+  ui.xpList.addEventListener('click', onXpSubmissionClick)
   ui.statusFilter.addEventListener('change', (event) => {
     state.filters.status = event.target.value
     renderSolicitacoes()
@@ -93,6 +105,11 @@ function renderAccessDenied() {
 async function carregarSolicitacoes() {
   state.solicitacoes = await obterSolicitacoesPublicacao({})
   renderSolicitacoes()
+}
+
+async function carregarSubmissoesXp() {
+  state.submissoesXp = await obterSubmissoesModeracao({ estado: 'pendente' })
+  renderSubmissoesXp()
 }
 
 function getFilteredSolicitacoes() {
@@ -224,6 +241,89 @@ async function onModerationListClick(event) {
 
   await carregarSolicitacoes()
   showToast(status === 'aprovado' ? 'Spot aprovado e publicado.' : 'Solicitacao rejeitada.', { type: 'success' })
+}
+
+function renderSubmissoesXp() {
+  const items = state.submissoesXp || []
+
+  if (!items.length) {
+    ui.xpList.innerHTML = '<article class="moderation-empty-card"><p>Nao existem submissoes XP pendentes.</p></article>'
+    return
+  }
+
+  ui.xpList.innerHTML = items.map((submissao) => {
+    const suspicious = Number(submissao.distancia_spot_metros || 0) > 100
+    const provaUrl = submissao.prova_url || ''
+
+    return `
+      <article class="moderation-card ${suspicious ? 'is-suspicious' : ''}">
+        <div class="moderation-card-top">
+          <div>
+            <h3>${escapeHtml(buildXpSubmissionTitle(submissao))}</h3>
+            <p>${escapeHtml(submissao.usuario?.nome || submissao.usuario?.email || 'Utilizador')} submeteu uma prova para validacao XP.</p>
+          </div>
+          <span class="moderation-status-badge" data-status="${suspicious ? 'suspeito' : 'pendente'}">${suspicious ? 'suspeito' : 'pendente'}</span>
+        </div>
+
+        <div class="moderation-card-meta">
+          <span>Tipo: ${escapeHtml(submissao.tipo || 'submissao')}</span>
+          <span>XP previsto: ${Number(submissao.xp_previsto || 0)}</span>
+          <span>Distancia: ${Number(submissao.distancia_spot_metros || 0)}m</span>
+          <span>${escapeHtml(submissao.spot?.modalidades?.nome || submissao.manobra?.modalidades?.nome || 'Modalidade')}</span>
+          <span>${formatDate(submissao.data_submissao)}</span>
+        </div>
+
+        ${provaUrl ? `<a class="moderation-proof-link" href="${escapeHtml(provaUrl)}" target="_blank" rel="noopener">Abrir prova</a>` : ''}
+
+        <label class="moderation-field">
+          <span>Motivo se rejeitares</span>
+          <textarea rows="3" data-xp-note="${submissao.id}" placeholder="Ex: prova insuficiente, fora do spot, duplicado"></textarea>
+        </label>
+
+        <div class="moderation-actions">
+          <button type="button" class="moderation-primary-button" data-xp-approve="${submissao.id}">Validar e atribuir XP</button>
+          <button type="button" class="moderation-danger-button" data-xp-reject="${submissao.id}">Rejeitar</button>
+        </div>
+      </article>
+    `
+  }).join('')
+}
+
+async function onXpSubmissionClick(event) {
+  const approve = event.target.closest('[data-xp-approve]')
+  const reject = event.target.closest('[data-xp-reject]')
+  if (!approve && !reject) return
+
+  const submissaoId = Number((approve || reject).dataset.xpApprove || (approve || reject).dataset.xpReject)
+  const estado = approve ? 'validado' : 'rejeitado'
+  const note = ui.xpList.querySelector(`[data-xp-note="${submissaoId}"]`)?.value.trim() || ''
+
+  const confirmed = await showConfirm({
+    title: estado === 'validado' ? 'Validar submissao XP' : 'Rejeitar submissao XP',
+    message: estado === 'validado'
+      ? 'Queres validar esta prova e atribuir XP ao utilizador?'
+      : 'Queres rejeitar esta prova sem atribuir XP?',
+    confirmText: estado === 'validado' ? 'Validar XP' : 'Rejeitar',
+    danger: estado === 'rejeitado'
+  })
+
+  if (!confirmed) return
+
+  const result = await moderarSubmissaoXp(submissaoId, estado, note)
+  if (!result) {
+    showToast('Nao foi possivel moderar a submissao XP. Confirma se o SQL do XP System ja foi aplicado.', { type: 'error' })
+    return
+  }
+
+  await carregarSubmissoesXp()
+  showToast(estado === 'validado' ? 'XP atribuido com sucesso.' : 'Submissao XP rejeitada.', { type: 'success' })
+}
+
+function buildXpSubmissionTitle(submissao) {
+  if (submissao.tipo === 'combo') return `Combo #${submissao.combo_id || submissao.id}`
+  if (submissao.manobra?.nome) return submissao.manobra.nome
+  if (submissao.spot?.nome) return submissao.spot.nome
+  return `Submissao #${submissao.id}`
 }
 
 function buildExcerpt(text = '', limit = 140) {

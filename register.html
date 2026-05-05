@@ -14,103 +14,132 @@
 <div class="auth-container">
   <div class="auth-card">
     <div class="auth-header">
-      <div class="auth-logo"></div>
+      <div class="auth-logo">
+        <img src="assets/images/logotipo.png" alt="BoardSports Logo" class="auth-logo-image">
+      </div>
       <h1>BoardSports</h1>
-      <p>Cria conta para guardar compras, spots e inscricoes no mesmo ecossistema.</p>
+      <p>Cria conta para guardar spots, publicar videos e personalizar o teu perfil.</p>
     </div>
 
     <form id="register-form" class="auth-form">
-      <div class="form-group">
-        <label for="nome">Nome Completo</label>
-        <input
-          id="nome"
-          type="text"
-          autocomplete="name"
-          placeholder="Joao Silva"
-          required
-        >
+      <div class="auth-stepper" aria-label="Progresso do registo">
+        <span class="auth-stepper-item is-active" data-step-indicator="1">1</span>
+        <span class="auth-stepper-line"></span>
+        <span class="auth-stepper-item" data-step-indicator="2">2</span>
       </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          autocomplete="email"
-          placeholder="tu@email.com"
-          required
-        >
-      </div>
+      <fieldset class="auth-step-panel is-active" data-register-step="1">
+        <div class="auth-step-copy">
+          <span>Primeira pagina</span>
+          <strong>Dados de acesso</strong>
+        </div>
 
-      <div class="form-group">
-        <label for="role">Tipo de Utilizador</label>
-        <select id="role" required>
-          <option value="">Selecione o tipo</option>
-          <option value="empresa">Empresa</option>
-          <option value="atleta">Atleta</option>
-          <option value="cliente">Cliente</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label for="nome">Nome Completo</label>
+          <input
+            id="nome"
+            type="text"
+            autocomplete="name"
+            placeholder="Joao Silva"
+            required
+          >
+        </div>
 
-      <div class="form-group">
-        <label for="password">Palavra-passe</label>
-        <input
-          id="password"
-          type="password"
-          autocomplete="new-password"
-          placeholder="********"
-          required
-          minlength="6"
-        >
-        <small>Minimo 6 caracteres</small>
-      </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            autocomplete="email"
+            placeholder="tu@email.com"
+            required
+          >
+        </div>
 
-      <div class="form-group">
-        <label for="password-confirm">Confirmar Palavra-passe</label>
-        <input
-          id="password-confirm"
-          type="password"
-          autocomplete="new-password"
-          placeholder="********"
-          required
-        >
-      </div>
+        <div class="form-group">
+          <label for="role">Tipo de Utilizador</label>
+          <select id="role" required>
+            <option value="">Selecione o tipo</option>
+            <option value="atleta">Atleta</option>
+            <option value="cliente"></option>
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label for="telefone">Telefone (opcional)</label>
-        <input
-          id="telefone"
-          type="tel"
-          autocomplete="tel"
-          placeholder="+351 000 000 000"
-        >
-      </div>
+        <div class="form-group">
+          <label for="password">Palavra-passe</label>
+          <input
+            id="password"
+            type="password"
+            autocomplete="new-password"
+            placeholder="********"
+            required
+            minlength="6"
+          >
+          <small>Minimo 6 caracteres</small>
+        </div>
 
-      <div class="form-group">
-        <label for="localidade">Localidade/Cidade (opcional)</label>
-        <input
-          id="localidade"
-          type="text"
-          autocomplete="address-level2"
-          placeholder="Ex: Porto, Lisboa"
-        >
-      </div>
+        <div class="form-group">
+          <label for="password-confirm">Confirmar Palavra-passe</label>
+          <input
+            id="password-confirm"
+            type="password"
+            autocomplete="new-password"
+            placeholder="********"
+            required
+          >
+        </div>
 
-      <div class="form-group">
-        <label for="bio">Bio (opcional)</label>
-        <textarea
-          id="bio"
-          placeholder="Conte-nos sobre si..."
-          rows="3"
-          maxlength="500"
-        ></textarea>
-        <small id="bio-counter">0/500</small>
-      </div>
+        <button type="button" class="btn-primary" id="register-next-btn">
+          <span>Continuar</span>
+          <span class="btn-icon">-></span>
+        </button>
+      </fieldset>
 
-      <button type="submit" class="btn-primary" id="register-btn">
-        <span>Criar conta</span>
-        <span class="btn-icon">-></span>
-      </button>
+      <fieldset class="auth-step-panel" data-register-step="2" hidden>
+        <div class="auth-step-copy">
+          <span>Segunda pagina</span>
+          <strong>Perfil publico</strong>
+        </div>
+
+        <div class="form-group">
+          <label for="telefone">Telefone (opcional)</label>
+          <input
+            id="telefone"
+            type="tel"
+            autocomplete="tel"
+            placeholder="+351 000 000 000"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="localidade">Localidade/Cidade (opcional)</label>
+          <input
+            id="localidade"
+            type="text"
+            autocomplete="address-level2"
+            placeholder="Ex: Porto, Lisboa"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="bio">Bio (opcional)</label>
+          <textarea
+            id="bio"
+            placeholder="Conte-nos sobre si..."
+            rows="3"
+            maxlength="500"
+          ></textarea>
+          <small id="bio-counter">0/500</small>
+        </div>
+
+        <div class="auth-step-actions">
+          <button type="button" class="auth-secondary-button" id="register-back-btn">Voltar</button>
+          <button type="submit" class="btn-primary" id="register-btn">
+            <span>Criar conta</span>
+            <span class="btn-icon">-></span>
+          </button>
+        </div>
+      </fieldset>
 
       <div id="msg" class="auth-message"></div>
     </form>

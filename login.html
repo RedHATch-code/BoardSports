@@ -14,9 +14,11 @@
 <div class="auth-container">
   <div class="auth-card">
     <div class="auth-header">
-      <div class="auth-logo"></div>
+      <div class="auth-logo">
+        <img src="assets/images/logotipo.png" alt="BoardSports Logo" class="auth-logo-image">
+      </div>
       <h1>BoardSports</h1>
-      <p>Entra para abrir spots, mercado e perfil num unico fluxo.</p>
+      <p>Entra para abrir spots, videos e perfil num unico fluxo.</p>
     </div>
 
     <form id="login-form" class="auth-form">
@@ -46,6 +48,10 @@
         <button type="button" class="auth-link-button" id="forgot-password">Esqueci-me da palavra-passe</button>
       </div>
 
+      <p class="auth-help-text">
+        O email de recuperacao pode ir para Spam/Promocoes. O link so chega se a conta existir e o envio de emails estiver ativo no Supabase.
+      </p>
+
       <button type="submit" class="btn-primary" id="login-btn">
         <span>Entrar</span>
         <span class="btn-icon">-></span>
@@ -53,8 +59,6 @@
 
       <div id="msg" class="auth-message"></div>
     </form>
-
-    <div class="auth-divider">ou</div>
 
     <div class="auth-footer">
       <p>Ainda nao tens conta?</p>

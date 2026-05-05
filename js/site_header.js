@@ -14,12 +14,11 @@ const PAGE_KEY_MAP = {
   'index.html': 'home',
   'login.html': 'login',
   'register.html': 'register',
-  'dashboard.html': 'home',
-  'produtos.html': 'products',
-  'modalidades.html': 'modalities',
   'mapa.html': 'map',
+  'videos.html': 'videos',
+  'leaderboard.html': 'leaderboard',
   'perfil.html': 'profile',
-  'empresa.html': 'company',
+  'configuracao.html': 'profile',
   'moderacao.html': 'moderation'
 }
 
@@ -52,10 +51,9 @@ function iconSvg(name) {
   const common = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"'
   const icons = {
     home: `<svg class="site-dock__icon" ${common}><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.8V20h14V9.8"/><path d="M9.5 20v-5.5h5V20"/></svg>`,
-    products: `<svg class="site-dock__icon" ${common}><path d="M6 7h12"/><path d="M8 4h8"/><path d="M5 7l1 12h12l1-12"/><path d="M10 11v4"/><path d="M14 11v4"/></svg>`,
-    modalities: `<svg class="site-dock__icon" ${common}><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>`,
     map: `<svg class="site-dock__icon" ${common}><path d="M9 18l-5 2V6l5-2 6 2 5-2v14l-5 2-6-2z"/><path d="M9 4v14"/><path d="M15 6v14"/></svg>`,
-    company: `<svg class="site-dock__icon" ${common}><path d="M4 20h16"/><path d="M6 20V8l6-4 6 4v12"/><path d="M9 11h.01"/><path d="M15 11h.01"/><path d="M9 15h.01"/><path d="M15 15h.01"/><path d="M11 20v-4h2v4"/></svg>`,
+    videos: `<svg class="site-dock__icon" ${common}><rect x="3.5" y="5" width="17" height="14" rx="2.4"/><path d="m10 9 5 3-5 3z"/></svg>`,
+    leaderboard: `<svg class="site-dock__icon" ${common}><path d="M8 21V10"/><path d="M16 21V6"/><path d="M12 21V3"/><path d="M4 21h16"/></svg>`,
     moderation: `<svg class="site-dock__icon" ${common}><path d="m12 3 7 4v5c0 4.5-2.7 7.9-7 9-4.3-1.1-7-4.5-7-9V7l7-4Z"/><path d="m9.5 12 1.8 1.8 3.7-3.8"/></svg>`,
     profile: `<svg class="site-dock__icon" ${common}><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>`,
     login: `<svg class="site-dock__icon" ${common}><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/><path d="M20 4v16"/></svg>`,
@@ -70,17 +68,12 @@ function iconSvg(name) {
 
 function buildDockItems(user) {
   const loginHref = '/login.html'
-  const homeHref = user ? '/dashboard.html' : '/index.html'
   const items = [
-    { key: 'home', title: 'Inicio', href: homeHref, icon: 'home' },
-    { key: 'products', title: 'Produtos', href: '/produtos.html', icon: 'products' },
-    { key: 'modalities', title: 'Modalidades', href: '/modalidades.html', icon: 'modalities' },
-    { key: 'map', title: 'Mapa', href: '/mapa.html', icon: 'map' }
+    { key: 'home', title: 'Inicio', href: '/index.html', icon: 'home' },
+    { key: 'map', title: 'Mapa', href: '/mapa.html', icon: 'map' },
+    { key: 'videos', title: 'Videos', href: '/videos.html', icon: 'videos' },
+    { key: 'leaderboard', title: 'Ranking', href: '/leaderboard.html', icon: 'leaderboard' }
   ]
-
-  if (user?.perfil?.role === 'empresa') {
-    items.push({ key: 'company', title: 'Empresa', href: '/empresa.html', icon: 'company' })
-  }
 
   if (user?.perfil?.is_admin) {
     items.push({ key: 'moderation', title: 'Moderacao', href: '/moderacao.html', icon: 'moderation' })
@@ -125,11 +118,19 @@ function renderDockItems(items, currentKey, extraClass = '') {
   return items.map((item) => renderDockItem(item, currentKey, extraClass)).join('')
 }
 
+function renderAvatarFallback(label = 'BoardSports') {
+  return `
+    <span class="site-dock__avatar-fallback">
+      <img class="site-dock__avatar-logo" src="/assets/images/logotipo.png" alt="${escapeHtml(label)}">
+    </span>
+  `
+}
+
 function renderAvatar(user) {
   if (!user) {
     return `
-      <span class="site-dock__avatar">
-        <span class="site-dock__avatar-fallback">BS</span>
+      <span class="site-dock__avatar is-fallback">
+        ${renderAvatarFallback()}
       </span>
     `
   }
@@ -146,14 +147,14 @@ function renderAvatar(user) {
           alt="Foto de perfil"
           onerror="this.remove(); this.parentElement.classList.add('is-fallback');"
         >
-        <span class="site-dock__avatar-fallback">${initials}</span>
+        ${renderAvatarFallback(`Fallback de ${initials}`)}
       </span>
     `
   }
 
   return `
     <span class="site-dock__avatar is-fallback">
-      <span class="site-dock__avatar-fallback">${initials}</span>
+      ${renderAvatarFallback(`Avatar de ${initials}`)}
     </span>
   `
 }
@@ -172,7 +173,7 @@ function renderUserBlock(user) {
   }
 
   const displayName = escapeHtml(user?.perfil?.nome || user.email || 'Utilizador')
-  const role = escapeHtml(user?.perfil?.role || 'membro')
+  const role = escapeHtml(user?.perfil?.tipo_user || user?.perfil?.role || 'membro')
 
   return `
     <div class="site-dock__user" aria-label="Utilizador">
@@ -352,11 +353,11 @@ async function renderHeader() {
   root.innerHTML = `
     <div class="site-dock__shell">
       <div class="site-dock__brand">
-        <a class="site-dock__brand-link" href="${user ? '/dashboard.html' : '/index.html'}" aria-label="BoardSports">
+        <a class="site-dock__brand-link" href="/index.html" aria-label="BoardSports">
           <span class="site-dock__brand-mark">BS</span>
           <span class="site-dock__brand-copy">
             <span class="site-dock__brand-title">BoardSports</span>
-            <span class="site-dock__brand-subtitle">Spots / gear / crew</span>
+            <span class="site-dock__brand-subtitle">Spots / videos / crew</span>
           </span>
         </a>
       </div>

@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BoardSports - Login</title>
+  <meta name="description" content="Inicia sessao na BoardSports para criar spots, publicar videos, enviar mensagens e acompanhar o teu progresso XP.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Entrar na BoardSports - Acesso a Perfil, Spots e XP">
+  <meta property="og:description" content="Inicia sessao na BoardSports para criar spots, publicar videos, enviar mensagens e acompanhar o teu progresso XP.">
+  <meta property="og:image" content="assets/images/boardsports-mix.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Entrar na BoardSports">
+  <meta name="twitter:description" content="Inicia sessao na BoardSports para criar spots, publicar videos e acompanhar o teu progresso XP.">
+  <meta name="twitter:image" content="assets/images/boardsports-mix.jpg">
+  <link rel="canonical" href="login.html">
+  <link rel="icon" type="image/png" href="assets/images/logotipo.png">
+  <title>Entrar na BoardSports - Acesso a Perfil, Spots e XP</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/auth.css">
   <link rel="stylesheet" href="css/responsive.css">
@@ -15,7 +26,7 @@
   <div class="auth-card">
     <div class="auth-header">
       <div class="auth-logo">
-        <img src="assets/images/logotipo.png" alt="BoardSports Logo" class="auth-logo-image">
+        <img src="assets/images/logotipo.png" alt="BoardSports Logo" class="auth-logo-image" width="76" height="76" loading="eager">
       </div>
       <h1>BoardSports</h1>
       <p>Entra para abrir spots, videos e perfil num unico fluxo.</p>
@@ -49,7 +60,7 @@
       </div>
 
       <p class="auth-help-text">
-        O email de recuperacao pode ir para Spam/Promocoes. O link so chega se a conta existir e o envio de emails estiver ativo no Supabase.
+        Escreve o email da conta para receberes um link seguro de recuperacao.
       </p>
 
       <button type="submit" class="btn-primary" id="login-btn">
@@ -73,7 +84,7 @@
   </div>
 </div>
 
-<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/auth.js?v=phpmailer-20260506"></script>
 <script src="js/responsive.js"></script>
 <script type="module" src="js/site_header.js"></script>
 

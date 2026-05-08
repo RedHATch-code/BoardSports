@@ -294,12 +294,12 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  current_user UUID := auth.uid();
+  v_current_user UUID := auth.uid();
   normalized_estado TEXT := LOWER(BTRIM(p_estado));
   item public.submissoes%ROWTYPE;
   origem_log TEXT;
 BEGIN
-  IF current_user IS NULL OR NOT public.is_admin_user(current_user) THEN
+  IF v_current_user IS NULL OR NOT public.is_admin_user(v_current_user) THEN
     RAISE EXCEPTION 'NOT_AUTHORIZED';
   END IF;
 
@@ -327,7 +327,7 @@ BEGIN
       estado = 'rejeitado',
       motivo_rejeicao = NULLIF(BTRIM(p_motivo_rejeicao), ''),
       xp_atribuido = 0,
-      validado_por = current_user,
+      validado_por = v_current_user,
       data_validacao = CURRENT_TIMESTAMP
     WHERE id = item.id;
 
@@ -350,7 +350,7 @@ BEGIN
     estado = 'validado',
     motivo_rejeicao = NULL,
     xp_atribuido = COALESCE(item.xp_previsto, 0),
-    validado_por = current_user,
+    validado_por = v_current_user,
     data_validacao = CURRENT_TIMESTAMP
   WHERE id = item.id;
 
@@ -498,12 +498,12 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  current_user UUID := auth.uid();
+  v_current_user UUID := auth.uid();
   normalized_status TEXT := LOWER(BTRIM(p_status));
   request_row public.solicitacoes_publicacao%ROWTYPE;
   spot_author UUID;
 BEGIN
-  IF current_user IS NULL OR NOT public.is_admin_user(current_user) THEN
+  IF v_current_user IS NULL OR NOT public.is_admin_user(v_current_user) THEN
     RAISE EXCEPTION 'NOT_AUTHORIZED';
   END IF;
 

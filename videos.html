@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Videos dos Spots - BoardSports</title>
+  <meta name="description" content="Ve videos curtos e longos publicados nos spots da comunidade BoardSports, com ligacao direta ao mapa.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Videos dos Spots BoardSports - Galeria da Comunidade">
+  <meta property="og:description" content="Ve videos curtos e longos publicados nos spots da comunidade BoardSports, com ligacao direta ao mapa.">
+  <meta property="og:image" content="assets/images/boardsports-mix.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Videos dos Spots BoardSports">
+  <meta name="twitter:description" content="Ve videos curtos e longos publicados nos spots da comunidade BoardSports.">
+  <meta name="twitter:image" content="assets/images/boardsports-mix.jpg">
+  <link rel="canonical" href="videos.html">
+  <link rel="icon" type="image/png" href="assets/images/logotipo.png">
+  <title>Videos dos Spots BoardSports - Galeria da Comunidade</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/floating-dock.css">
   <link rel="stylesheet" href="css/responsive.css">
@@ -45,10 +56,31 @@
     </label>
   </section>
 
-  <section class="videos-grid" id="videos-grid" aria-live="polite">
-    <article class="videos-empty-card">
-      <p>A carregar videos...</p>
-    </article>
+  <section class="videos-tabs" aria-label="Tipo de videos">
+    <button type="button" class="videos-tab is-active" data-video-view="shorts">
+      <span>Curtos verticais</span>
+      <strong id="videos-shorts-count">0</strong>
+    </button>
+    <button type="button" class="videos-tab" data-video-view="longs">
+      <span>Longos horizontais</span>
+      <strong id="videos-longs-count">0</strong>
+    </button>
+  </section>
+
+  <section class="videos-view videos-view-shorts is-active" id="videos-shorts-view" aria-live="polite">
+    <div class="videos-shorts-feed" id="videos-shorts-feed">
+      <article class="videos-empty-card">
+        <p>A carregar videos curtos...</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="videos-view videos-view-longs" id="videos-longs-view" aria-live="polite" hidden>
+    <div class="videos-grid" id="videos-grid">
+      <article class="videos-empty-card">
+        <p>A carregar videos longos...</p>
+      </article>
+    </div>
   </section>
 </main>
 

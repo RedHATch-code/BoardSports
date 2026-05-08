@@ -616,6 +616,13 @@ body.profile-page {
 }
 
 @media (max-width: 760px) {
+  .profile-shell {
+    width: min(100% - 14px, 480px);
+    padding-top: 88px;
+    padding-bottom: calc(128px + env(safe-area-inset-bottom));
+    gap: 18px;
+  }
+
   .profile-overview-head {
     grid-template-columns: 1fr;
   }
@@ -627,5 +634,24 @@ body.profile-page {
 
   .profile-stat-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 380px) {
+  .profile-shell {
+    width: min(100% - 12px, 380px);
+    padding-top: 76px;
+    gap: 14px;
+  }
+
+  .profile-overview-hero,
+  .profile-panel {
+    padding: 15px;
+  }
+
+  .profile-overview-copy h1,
+  .profile-hero h1 {
+    font-size: 1.82rem;
+    line-height: 1;
   }
 }

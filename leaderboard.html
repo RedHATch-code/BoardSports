@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leaderboard XP - BoardSports</title>
+  <meta name="description" content="Acompanha o ranking XP global, semanal, mensal e por modalidade na comunidade BoardSports.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Leaderboard BoardSports - Ranking XP da Comunidade">
+  <meta property="og:description" content="Acompanha o ranking XP global, semanal, mensal e por modalidade na comunidade BoardSports.">
+  <meta property="og:image" content="assets/images/boardsports-mix.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Leaderboard BoardSports">
+  <meta name="twitter:description" content="Acompanha o ranking XP global, semanal, mensal e por modalidade.">
+  <meta name="twitter:image" content="assets/images/boardsports-mix.jpg">
+  <link rel="canonical" href="leaderboard.html">
+  <link rel="icon" type="image/png" href="assets/images/logotipo.png">
+  <title>Leaderboard BoardSports - Ranking XP da Comunidade</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/floating-dock.css">
   <link rel="stylesheet" href="css/responsive.css">
@@ -15,7 +26,7 @@
   <section class="xp-hero">
     <div>
       <span class="xp-kicker">BoardSports XP System</span>
-      <h1>Ranking estilo Tony Hawk.</h1>
+      <h1>Ranking XP BoardSports.</h1>
       <p>XP por spots, manobras, combos, likes e conquistas validadas pela moderacao.</p>
     </div>
 
@@ -54,16 +65,16 @@
     </div>
   </section>
 
-  <section class="xp-panel">
-    <div class="xp-panel-head">
-      <div>
-        <h2>Niveis e tipos</h2>
-        <p>O tipo do rider e calculado automaticamente pelo XP total.</p>
-      </div>
-    </div>
+  <details class="xp-panel xp-levels-panel">
+    <summary class="xp-levels-summary">
+      <span>
+        <strong>Niveis e tipos</strong>
+        <small>Ver tabela de progressao XP</small>
+      </span>
+    </summary>
 
     <div id="xp-levels-grid" class="xp-levels-grid"></div>
-  </section>
+  </details>
 </main>
 
 <script type="module" src="js/leaderboard_page.js"></script>

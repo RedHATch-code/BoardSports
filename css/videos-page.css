@@ -27,6 +27,7 @@ body.videos-page {
 
 .videos-hero,
 .videos-toolbar,
+.videos-tabs,
 .videos-card,
 .videos-empty-card,
 .videos-stat-card {
@@ -130,6 +131,127 @@ body.videos-page {
   gap: 18px;
 }
 
+.videos-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 10px;
+  border-radius: 22px;
+}
+
+.videos-tab {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--videos-text);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.videos-tab span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.videos-tab strong {
+  min-width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffd9a6;
+}
+
+.videos-tab.is-active {
+  border-color: rgba(214, 109, 36, 0.48);
+  background: linear-gradient(135deg, rgba(214, 109, 36, 0.24), rgba(47, 158, 163, 0.1));
+  box-shadow: 0 16px 32px rgba(214, 109, 36, 0.12);
+}
+
+.videos-view[hidden] {
+  display: none;
+}
+
+.videos-shorts-feed {
+  height: min(760px, calc(100dvh - 136px));
+  min-height: 560px;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+  display: grid;
+  gap: 18px;
+  padding: 4px 0 28px;
+  scrollbar-width: thin;
+}
+
+.videos-short-card {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  width: min(430px, 100%);
+  height: min(740px, calc(100dvh - 176px));
+  min-height: 540px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid var(--videos-border);
+  border-radius: 28px;
+  background: #05070b;
+  box-shadow: var(--videos-shadow);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.videos-short-media {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: #05070b;
+}
+
+.videos-short-media iframe,
+.videos-short-media video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+  object-fit: cover;
+}
+
+.videos-short-overlay {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px 18px;
+  background: linear-gradient(180deg, rgba(18, 22, 29, 0.98), rgba(3, 5, 9, 0.98));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.videos-short-overlay h2 {
+  margin: 0 0 6px;
+  font-size: 1.25rem;
+}
+
+.videos-short-overlay p,
+.videos-short-overlay small {
+  color: rgba(245, 233, 215, 0.82);
+}
+
+.videos-short-overlay p {
+  margin: 0 0 6px;
+  line-height: 1.45;
+}
+
+.videos-short-actions a {
+  min-height: 38px;
+}
+
 .videos-card {
   display: grid;
   gap: 16px;
@@ -151,6 +273,7 @@ body.videos-page {
   height: 100%;
   border: 0;
   display: block;
+  object-fit: cover;
 }
 
 .videos-card-fallback {
@@ -247,5 +370,63 @@ body.videos-page {
   .videos-hero,
   .videos-toolbar {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .videos-shell {
+    width: min(100%, calc(100vw - 16px));
+    padding-top: 88px;
+    padding-bottom: calc(128px + env(safe-area-inset-bottom));
+  }
+
+  .videos-hero h1 {
+    font-size: clamp(1.95rem, 10vw, 2.45rem);
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .videos-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .videos-shorts-feed {
+    height: calc(100dvh - 184px - env(safe-area-inset-bottom));
+    min-height: 520px;
+    padding-bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+
+  .videos-short-card {
+    width: 100%;
+    height: calc(100dvh - 204px - env(safe-area-inset-bottom));
+    min-height: 520px;
+    border-radius: 22px;
+  }
+
+  .videos-short-overlay {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .videos-shell {
+    width: min(100% - 12px, 380px);
+    padding-top: 76px;
+    gap: 14px;
+  }
+
+  .videos-hero,
+  .videos-toolbar,
+  .videos-tabs,
+  .videos-card {
+    padding: 15px;
+  }
+
+  .videos-hero h1 {
+    font-size: 1.82rem;
+  }
+
+  .videos-hero p {
+    font-size: 0.94rem;
   }
 }

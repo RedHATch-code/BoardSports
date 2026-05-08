@@ -814,7 +814,7 @@ export async function obterPublicacoesPerfil(usuario_id, role = '') {
         titulo: produto.nome || 'Produto',
         descricao: produto.descricao || '',
         destaque: [produto.modalidade_nome, formatarMontante(produto.preco)].filter(Boolean).join(' · '),
-        url: 'produtos.html',
+        url: 'register.html',
         data: produto.data_criacao || null
       })),
       ...(videos || []).map((video) => ({
@@ -1076,6 +1076,7 @@ function buildSpotsBaseSelect(includeVideoUrl = true) {
       criador_id,
       modalidade_id,
       categoria_id,
+      dificuldade,
       publico,
       data_criacao,
       ativo
@@ -1125,6 +1126,7 @@ export async function obterSpots(filtros = {}) {
 
     const spots = (data || []).map((spot) => ({
       ...spot,
+      dificuldade: spot.dificuldade || 'facil',
       video_url: includeVideoUrl ? spot.video_url || null : null
     }))
     if (!spots.length) return []
@@ -1177,6 +1179,20 @@ export async function criarSpot(spotData) {
     if (error && isMissingColumnError(error, 'video_url')) {
       const fallbackPayload = { ...spotData }
       delete fallbackPayload.video_url
+
+      const retry = await supabase
+        .from('spots')
+        .insert([fallbackPayload])
+        .select()
+        .single()
+
+      if (retry.error) throw retry.error
+      return retry.data
+    }
+
+    if (error && isMissingColumnError(error, 'dificuldade')) {
+      const fallbackPayload = { ...spotData }
+      delete fallbackPayload.dificuldade
 
       const retry = await supabase
         .from('spots')
@@ -1292,6 +1308,10 @@ function guardarVideoSpotLocal(payload) {
     autor_id: payload.autor_id,
     video_url: payload.video_url,
     legenda: payload.legenda || null,
+    formato: payload.formato || 'long',
+    plataforma: payload.plataforma || null,
+    analise_score: payload.analise_score || 0,
+    analise_resultado: payload.analise_resultado || {},
     data_criacao: new Date().toISOString(),
     ativo: true
   }
@@ -1301,11 +1321,91 @@ function guardarVideoSpotLocal(payload) {
   return writeLocalSpotVideos(currentItems) ? nextItem : null
 }
 
+export function analisarVideoUrl(url = '') {
+  const raw = String(url || '').trim()
+  const lower = raw.toLowerCase()
+  const result = {
+    url: raw,
+    plataforma: 'link',
+    formato: 'long',
+    orientacao: 'horizontal',
+    score: 42,
+    avisos: [],
+    sugestoes: []
+  }
+
+  if (!raw) {
+    return {
+      ...result,
+      score: 0,
+      avisos: ['URL vazio.']
+    }
+  }
+
+  try {
+    const parsed = new URL(raw)
+    const host = parsed.hostname.replace(/^www\./, '')
+
+    if (host === 'youtu.be' || host.includes('youtube.com')) {
+      result.plataforma = 'youtube'
+      result.score += 22
+    } else if (host.includes('tiktok.com')) {
+      result.plataforma = 'tiktok'
+      result.score += 24
+    } else if (host.includes('instagram.com')) {
+      result.plataforma = 'instagram'
+      result.score += 18
+    } else if (host.includes('vimeo.com')) {
+      result.plataforma = 'vimeo'
+      result.score += 18
+    } else if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(raw)) {
+      result.plataforma = 'ficheiro'
+      result.score += 20
+    } else {
+      result.avisos.push('Plataforma sem embed garantido.')
+      result.sugestoes.push('Usa YouTube, TikTok, Vimeo ou um ficheiro MP4/WebM para melhor compatibilidade.')
+    }
+
+    if (
+      lower.includes('/shorts/')
+      || lower.includes('tiktok.com')
+      || lower.includes('/reel/')
+      || lower.includes('/reels/')
+    ) {
+      result.formato = 'short'
+      result.orientacao = 'vertical'
+      result.score += 22
+      result.sugestoes.push('Este video entra no feed de curtos verticais.')
+    } else {
+      result.formato = 'long'
+      result.orientacao = 'horizontal'
+      result.score += 14
+      result.sugestoes.push('Este video entra na grelha de videos longos horizontais.')
+    }
+
+    if (parsed.protocol !== 'https:') {
+      result.score -= 18
+      result.avisos.push('O link nao usa HTTPS.')
+    }
+  } catch (error) {
+    result.score = 15
+    result.avisos.push('URL invalido ou incompleto.')
+    result.sugestoes.push('Cola um link completo, por exemplo https://youtube.com/...')
+  }
+
+  result.score = Math.max(0, Math.min(100, Math.round(result.score)))
+  if (result.score >= 80) result.qualidade = 'Boa'
+  else if (result.score >= 55) result.qualidade = 'Media'
+  else result.qualidade = 'Baixa'
+
+  return result
+}
+
 export async function obterGaleriaVideosSpots(filtros = {}) {
   try {
     let query = supabase
       .from('spot_videos')
-      .select('id, spot_id, autor_id, video_url, legenda, data_criacao, ativo')
+      .select('id, spot_id, autor_id, video_url, legenda, formato, plataforma, analise_score, analise_resultado, data_criacao, ativo')
       .eq('ativo', true)
       .order('data_criacao', { ascending: false })
 
@@ -1323,7 +1423,13 @@ export async function obterGaleriaVideosSpots(filtros = {}) {
 
     const { data, error } = await query
 
-    if (error && isMissingRelationError(error, 'spot_videos')) {
+    if (error && (
+      isMissingRelationError(error, 'spot_videos')
+      || isMissingColumnError(error, 'formato')
+      || isMissingColumnError(error, 'plataforma')
+      || isMissingColumnError(error, 'analise_score')
+      || isMissingColumnError(error, 'analise_resultado')
+    )) {
       const [legacyItems, localItems] = await Promise.all([
         obterVideosSpotsLegacy(filtros),
         obterVideosSpotsLocal(filtros)
@@ -1346,11 +1452,16 @@ export async function obterGaleriaVideosSpots(filtros = {}) {
 
 export async function publicarVideoSpot({ spot_id, autor_id, video_url, legenda = '' }) {
   try {
+    const analysis = analisarVideoUrl(video_url)
     const payload = {
       spot_id,
       autor_id,
       video_url: String(video_url || '').trim(),
-      legenda: String(legenda || '').trim() || null
+      legenda: String(legenda || '').trim() || null,
+      formato: analysis.formato,
+      plataforma: analysis.plataforma,
+      analise_score: analysis.score,
+      analise_resultado: analysis
     }
 
     if (!payload.spot_id || !payload.autor_id || !payload.video_url) {
@@ -1379,11 +1490,64 @@ export async function publicarVideoSpot({ spot_id, autor_id, video_url, legenda 
       }
     }
 
+    if (error && (
+      isMissingColumnError(error, 'formato')
+      || isMissingColumnError(error, 'plataforma')
+      || isMissingColumnError(error, 'analise_score')
+      || isMissingColumnError(error, 'analise_resultado')
+    )) {
+      const fallbackPayload = { ...payload }
+      delete fallbackPayload.formato
+      delete fallbackPayload.plataforma
+      delete fallbackPayload.analise_score
+      delete fallbackPayload.analise_resultado
+
+      const retry = await supabase
+        .from('spot_videos')
+        .insert([fallbackPayload])
+        .select()
+        .single()
+
+      if (retry.error) throw retry.error
+      return { sucesso: true, data: retry.data }
+    }
+
     if (error) throw error
     return { sucesso: true, data }
   } catch (error) {
     console.error('Erro ao publicar video no spot:', error)
+
+    const rawMessage = error.message || ''
+    if (rawMessage.toLowerCase().includes('row-level security')) {
+      return {
+        sucesso: false,
+        erro: 'A base de dados bloqueou a publicacao por permissao. Faz logout/login e tenta novamente.'
+      }
+    }
+
     return { sucesso: false, erro: error.message || 'Nao foi possivel publicar o video neste spot.' }
+  }
+}
+
+export async function apagarVideoSpot(id) {
+  try {
+    if (!id) return false
+
+    if (String(id).startsWith('local-')) {
+      const nextItems = readLocalSpotVideos().filter((item) => String(item.id) !== String(id))
+      return writeLocalSpotVideos(nextItems)
+    }
+
+    const { error } = await supabase
+      .from('spot_videos')
+      .delete()
+      .eq('id', id)
+
+    if (error) throw error
+    return true
+  } catch (error) {
+    console.error('Erro ao apagar video do spot:', error)
+    return false
   }
 }
 
@@ -1485,6 +1649,7 @@ export async function atualizarSpot(id, updates) {
       video_url: updates.video_url,
       modalidade_id: updates.modalidade_id,
       categoria_id: updates.categoria_id,
+      dificuldade: updates.dificuldade || 'facil',
       coordenadas_lat: updates.coordenadas_lat,
       coordenadas_long: updates.coordenadas_long,
       data_atualizacao: new Date().toISOString()
@@ -1500,6 +1665,21 @@ export async function atualizarSpot(id, updates) {
     if (error && isMissingColumnError(error, 'video_url')) {
       const fallbackPayload = { ...payload }
       delete fallbackPayload.video_url
+
+      const retry = await supabase
+        .from('spots')
+        .update(fallbackPayload)
+        .eq('id', id)
+        .select()
+        .single()
+
+      data = retry.data
+      error = retry.error
+    }
+
+    if (error && isMissingColumnError(error, 'dificuldade')) {
+      const fallbackPayload = { ...payload }
+      delete fallbackPayload.dificuldade
 
       const retry = await supabase
         .from('spots')
@@ -1548,7 +1728,7 @@ export const XP_LEVELS = [
   { level: 6, name: 'Spot Explorer', xp: 2400, tipo_user: 'intermedio' },
   { level: 7, name: 'Combo Maker', xp: 3500, tipo_user: 'intermedio' },
   { level: 8, name: 'Style Master', xp: 5000, tipo_user: 'pro' },
-  { level: 9, name: 'Pro Rider', xp: 7500, tipo_user: 'pro' },
+  { level: 9, name: 'Elite Rider', xp: 7500, tipo_user: 'pro' },
   { level: 10, name: 'BoardSports Legend', xp: 10000, tipo_user: 'pro' }
 ]
 
@@ -1556,6 +1736,9 @@ export const XP_SOURCES = {
   spot_facil: 50,
   spot_medio: 120,
   spot_dificil: 250,
+  checkin_diario: 20,
+  video_diario: 40,
+  spot_diario: 60,
   manobra_facil: 25,
   manobra_media: 75,
   manobra_dificil: 150,
@@ -1563,6 +1746,27 @@ export const XP_SOURCES = {
   like: 2,
   destaque_admin: 300
 }
+
+export const DAILY_ACHIEVEMENTS = [
+  {
+    codigo: 'checkin_diario',
+    titulo: 'Check-in diario',
+    descricao: 'Entra no mapa uma vez por dia.',
+    xp: XP_SOURCES.checkin_diario
+  },
+  {
+    codigo: 'spot_diario',
+    titulo: 'Spot do dia',
+    descricao: 'Cria pelo menos um spot hoje.',
+    xp: XP_SOURCES.spot_diario
+  },
+  {
+    codigo: 'video_diario',
+    titulo: 'Video do dia',
+    descricao: 'Publica pelo menos um video num spot hoje.',
+    xp: XP_SOURCES.video_diario
+  }
+]
 
 function getLevelForXp(xpValue = 0) {
   const xp = Number(xpValue || 0)
@@ -1692,6 +1896,79 @@ export async function obterManobras(filtros = {}) {
     if (isMissingRelationError(error, 'manobras')) return []
     console.error('Erro ao obter manobras:', error)
     return []
+  }
+}
+
+export async function obterConquistasDiarias(userId) {
+  try {
+    if (!userId) return DAILY_ACHIEVEMENTS.map((item) => ({ ...item, concluida: false, reclamada: false }))
+
+    const start = new Date()
+    start.setHours(0, 0, 0, 0)
+
+    const [spotsRes, videosRes, conquistasRes] = await Promise.all([
+      supabase
+        .from('spots')
+        .select('id, data_criacao')
+        .eq('criador_id', userId)
+        .gte('data_criacao', start.toISOString()),
+      supabase
+        .from('spot_videos')
+        .select('id, data_criacao')
+        .eq('autor_id', userId)
+        .eq('ativo', true)
+        .gte('data_criacao', start.toISOString()),
+      supabase
+        .from('conquistas_diarias')
+        .select('codigo, xp_ganho, data_conquista')
+        .eq('user_id', userId)
+        .eq('data_conquista', start.toISOString().slice(0, 10))
+    ])
+
+    const spotCount = spotsRes.error ? 0 : (spotsRes.data || []).length
+    const videoCount = videosRes.error ? 0 : (videosRes.data || []).length
+    const claimed = new Set((conquistasRes.error ? [] : conquistasRes.data || []).map((item) => item.codigo))
+
+    return DAILY_ACHIEVEMENTS.map((item) => {
+      const concluida = item.codigo === 'checkin_diario'
+        || (item.codigo === 'spot_diario' && spotCount > 0)
+        || (item.codigo === 'video_diario' && videoCount > 0)
+
+      return {
+        ...item,
+        concluida,
+        reclamada: claimed.has(item.codigo),
+        progresso: item.codigo === 'spot_diario'
+          ? spotCount
+          : item.codigo === 'video_diario'
+            ? videoCount
+            : 1
+      }
+    })
+  } catch (error) {
+    if (isMissingRelationError(error, 'conquistas_diarias')) {
+      return DAILY_ACHIEVEMENTS.map((item) => ({ ...item, concluida: false, reclamada: false, progresso: 0 }))
+    }
+
+    console.error('Erro ao obter conquistas diarias:', error)
+    return []
+  }
+}
+
+export async function reclamarConquistaDiaria(codigo) {
+  try {
+    const { data, error } = await supabase.rpc('reclamar_conquista_diaria', {
+      p_codigo: codigo
+    })
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Erro ao reclamar conquista diaria:', error)
+    return {
+      sucesso: false,
+      erro: error.message || 'Nao foi possivel reclamar a conquista diaria.'
+    }
   }
 }
 

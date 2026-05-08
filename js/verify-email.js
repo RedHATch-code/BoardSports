@@ -17,6 +17,8 @@ const verifyIcon = document.getElementById('verify-icon')
 const verifyButtons = document.getElementById('verify-buttons')
 const errorButtons = document.getElementById('error-buttons')
 const loadingText = document.getElementById('loading-text')
+const gotoDashboardButton = document.getElementById('goto-dashboard')
+const resendEmailButton = document.getElementById('resend-email')
 
 let userEmail = obterEmailRegistoPendente()
 
@@ -31,6 +33,8 @@ function mostrarSucesso() {
 
   verifyButtons.style.display = 'flex'
   errorButtons.style.display = 'none'
+  gotoDashboardButton.style.display = ''
+  resendEmailButton.style.display = 'none'
 
   setTimeout(() => {
     window.location.href = '/mapa.html'
@@ -50,6 +54,8 @@ function mostrarAguardando() {
 
   verifyButtons.style.display = 'flex'
   errorButtons.style.display = 'none'
+  gotoDashboardButton.style.display = 'none'
+  resendEmailButton.style.display = ''
 }
 
 function mostrarErro(mensagem) {
@@ -63,6 +69,8 @@ function mostrarErro(mensagem) {
 
   verifyButtons.style.display = 'none'
   errorButtons.style.display = 'flex'
+  gotoDashboardButton.style.display = ''
+  resendEmailButton.style.display = ''
 }
 
 async function verificarEmail() {
@@ -104,17 +112,17 @@ async function verificarEmail() {
   }
 }
 
-document.getElementById('goto-dashboard').addEventListener('click', () => {
+gotoDashboardButton.addEventListener('click', () => {
   window.location.href = '/mapa.html'
 })
 
-document.getElementById('resend-email').addEventListener('click', async () => {
+resendEmailButton.addEventListener('click', async () => {
   if (!userEmail) {
     showToast('Nao existe email pendente para reenvio.', { type: 'error' })
     return
   }
 
-  const btn = document.getElementById('resend-email')
+  const btn = resendEmailButton
   btn.disabled = true
   btn.textContent = 'A enviar...'
 

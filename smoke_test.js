@@ -2,12 +2,24 @@ const baseUrl = process.env.BASE_URL || process.argv[2] || 'http://127.0.0.1:800
 
 const checks = [
   {
+    path: '/',
+    markers: ['<title>', 'data-cinematic-reel', 'class="platform-proof"', 'data-home-spots-list', 'class="map-story"', 'class="xp-arena"', 'class="business-cta"', 'class="shop-window"']
+  },
+  {
     path: '/login.html',
     markers: ['id="login-form"', 'autocomplete="email"', 'autocomplete="current-password"']
   },
   {
     path: '/register.html',
     markers: ['id="register-form"', 'autocomplete="new-password"', 'autocomplete="tel"']
+  },
+  {
+    path: '/reset-password.html',
+    markers: ['id="reset-form"', 'id="new-password"', 'id="confirm-password"']
+  },
+  {
+    path: '/verify-email.html',
+    markers: ['id="verify-icon"', 'id="retry-verify"', 'id="back-login"']
   },
   {
     path: '/perfil.html',
@@ -19,7 +31,7 @@ const checks = [
   },
   {
     path: '/mapa.html',
-    markers: ['id="map"', 'id="spots-container"', 'id="form-video"']
+    markers: ['id="map"', 'id="spots-container"', 'id="form-video"', 'id="form-xp"']
   },
   {
     path: '/videos.html',
@@ -31,7 +43,7 @@ const checks = [
   },
   {
     path: '/moderacao.html',
-    markers: ['id="moderation-list"', 'id="moderation-refresh"']
+    markers: ['id="moderation-list"', 'id="moderation-refresh"', 'id="xp-submissions-list"']
   }
 ]
 

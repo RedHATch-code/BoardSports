@@ -24,8 +24,6 @@ const state = {
 const ui = {
   displayName: null,
   displayBio: null,
-  roleBadge: null,
-  xpType: null,
   xpLevel: null,
   xpName: null,
   xpProgress: null,
@@ -59,8 +57,6 @@ async function inicializarPerfil() {
 function cacheDom() {
   ui.displayName = document.getElementById('profile-display-name')
   ui.displayBio = document.getElementById('profile-display-bio')
-  ui.roleBadge = document.getElementById('profile-role-badge')
-  ui.xpType = document.getElementById('profile-xp-type')
   ui.xpLevel = document.getElementById('profile-xp-level')
   ui.xpName = document.getElementById('profile-xp-name')
   ui.xpProgress = document.getElementById('profile-xp-progress')
@@ -121,7 +117,6 @@ function renderHero() {
 
   ui.displayName.textContent = displayName
   ui.displayBio.textContent = bio
-  ui.roleBadge.textContent = state.perfil?.role || 'membro'
   ui.adminLinkWrapper.hidden = !state.perfil?.is_admin
   ui.publicationsCount.textContent = String(state.publicacoes.length)
   ui.followersCount.textContent = String(state.seguidores.length)
@@ -131,7 +126,6 @@ function renderHero() {
 function renderXpSummary() {
   const xp = obterResumoXp(state.perfil)
 
-  ui.xpType.textContent = xp.tipo_user
   ui.xpLevel.textContent = `Nivel ${xp.nivel_xp}`
   ui.xpName.textContent = xp.nivel_nome
   ui.xpProgress.style.width = `${xp.progresso_percentagem}%`
@@ -199,7 +193,7 @@ function renderSeguidores() {
   ui.followersList.innerHTML = state.seguidores.map((item) => {
     const follower = item.perfil || {}
     const name = follower.nome || follower.email || 'Utilizador'
-    const subtitle = [follower.role, truncateText(follower.bio, 60)].filter(Boolean).join(' · ')
+    const subtitle = truncateText(follower.bio, 60)
 
     return `
       <article class="profile-follower-card">
@@ -300,7 +294,7 @@ function renderMiniAvatar(perfil) {
   if (photoUrl) {
     return `
       <span class="profile-mini-avatar">
-        <img src="${photoUrl}" alt="Avatar de ${escapeHtml(perfil?.nome || 'utilizador')}" onerror="this.remove(); this.parentElement.classList.add('is-fallback');">
+        <img src="${photoUrl}" alt="Avatar de ${escapeHtml(perfil?.nome || 'utilizador')}" width="42" height="42" loading="lazy" decoding="async" onerror="this.remove(); this.parentElement.classList.add('is-fallback');">
         <span class="profile-mini-avatar-fallback">${initials}</span>
       </span>
     `

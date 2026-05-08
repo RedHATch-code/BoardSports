@@ -24,6 +24,10 @@ body.moderation-page {
   gap: 22px;
 }
 
+.moderation-shell[data-admin-state="checking"] > * {
+  visibility: hidden;
+}
+
 .moderation-hero,
 .moderation-panel,
 .moderation-card,

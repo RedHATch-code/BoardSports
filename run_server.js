@@ -2,7 +2,7 @@
 
 /**
  * BoardSports Inc - Servidor Local de Desenvolvimento
- * Executa um servidor HTTP simples para testar o site localmente
+ * Executa um servidor HTTP simples para testar o site localmente.
  */
 
 const http = require('http');
@@ -32,30 +32,24 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  // Parse URL
   const parsedUrl = url.parse(req.url, true);
   let pathname = parsedUrl.pathname;
 
-  // Se a URL termina com /, servir index.html
   if (pathname === '/' || pathname.endsWith('/')) {
-    pathname = pathname === '/' ? '/index.html' : pathname + 'index.html';
+    pathname = pathname === '/' ? '/index.html' : `${pathname}index.html`;
   }
 
-  // Caminho do arquivo
-  let filePath = path.join(ROOT_DIR, pathname);
+  const filePath = path.join(ROOT_DIR, pathname);
 
-  // Prevenir directory traversal
   if (!filePath.startsWith(ROOT_DIR)) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });
     res.end('403 Forbidden');
     return;
   }
 
-  // Ler o arquivo
   fs.readFile(filePath, (err, data) => {
     if (err) {
       if (err.code === 'ENOENT') {
-        // Arquivo não encontrado, tentar index.html para rotas
         const indexPath = path.join(ROOT_DIR, 'index.html');
         fs.readFile(indexPath, (indexErr, indexData) => {
           if (indexErr) {
@@ -73,16 +67,14 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    // Definir Content-Type
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-    // Headers para evitar cache
     res.writeHead(200, {
       'Content-Type': contentType,
       'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
-      'Pragma': 'no-cache',
-      'Expires': '0'
+      Pragma: 'no-cache',
+      Expires: '0',
     });
 
     res.end(data);
@@ -91,17 +83,19 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
   console.log('\n' + '='.repeat(60));
-  console.log('🏄 BoardSports Inc - Servidor de Desenvolvimento');
+  console.log('BoardSports Inc - Servidor de Desenvolvimento');
   console.log('='.repeat(60));
   console.log();
-  console.log(`✓ Servidor iniciado em http://localhost:${PORT}`);
-  console.log(`✓ Diretório: ${ROOT_DIR}`);
+  console.log(`OK Servidor iniciado em http://localhost:${PORT}`);
+  console.log(`OK Diretorio: ${ROOT_DIR}`);
   console.log();
-  console.log('URLs disponíveis:');
-  console.log(`  • Inicio: http://localhost:${PORT}/index.html`);
-  console.log(`  • Login: http://localhost:${PORT}/login.html`);
-  console.log(`  • Registo: http://localhost:${PORT}/register.html`);
-  console.log(`  • Dashboard: http://localhost:${PORT}/dashboard.html`);
+  console.log('URLs disponiveis:');
+  console.log(`  - Inicio: http://localhost:${PORT}/index.html`);
+  console.log(`  - Login: http://localhost:${PORT}/login.html`);
+  console.log(`  - Registo: http://localhost:${PORT}/register.html`);
+  console.log(`  - Perfil: http://localhost:${PORT}/perfil.html`);
+  console.log(`  - Mapa: http://localhost:${PORT}/mapa.html`);
+  console.log(`  - Moderacao: http://localhost:${PORT}/moderacao.html`);
   console.log();
   console.log('Pressione Ctrl+C para parar o servidor');
   console.log('='.repeat(60));

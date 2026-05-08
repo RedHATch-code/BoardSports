@@ -45,6 +45,7 @@ async function initModeracaoPage() {
     return
   }
 
+  document.querySelector('.moderation-shell')?.setAttribute('data-admin-state', 'ready')
   ui.userLabel.textContent = state.user.perfil?.nome || state.user.email || 'Admin'
   await Promise.all([
     carregarSolicitacoes(),
@@ -86,6 +87,7 @@ function renderAccessDenied() {
   const shell = document.querySelector('.moderation-shell')
   if (!shell) return
 
+  shell.setAttribute('data-admin-state', 'denied')
   shell.innerHTML = `
     <section class="moderation-hero">
       <div>
@@ -108,8 +110,18 @@ async function carregarSolicitacoes() {
 }
 
 async function carregarSubmissoesXp() {
-  state.submissoesXp = await obterSubmissoesModeracao({ estado: 'pendente' })
-  renderSubmissoesXp()
+  try {
+    state.submissoesXp = await obterSubmissoesModeracao({ estado: 'pendente' })
+    renderSubmissoesXp()
+  } catch (error) {
+    console.warn('Sistema XP indisponivel na moderacao:', error)
+    ui.xpList.innerHTML = `
+      <article class="moderation-empty-card">
+        <p>O sistema de XP ainda nao foi aplicado a esta base de dados.</p>
+        <p>Aplica as migrations da pasta <code>supabase/migrations</code> para ativar as submissoes XP.</p>
+      </article>
+    `
+  }
 }
 
 function getFilteredSolicitacoes() {

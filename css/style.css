@@ -70,6 +70,26 @@ a:hover {
   color: var(--brand-sand);
 }
 
+.skip-link {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 10000;
+  transform: translateY(-140%);
+  padding: 10px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-orange);
+  color: #111319;
+  font-weight: 800;
+  box-shadow: var(--shadow-soft);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  color: #111319;
+}
+
 button,
 input,
 select,

@@ -79,7 +79,7 @@ function renderLeaderboard() {
   if (!riders.length) {
     ui.list.innerHTML = `
       <article class="xp-empty-card">
-        <p>Ainda nao ha XP registado. Aplica o SQL do BoardSports XP System e valida submissões para popular o ranking.</p>
+        <p>Ainda nao ha XP registado. Aplica o SQL do BoardSports XP System e valida submissoes para popular o ranking.</p>
       </article>
     `
     return
@@ -88,17 +88,19 @@ function renderLeaderboard() {
   ui.list.innerHTML = riders.map((rider, index) => {
     const summary = obterResumoXp(rider)
     const rank = index + 1
-    const medal = rank === 1 ? 'Ouro' : rank === 2 ? 'Prata' : rank === 3 ? 'Bronze' : `#${rank}`
     const rankingXp = Number(rider.xp_ranking ?? rider.periodo_xp ?? rider.xp_total ?? 0)
 
     return `
-      <article class="leaderboard-card ${rank <= 3 ? 'is-podium' : ''}">
-        <div class="leaderboard-rank">${escapeHtml(medal)}</div>
+      <article class="leaderboard-card">
+        <div class="leaderboard-rank">
+          <span>#${rank}</span>
+          <strong>Nivel ${summary.nivel_xp}</strong>
+        </div>
         <div class="leaderboard-rider">
           ${renderAvatar(rider)}
           <div>
             <h3>${escapeHtml(rider.nome || rider.email || 'Rider BoardSports')}</h3>
-            <p>${escapeHtml(summary.nivel_nome)} · ${escapeHtml(summary.tipo_user)}</p>
+            <p>${escapeHtml(summary.nivel_nome)}</p>
           </div>
         </div>
         <div class="leaderboard-score">
@@ -113,7 +115,6 @@ function renderLeaderboard() {
 function renderLevels() {
   ui.levelsGrid.innerHTML = XP_LEVELS.map((level) => `
     <article class="xp-level-card">
-      <span>${escapeHtml(level.tipo_user)}</span>
       <strong>Nivel ${level.level}</strong>
       <h3>${escapeHtml(level.name)}</h3>
       <p>${level.xp} XP</p>
@@ -129,7 +130,7 @@ function renderAvatar(rider) {
   if (photoUrl) {
     return `
       <span class="leaderboard-avatar">
-        <img src="${escapeHtml(photoUrl)}" alt="Foto de ${escapeHtml(label)}" onerror="this.remove(); this.parentElement.classList.add('is-fallback');">
+        <img src="${escapeHtml(photoUrl)}" alt="Foto de ${escapeHtml(label)}" width="56" height="56" loading="lazy" decoding="async" onerror="this.remove(); this.parentElement.classList.add('is-fallback');">
         <span>${initials}</span>
       </span>
     `

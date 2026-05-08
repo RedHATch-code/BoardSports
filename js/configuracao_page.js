@@ -21,11 +21,9 @@ const state = {
 const ui = {
   heroName: null,
   heroCopy: null,
-  roleBadge: null,
   adminLinkWrapper: null,
   form: null,
   email: null,
-  role: null,
   nome: null,
   telefone: null,
   localidade: null,
@@ -54,11 +52,9 @@ async function inicializarConfiguracao() {
 function cacheDom() {
   ui.heroName = document.getElementById('profile-hero-name')
   ui.heroCopy = document.getElementById('profile-hero-copy')
-  ui.roleBadge = document.getElementById('profile-role-badge')
   ui.adminLinkWrapper = document.getElementById('profile-admin-link-wrapper')
   ui.form = document.getElementById('profile-form')
   ui.email = document.getElementById('email')
-  ui.role = document.getElementById('role')
   ui.nome = document.getElementById('nome')
   ui.telefone = document.getElementById('telefone')
   ui.localidade = document.getElementById('localidade')
@@ -91,7 +87,6 @@ async function carregarConfiguracao() {
     if (!state.perfil) return
 
     ui.email.value = state.usuario.email || ''
-    ui.role.value = state.perfil.tipo_user || 'principiante'
     ui.nome.value = state.perfil.nome || ''
     ui.telefone.value = state.perfil.telefone || ''
     ui.localidade.value = state.perfil.localidade || ''
@@ -113,7 +108,6 @@ function renderHero() {
   const displayName = ui.nome.value.trim() || state.perfil?.nome || state.usuario?.email || 'Configuracao'
   ui.heroName.textContent = `Configuracao de ${displayName}`
   ui.heroCopy.textContent = 'Atualiza foto, bio e dados da conta sem expor os detalhes na pagina principal do perfil.'
-  ui.roleBadge.textContent = state.perfil?.tipo_user || state.perfil?.role || 'membro'
   ui.adminLinkWrapper.hidden = !state.perfil?.is_admin
 }
 

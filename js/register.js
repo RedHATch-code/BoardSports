@@ -4,7 +4,6 @@ const nomeInput = document.getElementById('nome')
 const emailInput = document.getElementById('email')
 const passwordInput = document.getElementById('password')
 const passwordConfirmInput = document.getElementById('password-confirm')
-const roleSelect = document.getElementById('role')
 const telefoneInput = document.getElementById('telefone')
 const localidadeInput = document.getElementById('localidade')
 const bioInput = document.getElementById('bio')
@@ -50,9 +49,8 @@ function validateFirstStep() {
   const email = emailInput.value.trim()
   const password = passwordInput.value.trim()
   const passwordConfirm = passwordConfirmInput.value.trim()
-  const role = roleSelect.value
 
-  if (!nome || !email || !role || !password || !passwordConfirm) {
+  if (!nome || !email || !password || !passwordConfirm) {
     mostrarMensagem('Preenche nome, email e palavra-passe.', 'error')
     return false
   }
@@ -96,7 +94,7 @@ registerForm.onsubmit = async (event) => {
   const email = emailInput.value.trim()
   const password = passwordInput.value.trim()
   const passwordConfirm = passwordConfirmInput.value.trim()
-  const role = 'principiante'
+  const tipoUser = 'principiante'
   const telefone = telefoneInput.value.trim()
   const localidade = localidadeInput.value.trim()
   const bio = bioInput.value.trim()
@@ -111,7 +109,9 @@ registerForm.onsubmit = async (event) => {
   registerBtn.disabled = true
   registerBtn.innerHTML = '<span>A criar conta...</span>'
 
-  const resultado = await fazerRegistro(email, password, role, {
+  const resultado = await fazerRegistro(email, password, tipoUser, {
+    role: 'atleta',
+    tipo_user: tipoUser,
     nome,
     telefone: telefone || null,
     localidade: localidade || null,
@@ -120,7 +120,7 @@ registerForm.onsubmit = async (event) => {
 
   if (resultado.sucesso) {
     if (resultado.precisaVerificacao) {
-      mostrarMensagem('Conta criada. Verifica o email para ativar o acesso.', 'success')
+      mostrarMensagem('Conta criada. Verifica o teu email para ativar a conta.', 'success')
       setTimeout(() => {
         window.location.href = '/verify-email.html'
       }, 1200)
@@ -131,6 +131,13 @@ registerForm.onsubmit = async (event) => {
     setTimeout(() => {
       window.location.href = '/mapa.html'
     }, 1200)
+    return
+  }
+
+  if (resultado.codigo === 'confirmation_email_failed') {
+    mostrarMensagem(`Falha no registo: ${resultado.erro}`, 'error')
+    registerBtn.disabled = false
+    registerBtn.innerHTML = textoOriginal
     return
   }
 

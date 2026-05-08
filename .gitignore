@@ -1,4 +1,5 @@
 node_modules/
+dist/
 apps/web/.next/
 apps/web/node_modules/
 *.tsbuildinfo
@@ -6,3 +7,10 @@ apps/web/node_modules/
 desktop.ini
 Desktop.ini
 env.js
+api/mail-config.php
+
+# Local Netlify folder
+.netlify
+
+# Documents
+*.pdf

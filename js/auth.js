@@ -1,7 +1,6 @@
 import {
   fazerLogin,
-  pedirRecuperacaoPassword,
-  resendEmailConfirmation
+  pedirRecuperacaoPassword
 } from './auth_utils.js'
 
 const emailInput = document.getElementById('email')
@@ -77,7 +76,11 @@ loginForm.onsubmit = async (event) => {
   }
 
   if (resultado.codigo === 'email_not_confirmed') {
-    await resendEmailConfirmation(email).catch(() => null)
+    mostrarMensagem(resultado.erro, 'error')
+    setTimeout(() => {
+      window.location.href = '/verify-email.html'
+    }, 1800)
+    return
   }
 
   mostrarMensagem(`Falha no login: ${resultado.erro}`, 'error')
@@ -100,9 +103,9 @@ forgotPasswordButton?.addEventListener('click', async () => {
   const resultado = await pedirRecuperacaoPassword(email)
 
   if (resultado.sucesso) {
-    mostrarMensagem('Pedido enviado. Se a conta existir, vais receber o email de recuperacao. Verifica tambem Spam/Promocoes.', 'success')
+    mostrarMensagem('Pedido enviado. Se existir uma conta com esse email, vais receber o link de recuperacao.', 'success')
   } else {
-    mostrarMensagem(`Falha ao enviar recuperacao: ${resultado.erro}`, 'error')
+    mostrarMensagem(`Falha na recuperacao: ${resultado.erro}`, 'error')
   }
 
   forgotPasswordButton.disabled = false

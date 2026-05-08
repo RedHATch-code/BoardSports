@@ -3,7 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mapa de Spots - BoardSports</title>
+  <meta name="description" content="Explora spots publicos no mapa, cria novos locais, publica videos e submete provas para ganhar XP.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Mapa de Spots BoardSports - Descobre e Publica Locais">
+  <meta property="og:description" content="Explora spots publicos no mapa, cria novos locais, publica videos e submete provas para ganhar XP.">
+  <meta property="og:image" content="assets/images/boardsports-mix.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mapa de Spots BoardSports">
+  <meta name="twitter:description" content="Explora spots publicos no mapa, cria novos locais, publica videos e submete provas para ganhar XP.">
+  <meta name="twitter:image" content="assets/images/boardsports-mix.jpg">
+  <link rel="canonical" href="mapa.html">
+  <link rel="icon" type="image/png" href="assets/images/logotipo.png">
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossorigin>
+  <title>Mapa de Spots BoardSports - Descobre e Publica Locais</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/responsive.css">
   <link rel="stylesheet" href="css/floating-dock.css">
@@ -58,11 +71,25 @@
     </div>
   </section>
 
+  <section class="map-daily-panel">
+    <div class="map-section-head">
+      <div>
+        <h2>Conquistas diarias</h2>
+        <p>Completa tarefas simples uma vez por dia para ganhar XP extra.</p>
+      </div>
+    </div>
+    <div id="daily-achievements" class="daily-achievements-grid">
+      <article class="map-empty-card">
+        <p>A carregar conquistas...</p>
+      </article>
+    </div>
+  </section>
+
   <section class="map-panel">
     <div class="map-section-head">
       <div>
         <h2>Mapa</h2>
-        <p>Clica num spot para abrir detalhes ou usa "Novo spot" e depois escolhe um ponto no mapa. Para publicar um video, abre um spot existente e usa o botao dedicado.</p>
+        <p>Clica num spot para abrir detalhes. Para criar um novo spot podes pesquisar uma morada, escrever coordenadas ou escolher um ponto no mapa.</p>
       </div>
     </div>
     <div id="map"></div>
@@ -91,6 +118,8 @@
     </div>
 
     <form id="form-spot" class="map-form">
+      <p class="map-modal-copy">Podes criar um spot mesmo sem estares no local. Pesquisa o nome/morada do sitio, escreve as coordenadas manualmente ou escolhe no mapa.</p>
+
       <label class="map-field">
         <span>Nome do spot</span>
         <input type="text" id="spot-nome" required placeholder="Ex: Praia da Aguda">
@@ -122,20 +151,40 @@
         </label>
       </div>
 
+      <label class="map-field">
+        <span>Dificuldade do spot</span>
+        <select id="spot-dificuldade" required>
+          <option value="facil">Facil</option>
+          <option value="media">Media</option>
+          <option value="dificil">Dificil</option>
+        </select>
+      </label>
+
+      <div class="map-location-search">
+        <label class="map-field">
+          <span>Pesquisar local ou morada</span>
+          <input type="search" id="spot-location-query" placeholder="Ex: Praia de Matosinhos, Porto">
+        </label>
+        <button type="button" id="btn-search-spot-location" class="map-secondary-button">Pesquisar</button>
+      </div>
+
+      <p id="spot-location-status" class="map-location-status" aria-live="polite"></p>
+
       <div class="map-form-grid">
         <label class="map-field">
           <span>Latitude</span>
-          <input type="number" id="spot-lat" step="0.0001" required readonly placeholder="Escolhe no mapa">
+          <input type="number" id="spot-lat" step="0.000001" min="-90" max="90" required placeholder="Ex: 41.1756">
         </label>
 
         <label class="map-field">
           <span>Longitude</span>
-          <input type="number" id="spot-lng" step="0.0001" required readonly placeholder="Escolhe no mapa">
+          <input type="number" id="spot-lng" step="0.000001" min="-180" max="180" required placeholder="Ex: -8.6909">
         </label>
       </div>
 
       <div class="map-form-actions">
         <button type="button" class="map-secondary-button" data-close-spot>Cancelar</button>
+        <button type="button" id="btn-pick-spot-on-map" class="map-secondary-button">Escolher no mapa</button>
         <button type="submit" class="map-primary-button">Guardar spot</button>
       </div>
     </form>
@@ -160,6 +209,11 @@
         <input type="url" id="video-url" required placeholder="https://youtube.com/...">
       </label>
 
+      <div id="video-analysis" class="video-analysis-card">
+        <strong>Analisador de video</strong>
+        <p>Cola um link para analisar plataforma, formato e compatibilidade antes de publicar.</p>
+      </div>
+
       <label class="map-field">
         <span>Legenda</span>
         <textarea id="video-legenda" rows="4" placeholder="Adiciona uma descricao curta para este video."></textarea>
@@ -168,6 +222,52 @@
       <div class="map-form-actions">
         <button type="button" class="map-secondary-button" data-close-video>Cancelar</button>
         <button type="submit" class="map-primary-button">Publicar video</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="modal-xp" class="map-modal" hidden>
+  <div class="map-modal-card">
+    <div class="map-modal-head">
+      <div>
+        <span class="map-modal-kicker">Submeter XP</span>
+        <h2 id="xp-modal-title">Spot selecionado</h2>
+      </div>
+      <button type="button" class="map-modal-close" data-close-xp>&times;</button>
+    </div>
+
+    <form id="form-xp" class="map-form">
+      <p id="xp-modal-copy" class="map-modal-copy">Envia uma prova para a moderacao validar XP neste spot.</p>
+
+      <label class="map-field">
+        <span>Tipo de submissao</span>
+        <select id="xp-tipo" required>
+          <option value="spot">Completar spot</option>
+          <option value="manobra">Manobra no spot</option>
+        </select>
+      </label>
+
+      <label id="xp-manobra-field" class="map-field" hidden>
+        <span>Manobra</span>
+        <select id="xp-manobra">
+          <option value="">Selecionar manobra</option>
+        </select>
+      </label>
+
+      <label class="map-field">
+        <span>URL da prova</span>
+        <input type="url" id="xp-prova-url" required placeholder="https://youtube.com/...">
+      </label>
+
+      <div id="xp-preview" class="xp-preview-card">
+        <strong>XP previsto</strong>
+        <p>Escolhe o tipo de submissao para calcular o XP antes de enviar.</p>
+      </div>
+
+      <div class="map-form-actions">
+        <button type="button" class="map-secondary-button" data-close-xp>Cancelar</button>
+        <button type="submit" class="map-primary-button">Enviar para moderacao</button>
       </div>
     </form>
   </div>

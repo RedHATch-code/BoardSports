@@ -103,6 +103,7 @@ function renderDockItem(item, currentKey, extraClass = '') {
     return `
       <button type="button" ${sharedAttributes} data-action="${item.action}">
         ${iconSvg(item.icon)}
+        <span class="site-dock__label">${escapeHtml(item.title)}</span>
       </button>
     `
   }
@@ -110,6 +111,7 @@ function renderDockItem(item, currentKey, extraClass = '') {
   return `
     <a ${sharedAttributes} href="${item.href}" ${item.key === currentKey ? 'aria-current="page"' : ''}>
       ${iconSvg(item.icon)}
+      <span class="site-dock__label">${escapeHtml(item.title)}</span>
     </a>
   `
 }
@@ -118,10 +120,19 @@ function renderDockItems(items, currentKey, extraClass = '') {
   return items.map((item) => renderDockItem(item, currentKey, extraClass)).join('')
 }
 
+function buildMobileDockItems() {
+  return [
+    { key: 'home', title: 'Home', href: '/index.html', icon: 'home' },
+    { key: 'map', title: 'Mapa', href: '/mapa.html', icon: 'map' },
+    { key: 'leaderboard', title: 'Ranking', href: '/leaderboard.html', icon: 'leaderboard' },
+    { key: 'profile', title: 'Perfil', href: '/perfil.html', icon: 'profile' }
+  ]
+}
+
 function renderAvatarFallback(label = 'BoardSports') {
   return `
     <span class="site-dock__avatar-fallback">
-      <img class="site-dock__avatar-logo" src="/assets/images/logotipo.png" alt="${escapeHtml(label)}">
+      <img class="site-dock__avatar-logo" src="/assets/images/logotipo.png" alt="${escapeHtml(label)}" width="38" height="38" decoding="async">
     </span>
   `
 }
@@ -145,6 +156,10 @@ function renderAvatar(user) {
           class="site-dock__avatar-image"
           src="${photoUrl}"
           alt="Foto de perfil"
+          width="38"
+          height="38"
+          loading="lazy"
+          decoding="async"
           onerror="this.remove(); this.parentElement.classList.add('is-fallback');"
         >
         ${renderAvatarFallback(`Fallback de ${initials}`)}
@@ -173,14 +188,13 @@ function renderUserBlock(user) {
   }
 
   const displayName = escapeHtml(user?.perfil?.nome || user.email || 'Utilizador')
-  const role = escapeHtml(user?.perfil?.tipo_user || user?.perfil?.role || 'membro')
 
   return `
     <div class="site-dock__user" aria-label="Utilizador">
       ${renderAvatar(user)}
       <span class="site-dock__user-copy">
         <span class="site-dock__user-name">${displayName}</span>
-        <span class="site-dock__user-role">${role}</span>
+        <span class="site-dock__user-role">Sessao ativa</span>
       </span>
     </div>
   `
@@ -349,6 +363,7 @@ async function renderHeader() {
   const currentKey = getCurrentPageKey()
   const user = await obterUsuarioAtual()
   const items = buildDockItems(user)
+  const mobileItems = buildMobileDockItems()
 
   root.innerHTML = `
     <div class="site-dock__shell">
@@ -370,18 +385,7 @@ async function renderHeader() {
         </nav>
 
         <div class="site-dock__mobile" data-dock-mobile>
-          <div class="site-dock__mobile-panel">
-            ${renderDockItems(items, currentKey, 'site-dock__item--mobile')}
-          </div>
-          <button
-            type="button"
-            class="site-dock__mobile-toggle"
-            data-dock-mobile-toggle
-            aria-label="Abrir navegacao"
-            aria-expanded="false"
-          >
-            ${iconSvg('menu')}
-          </button>
+          ${renderDockItems(mobileItems, currentKey, 'site-dock__item--mobile')}
         </div>
       </div>
 

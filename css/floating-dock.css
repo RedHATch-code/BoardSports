@@ -208,6 +208,10 @@ body.site-dock-auth {
   transition: width 0.18s ease, height 0.18s ease;
 }
 
+.site-dock__label {
+  display: none;
+}
+
 .site-dock__action {
   padding: 0;
 }
@@ -344,6 +348,8 @@ body.site-dock-auth {
 
   .site-dock__center {
     flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
   }
 
   .site-dock__nav--desktop {
@@ -442,23 +448,28 @@ body.site-dock-auth {
 @media (max-width: 640px) {
   body:not(.site-dock-auth) {
     padding-left: 0;
-    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
   }
 
   .site-dock {
     top: auto;
     left: 50%;
     right: auto;
-    bottom: calc(10px + env(safe-area-inset-bottom));
-    width: min(100vw - 16px, 480px);
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    width: min(calc(100vw - 36px), 360px);
     transform: translateX(-50%);
   }
 
   .site-dock__shell {
-    min-height: 64px;
-    padding: 8px;
-    border-radius: 22px;
-    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.36);
+    min-height: 54px;
+    padding: 6px;
+    border-radius: 18px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+  }
+
+  .site-dock__brand,
+  .site-dock__user {
+    display: none;
   }
 
   .site-dock__brand-link,
@@ -474,10 +485,16 @@ body.site-dock-auth {
   }
 
   .site-dock__mobile {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    gap: 4px;
   }
 
   .site-dock__mobile-toggle {
+    display: none;
     width: 52px;
     height: 46px;
     border-radius: 16px;
@@ -500,11 +517,51 @@ body.site-dock-auth {
 
   .site-dock__item--mobile {
     width: 100%;
-    height: 50px;
-    border-radius: 16px;
+    height: 44px;
+    border-radius: 14px;
+    display: grid;
+    gap: 2px;
+    place-items: center;
+    padding: 4px 2px;
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .site-dock__item--mobile.is-active {
+    background: rgba(214, 109, 36, 0.18);
+    border-color: rgba(214, 109, 36, 0.2);
+  }
+
+  .site-dock__item--mobile .site-dock__icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .site-dock__item--mobile .site-dock__label {
+    display: block;
+    max-width: 100%;
+    color: currentColor;
+    font-size: 0.66rem;
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   body.site-dock-auth .auth-container {
     margin-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  body.site-dock-auth {
+    padding-left: 0;
+    padding-bottom: 0;
+  }
+
+  body.site-dock-auth .site-dock {
+    display: none;
   }
 }

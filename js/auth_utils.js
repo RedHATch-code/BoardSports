@@ -71,7 +71,7 @@ function isMissingProfileXpColumn(error) {
 }
 
 function buildProfileDraft(tipoUser, dadosAdicionais = {}, email = '') {
-  const boardSportsType = 'principiante'
+  const boardSportsType = normalizeBoardSportsType(dadosAdicionais.tipo_user || tipoUser)
 
   return {
     role: normalizeProfileRole(dadosAdicionais.role || 'atleta'),
@@ -203,6 +203,19 @@ export async function processarRedirecionamentoAuth() {
       return { sucesso: true, metodo: 'token_hash', type }
     }
 
+    const accessToken = hashParams.get('access_token')
+    const refreshToken = hashParams.get('refresh_token')
+    const hashType = hashParams.get('type')
+    if (accessToken && refreshToken && (!hashType || AUTH_REDIRECT_TYPES.has(hashType))) {
+      const { error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      })
+      if (error) throw error
+      window.history.replaceState({}, document.title, window.location.pathname)
+      return { sucesso: true, metodo: 'hash', type: hashType || null }
+    }
+
     return { sucesso: true, metodo: 'session' }
   } catch (error) {
     return { sucesso: false, erro: error.message || 'Nao foi possivel processar o link de autenticacao.' }
@@ -318,10 +331,12 @@ export async function fazerLogin(email, password) {
     const normalizedMessage = rawMessage.toLowerCase()
 
     if (normalizedMessage.includes('email not confirmed')) {
+      guardarEmailRegistoPendente(email)
+
       return {
         sucesso: false,
         codigo: 'email_not_confirmed',
-        erro: 'Tens de confirmar o email antes de entrar. Enviei novamente o link de confirmacao.'
+        erro: 'Este email ainda nao foi confirmado. Abre o link que recebeste no email ou pede um novo envio na pagina de verificacao.'
       }
     }
 
@@ -373,39 +388,41 @@ export async function fazerRegistro(email, password, tipoUser, dadosAdicionais =
       sucesso: true,
       data,
       email,
-      precisaVerificacao: !data.session
+      precisaVerificacao: !data.session,
+      confirmacaoAindaAtiva: !data.session
     }
   } catch (error) {
-    return { sucesso: false, erro: error.message }
+    const rawMessage = error.message || ''
+    const normalizedMessage = rawMessage.toLowerCase()
+
+    if (normalizedMessage.includes('sending confirmation email')) {
+      return {
+        sucesso: false,
+        codigo: 'confirmation_email_failed',
+        erro: 'Nao foi possivel enviar o email de confirmacao. Confirma se o envio de emails do Supabase esta disponivel para o projeto.'
+      }
+    }
+
+    return { sucesso: false, erro: rawMessage || 'Nao foi possivel criar a conta.' }
   }
 }
 
 export async function pedirRecuperacaoPassword(email) {
   try {
-    const redirectTo = obterUrlRecuperacaoPassword()
-
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo
+      redirectTo: obterUrlRecuperacaoPassword()
     })
 
     if (error) throw error
 
     guardarEmailRecuperacaoPendente(email)
-    return { sucesso: true, redirectTo }
+    return { sucesso: true }
   } catch (error) {
-    const rawMessage = error.message || ''
-    const normalizedMessage = rawMessage.toLowerCase()
-
-    if (normalizedMessage.includes('redirect') || normalizedMessage.includes('not allowed')) {
-      return {
-        sucesso: false,
-        codigo: 'redirect_not_allowed',
-        redirectTo: obterUrlRecuperacaoPassword(),
-        erro: `O Supabase ainda nao permite o URL de recuperacao: ${obterUrlRecuperacaoPassword()}`
-      }
+    return {
+      sucesso: false,
+      codigo: 'password_recovery_failed',
+      erro: error.message || 'Nao foi possivel enviar o email de recuperacao.'
     }
-
-    return { sucesso: false, erro: rawMessage || 'Nao foi possivel enviar o email de recuperacao.' }
   }
 }
 

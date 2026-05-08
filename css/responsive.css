@@ -926,3 +926,291 @@ textarea {
   }
 }
 
+/* Mobile comfort pass: keeps the main tools usable without crowding the viewport. */
+@media (max-width: 768px) {
+  .blob,
+  .landing-orb {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --device-pad: 18px;
+  }
+
+  .map-page-shell,
+  .videos-shell,
+  .profile-shell,
+  .moderation-shell {
+    width: min(100% - 18px, 480px) !important;
+    gap: 18px;
+  }
+
+  .map-page-hero,
+  .map-toolbar,
+  .map-panel,
+  .spots-panel,
+  .map-daily-panel,
+  .videos-hero,
+  .videos-toolbar,
+  .videos-tabs,
+  .profile-overview-hero,
+  .profile-panel,
+  .moderation-hero,
+  .moderation-panel {
+    padding: 18px !important;
+  }
+
+  .map-toolbar,
+  .videos-toolbar {
+    position: static;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.2);
+  }
+
+  .map-page-hero p,
+  .videos-hero p,
+  .profile-overview-copy p,
+  .map-section-head p,
+  .profile-section-head p {
+    line-height: 1.65;
+  }
+
+  .map-page-stats,
+  .videos-stats,
+  .profile-stat-grid,
+  .daily-achievements-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .daily-achievement-card,
+  .spot-card,
+  .videos-card,
+  .profile-publication-card,
+  .profile-message-card {
+    padding: 16px !important;
+    gap: 12px;
+  }
+
+  .spot-card-actions,
+  .spot-video-actions,
+  .videos-card-actions,
+  .profile-overview-actions,
+  .profile-photo-actions,
+  .map-form-actions {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+
+  .spot-card-actions a,
+  .spot-card-actions button,
+  .spot-video-actions a,
+  .spot-video-actions button,
+  .videos-card-actions a,
+  .profile-overview-actions a,
+  .profile-photo-actions button,
+  .map-form-actions button {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .spot-preview {
+    border-radius: 16px;
+  }
+
+  .spot-video-list {
+    padding: 10px;
+  }
+
+  .spot-video-item {
+    gap: 10px;
+  }
+
+  .video-analysis-card {
+    padding: 14px;
+  }
+
+  .video-analysis-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #map {
+    height: min(54vh, 360px) !important;
+    min-height: 300px;
+  }
+
+  .map-modal {
+    align-items: end;
+    padding: 8px;
+  }
+
+  .map-modal-card {
+    padding: 18px;
+    max-height: 88vh;
+  }
+
+  .videos-tabs {
+    gap: 8px;
+  }
+
+  .videos-tab {
+    min-height: 54px;
+    padding: 0 14px;
+  }
+
+  .videos-shorts-feed {
+    height: calc(100vh - 158px) !important;
+    min-height: 430px !important;
+    gap: 12px;
+  }
+
+  .videos-short-card {
+    height: calc(100vh - 174px) !important;
+    min-height: 430px !important;
+    border-radius: 20px;
+  }
+
+  .videos-short-overlay {
+    padding: 16px;
+  }
+
+  .videos-short-overlay h2,
+  .videos-card-copy h2 {
+    font-size: 1.12rem;
+  }
+
+  .profile-overview-head,
+  .profile-photo-section,
+  .profile-xp-head {
+    grid-template-columns: 1fr !important;
+    align-items: start;
+    gap: 16px;
+  }
+
+  .profile-xp-head {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .profile-avatar-shell,
+  .profile-overview-avatar {
+    width: 96px !important;
+    height: 96px !important;
+    border-radius: 20px;
+  }
+
+  .profile-follower-card {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .profile-mini-avatar {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-copy h1,
+  .map-page-hero h1,
+  .videos-hero h1,
+  .profile-overview-copy h1,
+  .profile-hero h1,
+  .moderation-hero h1,
+  .modalidades-title {
+    font-size: 1.96rem !important;
+  }
+
+  .map-page-shell,
+  .videos-shell,
+  .profile-shell,
+  .moderation-shell {
+    width: min(100% - 12px, 420px) !important;
+    gap: 14px;
+  }
+
+  .map-page-hero,
+  .map-toolbar,
+  .map-panel,
+  .spots-panel,
+  .map-daily-panel,
+  .videos-hero,
+  .videos-toolbar,
+  .videos-tabs,
+  .profile-overview-hero,
+  .profile-panel,
+  .moderation-hero,
+  .moderation-panel {
+    padding: 15px !important;
+    border-radius: 18px;
+  }
+
+  .map-stat-card strong,
+  .videos-stat-card strong,
+  .profile-stat-card strong {
+    font-size: 1.35rem;
+  }
+
+  .map-field input,
+  .map-field select,
+  .map-field textarea,
+  .profile-field input,
+  .profile-field select,
+  .profile-field textarea {
+    font-size: 16px;
+  }
+
+  #map {
+    height: 300px !important;
+    min-height: 280px;
+  }
+
+  .videos-shorts-feed {
+    height: calc(100vh - 150px) !important;
+    min-height: 380px !important;
+  }
+
+  .videos-short-card {
+    height: calc(100vh - 166px) !important;
+    min-height: 380px !important;
+  }
+
+  .videos-short-overlay p,
+  .videos-card-copy p,
+  .spot-card p,
+  .profile-publication-card p {
+    font-size: 0.94rem;
+  }
+}
+
+@media (max-width: 640px) {
+  body.landing-page .landing-main {
+    width: min(100% - 16px, 480px);
+    padding-top: 8px;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+
+  body.landing-page .landing-hero {
+    padding: 10px;
+  }
+
+  body.landing-page .landing-quick-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.site-dock-auth .auth-container {
+    padding-top: 18px;
+  }
+
+  body.site-dock-auth .auth-card {
+    gap: 18px;
+    padding: 18px 16px;
+    border-radius: 22px;
+  }
+}
+

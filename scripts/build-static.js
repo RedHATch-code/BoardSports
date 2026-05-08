@@ -24,48 +24,48 @@ const entriesToCopy = [
 
 const pageMeta = {
   'index.html': {
-    title: 'BoardSports Inc - Digital Home for Board Sports Culture',
-    description: 'Explora spots, videos, comunidade, ranking XP e shop lifestyle numa experiencia cinematica para surf, skate, skimboard, snowboard e sandboard.'
+    title: 'BoardSports Inc - Spots, Riders e Ranking XP',
+    description: 'Descobre spots, publica vídeos, acompanha riders, ganha XP e vive a cultura board sports numa plataforma cinematográfica e intuitiva.'
   },
   'login.html': {
     title: 'Entrar na BoardSports - Acesso a Perfil, Spots e XP',
-    description: 'Inicia sessao na BoardSports para criar spots, publicar videos, enviar mensagens e acompanhar o teu progresso XP.'
+    description: 'Inicia sessão na BoardSports para criar spots, publicar vídeos, enviar mensagens e acompanhar o teu progresso XP.'
   },
   'register.html': {
-    title: 'Criar Conta BoardSports - Junta-te a Comunidade',
-    description: 'Cria uma conta BoardSports para guardar perfil, publicar spots, partilhar videos e participar no ranking XP.'
+    title: 'Criar Conta BoardSports - Junta-te à Comunidade',
+    description: 'Cria uma conta BoardSports para guardar perfil, publicar spots, partilhar vídeos e participar no ranking XP.'
   },
   'reset-password.html': {
     title: 'Recuperar Palavra-passe - BoardSports',
-    description: 'Recupera o acesso a tua conta BoardSports com um link seguro de redefinicao de palavra-passe.'
+    description: 'Recupera o acesso à tua conta BoardSports com um link seguro de redefinição de palavra-passe.'
   },
   'verify-email.html': {
     title: 'Verificar Email - BoardSports',
-    description: 'Confirma o email da tua conta BoardSports para concluir o acesso a comunidade.'
+    description: 'Confirma o email dà tua conta BoardSports para concluir o acesso à comunidade.'
   },
   'perfil.html': {
-    title: 'Perfil BoardSports - Publicacoes, Mensagens e XP',
-    description: 'Consulta o teu perfil BoardSports, publicacoes, seguidores, mensagens e progresso XP.'
+    title: 'Perfil BoardSports - Publicações, Mensagens e XP',
+    description: 'Consulta o teu perfil BoardSports, publicações, seguidores, mensagens e progresso XP.'
   },
   'configuracao.html': {
-    title: 'Configuracao de Perfil - BoardSports',
-    description: 'Atualiza dados de perfil, avatar, palavra-passe e preferencias da tua conta BoardSports.'
+    title: 'Configuração de Perfil - BoardSports',
+    description: 'Atualiza dados de perfil, avatar, palavra-passe e preferências dà tua conta BoardSports.'
   },
   'mapa.html': {
     title: 'Mapa de Spots BoardSports - Descobre e Publica Locais',
-    description: 'Explora spots publicos no mapa, cria novos locais, publica videos e submete provas para ganhar XP.'
+    description: 'Explora spots públicos no mapa, cria novos locais, publica vídeos e submete provas para ganhar XP.'
   },
   'videos.html': {
-    title: 'Videos dos Spots BoardSports - Galeria da Comunidade',
-    description: 'Ve videos curtos e longos publicados nos spots da comunidade BoardSports, com ligacao direta ao mapa.'
+    title: 'Vídeos dos Spots BoardSports - Galeria da Comunidade',
+    description: 'Vê vídeos curtos e longos publicados nos spots da comunidade BoardSports, com ligação direta ao mapa.'
   },
   'leaderboard.html': {
     title: 'Leaderboard BoardSports - Ranking XP da Comunidade',
     description: 'Acompanha o ranking XP global, semanal, mensal e por modalidade na comunidade BoardSports.'
   },
   'moderacao.html': {
-    title: 'Moderacao BoardSports - Painel Administrativo',
-    description: 'Painel restrito para administradores validarem spots publicos e submissoes XP.'
+    title: 'Moderação BoardSports - Painel Administrativo',
+    description: 'Painel restrito para administradores validarem spots públicos e submissões XP.'
   }
 }
 
@@ -111,7 +111,7 @@ function injectAccessibility(html) {
   if (/id=["']main-content["']/.test(html) && !/class=["']skip-link["']/.test(html)) {
     html = html.replace(
       /<body([^>]*)>/i,
-      '<body$1>\n<a class="skip-link" href="#main-content">Saltar para o conteudo</a>'
+      '<body$1>\n<a class="skip-link" href="#main-content">Saltar para o conteúdo</a>'
     )
   }
 

@@ -49,7 +49,7 @@ function setupCinematicReel(prefersReducedMotion) {
 }
 
 function setupHoverDepth(prefersReducedMotion) {
-  const cards = Array.from(document.querySelectorAll('.sport-card, .story-tile, .rank-board, .shop-window'))
+  const cards = Array.from(document.querySelectorAll('.sport-card, .story-tile, .rank-board, .shop-window, .action-card, .proof-panel'))
   cards.forEach((card) => {
     card.addEventListener('pointermove', (event) => {
       if (prefersReducedMotion) return
@@ -83,7 +83,7 @@ function setupGsapAnimations(prefersReducedMotion) {
     delay: 0.18
   })
 
-  gsap.utils.toArray('.platform-proof, .section-intro, .sport-card, .map-story, .community-feed, .xp-arena, .business-cta, .shop-window').forEach((element) => {
+  gsap.utils.toArray('.platform-proof, .section-heading, .sport-card, .split-section, .community-feed, .rank-board, .shop-window, .events-section, .action-card').forEach((element) => {
     gsap.from(element, {
       scrollTrigger: {
         trigger: element,
@@ -108,17 +108,6 @@ function setupGsapAnimations(prefersReducedMotion) {
     ease: 'none'
   })
 
-  gsap.to('.map-panel__coast', {
-    scrollTrigger: {
-      trigger: '.map-story',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: true
-    },
-    x: -35,
-    y: 24,
-    ease: 'none'
-  })
 }
 
 async function hydrateHomepageData() {
@@ -137,12 +126,14 @@ async function hydrateHomepageData() {
     renderMapSummary({ spots, videos, riders })
     renderProofPanels({ spots, videos, riders })
     renderMapSpotCards(spots)
+    initHomeMapPreview(spots)
     renderCommunityFeed({ spots, videos })
     renderRanking(riders)
     renderProduct(produtos)
   } catch (error) {
     console.error('Erro ao carregar dados reais da homepage:', error)
     renderDatabaseFallback()
+    initHomeMapPreview([])
   }
 }
 
@@ -190,7 +181,7 @@ function renderProofPanels({ spots = [], videos = [], riders = [] }) {
 
   if (spotList) {
     if (!spots.length) {
-      spotList.innerHTML = '<p>Ainda nao existem spots publicos na base de dados.</p>'
+      spotList.innerHTML = '<p>Ainda não existem spots públicos na base de dados.</p>'
     } else {
       spotList.innerHTML = spots.slice(0, 3).map((spot) => `
         <article>
@@ -204,14 +195,14 @@ function renderProofPanels({ spots = [], videos = [], riders = [] }) {
   if (riderRank) riderRank.textContent = top ? '#01' : '#--'
   if (riderInitials) riderInitials.textContent = getInitials(top?.nome || top?.email || 'BS')
   if (riderName) riderName.textContent = top?.nome || top?.email || 'Sem rider XP'
-  if (riderLevel) riderLevel.textContent = summary ? `Nivel ${summary.nivel_xp} / ${summary.nivel_nome}` : 'Sem nivel XP'
+  if (riderLevel) riderLevel.textContent = summary ? `Nível ${summary.nivel_xp} / ${summary.nivel_nome}` : 'Sem nível XP'
   if (riderXp) riderXp.textContent = `${formatNumber(top?.xp_ranking ?? top?.xp_total ?? 0)} XP`
   if (videoCount) videoCount.textContent = `${videos.length} ${videos.length === 1 ? 'video' : 'videos'}`
-  if (xpStatus) xpStatus.textContent = summary ? `${summary.progresso_percentagem}% ate ao proximo nivel` : 'A espera de provas'
+  if (xpStatus) xpStatus.textContent = summary ? `${summary.progresso_percentagem}% até ao próximo nível` : 'À espera de provas'
   if (xpMeter) xpMeter.style.width = `${summary?.progresso_percentagem || 0}%`
   if (xpCopy) {
     xpCopy.textContent = summary
-      ? `${top.nome || top.email || 'O rider lider'} precisa de ${summary.xp_para_proximo} XP para o proximo nivel.`
+      ? `${top.nome || top.email || 'O rider líder'} precisa de ${summary.xp_para_proximo} XP para o próximo nível.`
       : 'As provas submetidas no mapa alimentam o ranking da comunidade.'
   }
 }
@@ -233,6 +224,62 @@ function renderMapSpotCards(spots = []) {
   `).join('')
 }
 
+function initHomeMapPreview(spots = []) {
+  const target = document.getElementById('home-map-preview')
+  if (!target || !window.L || target.dataset.ready === 'true') return
+
+  const validSpots = spots
+    .map((spot) => ({
+      ...spot,
+      lat: Number(spot.coordenadas_lat),
+      lng: Number(spot.coordenadas_long)
+    }))
+    .filter((spot) => Number.isFinite(spot.lat) && Number.isFinite(spot.lng))
+
+  const map = window.L.map(target, {
+    zoomControl: false,
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    tap: false
+  }).setView([39.5, -8.5], 6)
+
+  window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+  }).addTo(map)
+
+  const markerIcon = window.L.divIcon({
+    className: '',
+    html: '<span class="home-map-marker"></span>',
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  })
+
+  const bounds = []
+  validSpots.forEach((spot) => {
+    window.L.marker([spot.lat, spot.lng], { icon: markerIcon })
+      .bindTooltip(spot.nome || 'Spot BoardSports', {
+        permanent: false,
+        direction: 'top',
+        opacity: 0.92
+      })
+      .addTo(map)
+    bounds.push([spot.lat, spot.lng])
+  })
+
+  if (bounds.length === 1) {
+    map.setView(bounds[0], 11)
+  } else if (bounds.length > 1) {
+    map.fitBounds(bounds, { padding: [58, 58], maxZoom: 11 })
+  }
+
+  window.setTimeout(() => map.invalidateSize(), 120)
+  target.dataset.ready = 'true'
+}
+
 function renderCommunityFeed({ spots = [], videos = [] }) {
   const stories = Array.from(document.querySelectorAll('[data-home-story]'))
   const activity = buildActivityItems(spots, videos)
@@ -243,7 +290,7 @@ function renderCommunityFeed({ spots = [], videos = [] }) {
     const title = story.querySelector('[data-story-title]')
     if (!item) {
       if (meta) meta.textContent = 'Sem atividade recente'
-      if (title) title.textContent = 'A base de dados ainda nao tem publicacoes suficientes.'
+      if (title) title.textContent = 'A base de dados ainda não tem publicações suficientes.'
       return
     }
 
@@ -260,15 +307,15 @@ function buildActivityItems(spots = [], videos = []) {
     const sport = spot?.modalidades?.nome || 'Video'
     return {
       image: imageForSport(sport),
-      meta: `${sport} / publicacao recente`,
-      title: video.legenda || spot?.nome || 'Novo video publicado na comunidade.',
-      date: video.data_criacao
+      meta: `${sport} / publicação recente`,
+      title: vídeo.legenda || spot?.nome || 'Novo vídeo publicado na comunidade.',
+      date: vídeo.data_criacao
     }
   })
 
   const spotItems = spots.map((spot) => ({
     image: imageForSport(spot.modalidades?.nome),
-    meta: `${spot.modalidades?.nome || 'Spot'} / publicacao recente`,
+    meta: `${spot.modalidades?.nome || 'Spot'} / publicação recente`,
     title: spot.nome || 'Novo spot registado.',
     date: spot.data_criacao
   }))
@@ -332,8 +379,8 @@ function renderProduct(produtos = []) {
 function renderDatabaseFallback() {
   const spotCount = document.querySelector('[data-home-spot-count]')
   const summary = document.querySelector('[data-home-map-summary]')
-  if (spotCount) spotCount.textContent = 'Dados indisponiveis'
-  if (summary) summary.textContent = 'Nao foi possivel carregar a base de dados neste momento.'
+  if (spotCount) spotCount.textContent = 'Dados indisponíveis'
+  if (summary) summary.textContent = 'Não foi possível carregar a base de dados neste momento.'
 }
 
 function normalizeSport(value = '') {

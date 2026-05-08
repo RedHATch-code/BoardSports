@@ -3,7 +3,7 @@ const baseUrl = process.env.BASE_URL || process.argv[2] || 'http://127.0.0.1:800
 const checks = [
   {
     path: '/',
-    markers: ['<title>', 'data-cinematic-reel', 'class="platform-proof"', 'data-home-spots-list', 'class="map-story"', 'class="xp-arena"', 'class="business-cta"', 'class="shop-window"']
+    markers: ['<title>', 'data-cinematic-reel', 'class="platform-proof section-band"', 'data-home-spots-list', 'class="split-section map-story"', 'class="split-section xp-arena"', 'class="shop-window section-band"', 'class="events-section"']
   },
   {
     path: '/login.html',

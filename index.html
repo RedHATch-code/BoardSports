@@ -3,26 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="BoardSports e a plataforma portuguesa para descobrir spots, publicar vídeos, seguir riders, ganhar XP e viver a cultura dos desportos de prancha.">
+  <meta name="description" content="BoardSports e a casa digital da cultura surf, skate, skimboard, snowboard e sandboard: spots, videos, comunidade, ranking XP e shop lifestyle.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="BoardSports Inc - Plataforma de spots, riders e cultura board sports">
-  <meta property="og:description" content="Mapa de spots, publicações recentes, ranking XP, comunidade e drops para surf, skate, skimboard, snowboard e sandboard.">
+  <meta property="og:title" content="BoardSports Inc - Digital Home for Board Sports Culture">
+  <meta property="og:description" content="Explora spots, riders, videos, ranking XP e cultura board sports numa experiencia cinematica.">
   <meta property="og:image" content="assets/images/boardsports-mix.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="BoardSports Inc - Plataforma de spots, riders e cultura board sports">
-  <meta name="twitter:description" content="Mapa de spots, publicações recentes, ranking XP, comunidade e drops para surf, skate, skimboard, snowboard e sandboard.">
+  <meta name="twitter:title" content="BoardSports Inc - Digital Home for Board Sports Culture">
+  <meta name="twitter:description" content="Explora spots, riders, videos, ranking XP e cultura board sports numa experiencia cinematica.">
   <meta name="twitter:image" content="assets/images/boardsports-mix.jpg">
   <link rel="canonical" href="/">
   <link rel="icon" type="image/png" href="assets/images/logotipo.png">
-  <title>BoardSports Inc - Spots, Riders e Ranking XP</title>
+  <title>BoardSports Inc - Digital Home for Board Sports Culture</title>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <link rel="preconnect" href="https://unpkg.com" crossorigin>
-  <link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossorigin>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/floating-dock.css">
   <link rel="stylesheet" href="css/landing.css">
   <link rel="stylesheet" href="css/responsive.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 </head>
 <body class="landing-page">
 
@@ -37,66 +34,54 @@
     </div>
 
     <div class="hero-reel__grain" aria-hidden="true"></div>
+    <div class="hero-reel__hud" aria-hidden="true">
+      <span>Atlantic Feed</span>
+      <span>05 Sports</span>
+      <span>Live Culture</span>
+    </div>
 
-    <div class="hero-layout">
-      <div class="hero-reel__copy">
-        <p class="kicker">BoardSports Inc / plataforma cultural</p>
-        <h1 id="cover-title">Descobre spots. Publica videos. Sobe no ranking.</h1>
-        <p class="hero-reel__lead">A casa digital dos desportos de prancha: mapa real de spots, publicações da comunidade, XP por provas e cultura surf/skate num só lugar.</p>
-        <div class="hero-reel__actions" aria-label="Ações principaís">
-          <a class="btn-cinema btn-cinema--primary" href="mapa.html">Explorar mapa</a>
-          <a class="btn-cinema btn-cinema--ghost" href="register.html">Criar conta</a>
-        </div>
+    <div class="hero-reel__copy">
+      <p class="kicker">BoardSports Inc / diario de bordo</p>
+      <h1 id="cover-title">Ride like a PRO</h1>
+      <p class="hero-reel__lead">Share your experience.</p>
+      <div class="hero-reel__actions" aria-label="Acoes principais">
+        <a class="btn-cinema btn-cinema--primary" href="mapa.html">Explorar spots</a>
+        <a class="btn-cinema btn-cinema--ghost" href="register.html">Entra na crew!</a>
       </div>
-
-      <aside class="hero-command" aria-label="Resumo da plataforma">
-        <span class="kicker">Hoje na BoardSports</span>
-        <div class="hero-command__stat">
-          <strong data-home-spot-count>0 spots ativos</strong>
-          <span data-home-map-summary>0 vídeos ligados aos spots / 0 riders no ranking XP</span>
-        </div>
-        <div class="hero-command__actions">
-          <a href="videos.html">Ver videos</a>
-          <a href="leaderboard.html">Ranking XP</a>
-        </div>
-      </aside>
     </div>
 
-    <div class="hero-steps" aria-label="Fluxo principal da plataforma">
-      <a href="mapa.html">
-        <span>01</span>
-        <strong>Encontrar spots</strong>
-        <em>Mapa vivo com locais da comunidade.</em>
-      </a>
-      <a href="videos.html">
-        <span>02</span>
-        <strong>Publicar vídeos</strong>
-        <em>Provas, linhas e momentos recentes.</em>
-      </a>
-      <a href="leaderboard.html">
-        <span>03</span>
-        <strong>Ganhar XP</strong>
-        <em>Ranking por atividade e progresso.</em>
-      </a>
-    </div>
+    <a class="hero-reel__scroll" href="#sports-culture" aria-label="Ver cultura BoardSports">
+      <span>Scroll</span>
+      <i aria-hidden="true"></i>
+    </a>
   </section>
 
-  <section class="platform-proof section-band" aria-label="Produto real BoardSports">
-    <article class="proof-panel">
-      <span class="kicker">Mapa real</span>
-      <strong data-proof-spot-count>0 spots</strong>
+  <section class="platform-proof" aria-label="Produto real BoardSports">
+    <article class="proof-panel proof-panel--map">
+      <div class="proof-panel__header">
+        <span class="kicker">Mapa real</span>
+        <strong data-proof-spot-count>0 spots</strong>
+      </div>
+      <div class="proof-map" aria-hidden="true">
+        <span class="proof-map__line"></span>
+        <i class="proof-pin proof-pin--one"></i>
+        <i class="proof-pin proof-pin--two"></i>
+        <i class="proof-pin proof-pin--three"></i>
+      </div>
       <div class="proof-list" data-home-spots-list>
-        <p>Os spots públicos aparecem aqui automaticamente.</p>
+        <p>Os spots publicos aparecem aqui automaticamente.</p>
       </div>
       <a class="text-link" href="mapa.html">Abrir mapa</a>
     </article>
 
-    <article class="proof-panel">
-      <span class="kicker">Rider em destaque</span>
+    <article class="proof-panel proof-panel--rider">
+      <div class="proof-panel__header">
+        <span class="kicker">Perfil rider</span>
+        <strong data-proof-rider-rank>#--</strong>
+      </div>
       <div class="rider-pass">
         <span class="rider-pass__avatar" data-proof-rider-initials>BS</span>
         <div>
-          <strong data-proof-rider-rank>#--</strong>
           <h2 data-proof-rider-name>Sem rider XP</h2>
           <p data-proof-rider-level>Nivel XP</p>
         </div>
@@ -105,188 +90,176 @@
         <span data-proof-rider-xp>0 XP</span>
         <span data-proof-video-count>0 videos</span>
       </div>
+      <a class="text-link" href="leaderboard.html">Ver leaderboard</a>
     </article>
 
-    <article class="proof-panel">
-      <span class="kicker">Provas XP</span>
-      <strong data-proof-xp-status>A espera de provas</strong>
-      <div class="proof-progress"><span data-proof-xp-meter style="width: 0%"></span></div>
-      <p data-proof-xp-copy>As provas submetidas no mapa alimentam o ranking da comunidade.</p>
-      <a class="text-link" href="mapa.html">Submeter prova</a>
-    </article>
-  </section>
-
-  <section class="section-heading" id="sports-culture">
-    <p class="kicker">Modalidades</p>
-    <h2>Cinco culturas. Um mapa comum.</h2>
-    <p>Cada modalidade tem identidade própria, mas todas partilham a mesma lógica: descobrir terreno, registar movimento e criar comunidade.</p>
-  </section>
-
-  <section class="sport-grid" aria-label="Modalidades BoardSports">
-    <article class="sport-card sport-card--featured" data-sport-card data-sport-name="Skate">
-      <img class="sport-card__image" src="assets/images/cover-skate.png" alt="Skater em movimento num spot urbano" width="1200" height="900" loading="lazy">
-      <div class="sport-card__content">
-        <h3>Skate</h3>
-        <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
+    <article class="proof-panel proof-panel--xp">
+      <div class="proof-panel__header">
+        <span class="kicker">Submeter prova</span>
+        <strong data-proof-xp-status>XP real</strong>
       </div>
+      <div class="proof-badges" aria-label="Conquistas XP">
+        <span>Spot validado</span>
+        <span>Video do dia</span>
+        <span>Combo trick</span>
+      </div>
+      <div class="proof-progress">
+        <span data-proof-xp-meter style="width: 0%"></span>
+      </div>
+      <p data-proof-xp-copy>As provas submetidas no mapa alimentam o ranking da comunidade.</p>
+      <a class="btn-cinema btn-cinema--ghost" href="mapa.html">Submeter prova</a>
+    </article>
+  </section>
+
+  <section class="section-intro" id="sports-culture">
+    <p class="kicker">Modalidades</p>
+    <h2>Cada prancha tem o seu terreno.</h2>
+    <p>Da maré baixa ao bowl, da neve as dunas, cada modalidade tem textura, velocidade e tribo propria.</p>
+  </section>
+
+  <section class="sport-grid" aria-label="Culturas BoardSports na pagina principal">
+    <article class="sport-card sport-card--wide" data-sport-card data-sport-name="Skate">
+      <img class="sport-card__image" src="assets/images/cover-skate.png" alt="Skater em movimento num spot urbano" width="1200" height="900" loading="lazy">
+      <span>01</span>
+      <h3>Skate</h3>
+      <p>Cimento, noite, street spots e linhas urbanas.</p>
+      <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
     </article>
     <article class="sport-card" data-sport-card data-sport-name="Surf">
       <img class="sport-card__image" src="assets/images/surfingboardsports.jpg" alt="Surfista numa onda com prancha" width="1200" height="900" loading="lazy">
-      <div class="sport-card__content">
-        <h3>Surf</h3>
-        <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
-      </div>
+      <span>02</span>
+      <h3>Surf</h3>
+      <p>Oceano, sunrise, swell e crews de praia.</p>
+      <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
     </article>
     <article class="sport-card" data-sport-card data-sport-name="Skimboard">
       <img class="sport-card__image" src="assets/images/skim.jpg" alt="Rider de skimboard a deslizar na linha de agua" width="1200" height="900" loading="lazy">
-      <div class="sport-card__content">
-        <h3>Skimboard</h3>
-        <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
-      </div>
+      <span>03</span>
+      <h3>Skimboard</h3>
+      <p>Praia, velocidade, mare baixa e precisao.</p>
+      <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
     </article>
     <article class="sport-card" data-sport-card data-sport-name="Snowboard">
       <img class="sport-card__image" src="assets/images/snowboard.jpg" alt="Rider de snowboard em montanha com neve" width="1200" height="900" loading="lazy">
-      <div class="sport-card__content">
-        <h3>Snowboard</h3>
-        <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
-      </div>
+      <span>04</span>
+      <h3>Snowboard</h3>
+      <p>Montanha, frio, powder e viagens de inverno.</p>
+      <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
     </article>
-    <article class="sport-card" data-sport-card data-sport-name="Sandboard">
+    <article class="sport-card sport-card--tall" data-sport-card data-sport-name="Sandboard">
       <img class="sport-card__image" src="assets/images/sandboard.jpg" alt="Rider de sandboard numa duna" width="1200" height="900" loading="lazy">
-      <div class="sport-card__content">
-        <h3>Sandboard</h3>
-        <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
-      </div>
+      <span>05</span>
+      <h3>Sandboard</h3>
+      <p>Deserto, sunset, dunas e descidas longas.</p>
+      <strong class="sport-card__meta" data-sport-count>0 spots na base de dados</strong>
     </article>
   </section>
 
-  <section class="split-section map-story" aria-labelledby="map-title">
-    <div class="section-copy">
+  <section class="map-story" aria-labelledby="map-title">
+    <div class="map-story__copy">
       <p class="kicker">Mapa de spots</p>
-      <h2 id="map-title">Explora o terreno antes de sair de casa.</h2>
-      <p>O mapa organiza spots por modalidade, mostra publicações ligadas ao local e ajuda riders a encontrar o próximo sítio para filmar, treinar ou combinar uma sessão.</p>
-      <div class="section-actions">
-        <a class="btn-cinema btn-cinema--primary" href="mapa.html">Abrir mapa</a>
-        <a class="btn-cinema btn-cinema--ghost" href="videos.html">Ver videos</a>
-      </div>
+      <h2 id="map-title">Um mapa vivo para ondas, parks, dunas e montanha.</h2>
+      <p>Marca locais, descobre videos ligados ao spot certo e segue o movimento da comunidade em tempo real.</p>
+      <a class="text-link" href="mapa.html">Abrir mapa de spots</a>
     </div>
-
-    <div class="map-panel map-panel--live" aria-label="Pre-visualizacao do mapa de spots">
-      <div id="home-map-preview" class="home-map-preview" aria-hidden="true"></div>
+    <div class="map-panel" aria-label="Mapa cinematografico de spots">
+      <div class="map-panel__coast"></div>
+      <button class="map-marker map-marker--surf" type="button"><span>Surf</span></button>
+      <button class="map-marker map-marker--skate" type="button"><span>Skate</span></button>
+      <button class="map-marker map-marker--snow" type="button"><span>Snow</span></button>
+      <button class="map-marker map-marker--sand" type="button"><span>Sand</span></button>
+      <div class="map-panel__readout">
+        <strong data-home-spot-count>0 spots ativos</strong>
+        <span data-home-map-summary>0 videos ligados aos spots / 0 riders no ranking XP</span>
+      </div>
       <div class="map-panel__spots" data-home-map-spots>
         <article><strong>Sem spots</strong><span>Cria o primeiro spot no mapa.</span></article>
       </div>
     </div>
   </section>
 
-  <section class="community-feed section-band" aria-labelledby="community-title">
-    <div class="section-heading section-heading--compact">
+  <section class="community-feed" aria-labelledby="community-title">
+    <div class="section-intro section-intro--left">
       <p class="kicker">Comunidade</p>
-      <h2 id="community-title">Publicações recentes</h2>
-      <p>Vídeos e spots aparecem aqui de acordo com a atividade real da base de dados.</p>
+      <h2 id="community-title">Nao e so feed. E diario de bordo.</h2>
     </div>
-
     <div class="community-mosaic">
       <article class="story-tile story-tile--large" style="--tile-image: url('assets/images/boardsports-mix.jpg')" data-home-story="0">
-        <span data-story-meta>Publicação recente</span>
-        <h3 data-story-title>As publicações da base de dados aparecem aqui.</h3>
+        <span data-story-meta>Base de dados / comunidade</span>
+        <h3 data-story-title>A atividade da base de dados aparece aqui.</h3>
       </article>
-      <article class="story-tile" style="--tile-image: url('assets/images/surfingboardsports.jpg')" data-home-story="1">
-        <span data-story-meta>Publicação recente</span>
-        <h3 data-story-title>As publicações da base de dados aparecem aqui.</h3>
+      <article class="story-note">
+        <span data-home-community-kicker>Resumo real</span>
+        <p data-home-community-quote>"0 modalidades, 0 spots, 0 videos e 0 riders carregados da base de dados."</p>
       </article>
-      <article class="story-tile" style="--tile-image: url('assets/images/skim.jpg')" data-home-story="2">
-        <span data-story-meta>Publicação recente</span>
-        <h3 data-story-title>As publicações da base de dados aparecem aqui.</h3>
+      <article class="story-tile" style="--tile-image: url('assets/images/skim.jpg')" data-home-story="1">
+        <span data-story-meta>Video recente</span>
+        <h3 data-story-title>Os clips recentes aparecem aqui.</h3>
       </article>
-      <article class="story-tile" style="--tile-image: url('assets/images/cover-skate.png')" data-home-story="3">
-        <span data-story-meta>Publicação recente</span>
-        <h3 data-story-title>As publicações da base de dados aparecem aqui.</h3>
+      <article class="story-tile" style="--tile-image: url('assets/images/cover-skate.png')" data-home-story="2">
+        <span data-story-meta>Spot recente</span>
+        <h3 data-story-title>Os spots recentes aparecem aqui.</h3>
       </article>
     </div>
   </section>
 
-  <section class="split-section xp-arena" aria-labelledby="xp-title">
-    <div class="section-copy">
+  <section class="xp-arena" aria-labelledby="xp-title">
+    <div class="xp-arena__copy">
       <p class="kicker">Sistema XP / ranking</p>
-      <h2 id="xp-title">O progresso precisa de ser visivel.</h2>
-      <p>Submete provas, valida manobras, acompanhá XP e compara progresso com outros riders. O ranking transforma atividade real em motivação clara.</p>
-      <a class="btn-cinema btn-cinema--primary" href="leaderboard.html">Ver ranking</a>
+      <h2 id="xp-title">Sobe de nivel, prova a manobra, ganha respeito.</h2>
+      <p>Submete provas, valida manobras, desbloqueia badges e deixa a tua assinatura nos spots que realmente montaste.</p>
+      <a class="btn-cinema btn-cinema--ghost" href="leaderboard.html">Ver ranking</a>
     </div>
-
     <div class="rank-board" aria-label="Ranking XP">
       <div class="rank-board__top">
-        <span>Época 2026</span>
+        <span>Season 2026</span>
         <strong data-home-ranking-summary>Sem XP registado</strong>
       </div>
       <ol data-home-ranking>
         <li><span>--</span><strong>Sem dados XP na base</strong><em>0 XP</em></li>
       </ol>
       <div class="xp-badge-row" aria-label="Badges XP">
-        <span>Rider iniciante</span>
-        <span>Rider local</span>
-        <span>Lenda BoardSports</span>
+        <span>Rookie Rider</span>
+        <span>Local Shredder</span>
+        <span>BoardSports Legend</span>
       </div>
       <div class="rank-meter"><span data-home-rank-meter style="width: 0%"></span></div>
     </div>
   </section>
 
-  <section class="shop-window section-band" aria-labelledby="shop-title">
+  <section class="business-cta" aria-label="BoardSports para riders marcas e lojas">
+    <article>
+      <span class="kicker">Para riders</span>
+      <h2>Cria perfil, adiciona spots e submete provas.</h2>
+      <a class="text-link" href="register.html">Criar conta</a>
+    </article>
+    <article>
+      <span class="kicker">Para lojas</span>
+      <h2>Mostra drops, decks, t-shirts e material da comunidade.</h2>
+      <a class="text-link" href="produtos.html">Vender na BoardSports</a>
+    </article>
+    <article>
+      <span class="kicker">Para marcas</span>
+      <h2>Entra na cultura local onde os spots acontecem.</h2>
+      <a class="text-link" href="register.html">Entrar como marca</a>
+    </article>
+  </section>
+
+  <section class="shop-window" aria-labelledby="shop-title">
     <div class="shop-window__image">
       <img src="assets/images/logotipo.png" alt="BoardSports lifestyle logo" width="420" height="420" loading="lazy" data-home-product-image>
     </div>
-    <div class="section-copy shop-window__copy">
+    <div class="shop-window__copy">
       <p class="kicker">Shop / drops</p>
       <h2 id="shop-title" data-home-product-title>Sem produtos ativos na base de dados.</h2>
       <p data-home-product-copy>A montra usa os produtos ativos registados na base de dados.</p>
-      <a class="btn-cinema btn-cinema--ghost" href="register.html">Criar conta de loja</a>
-    </div>
-  </section>
-
-  <section class="events-section" aria-labelledby="events-title">
-    <div class="section-heading section-heading--compact">
-      <p class="kicker">Eventos e próximos passos</p>
-      <h2 id="events-title">A plataforma cresce a partir da comunidade.</h2>
-    </div>
-    <div class="action-grid">
-      <article class="action-card">
-        <span>01</span>
-        <h3>Riders</h3>
-        <p>Criam perfil, adicionam spots, publicam vídeos e entram no ranking.</p>
-        <a class="text-link" href="register.html">Criar conta</a>
-      </article>
-      <article class="action-card">
-        <span>02</span>
-        <h3>Lojas</h3>
-        <p>Podem preparar drops, material local e produtos ligados a cada modalidade.</p>
-        <a class="text-link" href="register.html">Entrar como loja</a>
-      </article>
-      <article class="action-card">
-        <span>03</span>
-        <h3>Marcas</h3>
-        <p>Acompanham cultura local, riders ativos e spots onde a comunidade se junta.</p>
-        <a class="text-link" href="register.html">Entrar como marca</a>
-      </article>
+      <a class="text-link" href="produtos.html">Explorar shop</a>
     </div>
   </section>
 </main>
 
-<footer class="site-footer">
-  <div>
-    <strong>BoardSports Inc</strong>
-    <p>Digital home for board sports culture.</p>
-  </div>
-  <nav aria-label="Links finais">
-    <a href="mapa.html">Mapa</a>
-    <a href="videos.html">Vídeos</a>
-    <a href="leaderboard.html">Ranking</a>
-    <a href="register.html">Criar conta</a>
-  </nav>
-</footer>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js" defer></script>
 <script src="js/responsive.js"></script>
 <script type="module" src="js/landing_page.js"></script>
 <script type="module" src="js/site_header.js"></script>

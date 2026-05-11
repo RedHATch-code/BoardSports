@@ -41,7 +41,7 @@ const pageMeta = {
   },
   'verify-email.html': {
     title: 'Verificar Email - BoardSports',
-    description: 'Confirma o email dà tua conta BoardSports para concluir o acesso à comunidade.'
+    description: 'Confirma o email da tua conta BoardSports para concluir o acesso à comunidade.'
   },
   'perfil.html': {
     title: 'Perfil BoardSports - Publicações, Mensagens e XP',
@@ -49,7 +49,7 @@ const pageMeta = {
   },
   'configuracao.html': {
     title: 'Configuração de Perfil - BoardSports',
-    description: 'Atualiza dados de perfil, avatar, palavra-passe e preferências dà tua conta BoardSports.'
+    description: 'Atualiza dados de perfil, avatar, palavra-passe e preferências da tua conta BoardSports.'
   },
   'mapa.html': {
     title: 'Mapa de Spots BoardSports - Descobre e Publica Locais',
@@ -94,7 +94,8 @@ function generateEnvFile() {
 
   fs.writeFileSync(
     path.join(distDir, 'env.js'),
-    `export const SUPABASE_URL = '${escapeJs(supabaseUrl)}'\nexport const SUPABASE_ANON_KEY = '${escapeJs(supabaseAnonKey)}'\n`
+    `export const SUPABASE_URL = '${escapeJs(supabaseUrl)}'\nexport const SUPABASE_ANON_KEY = '${escapeJs(supabaseAnonKey)}'\n`,
+    'utf8'
   )
 }
 
@@ -147,7 +148,7 @@ function injectSeo() {
       html = upsertHeadTag(html, '<link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossorigin>', /<link\s+rel=["']preconnect["']\s+href=["']https:\/\/a\.basemaps\.cartocdn\.com["'][^>]*>/i)
     }
 
-    fs.writeFileSync(filePath, html)
+    fs.writeFileSync(filePath, html, 'utf8')
   }
 }
 
@@ -156,8 +157,8 @@ function writeCrawlerFiles() {
     .map((fileName) => `  <url><loc>${siteUrl}/${fileName === 'index.html' ? '' : fileName}</loc></url>`)
     .join('\n')
 
-  fs.writeFileSync(path.join(distDir, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`)
-  fs.writeFileSync(path.join(distDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`)
+  fs.writeFileSync(path.join(distDir, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`, 'utf8')
+  fs.writeFileSync(path.join(distDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`, 'utf8')
 }
 
 fs.rmSync(distDir, { recursive: true, force: true })

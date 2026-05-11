@@ -49,7 +49,7 @@ function setupCinematicReel(prefersReducedMotion) {
 }
 
 function setupHoverDepth(prefersReducedMotion) {
-  const cards = Array.from(document.querySelectorAll('.sport-card, .story-tile, .rank-board, .shop-window, .action-card, .proof-panel'))
+  const cards = Array.from(document.querySelectorAll('.sport-card, .story-tile, .rank-board, .shop-window, .action-card, .proof-panel, .guide-card'))
   cards.forEach((card) => {
     card.addEventListener('pointermove', (event) => {
       if (prefersReducedMotion) return
@@ -83,14 +83,14 @@ function setupGsapAnimations(prefersReducedMotion) {
     delay: 0.18
   })
 
-  gsap.utils.toArray('.platform-proof, .section-heading, .sport-card, .split-section, .community-feed, .rank-board, .shop-window, .events-section, .action-card').forEach((element) => {
+  gsap.utils.toArray('.daily-guide, .platform-proof, .section-heading, .sport-card, .split-section, .community-feed, .rank-board, .shop-window, .events-section, .action-card').forEach((element) => {
     gsap.from(element, {
       scrollTrigger: {
         trigger: element,
-        start: 'top 82%'
+        start: 'top 86%',
+        once: true
       },
       y: 54,
-      opacity: 0,
       duration: 0.9,
       ease: 'power3.out'
     })
@@ -107,7 +107,6 @@ function setupGsapAnimations(prefersReducedMotion) {
     scale: 1.08,
     ease: 'none'
   })
-
 }
 
 async function hydrateHomepageData() {
@@ -156,7 +155,7 @@ function renderMapSummary({ spots = [], videos = [], riders = [] }) {
     spotCount.textContent = `${spots.length} ${spots.length === 1 ? 'spot ativo' : 'spots ativos'}`
   }
   if (summary) {
-    summary.textContent = `${videos.length} ${videos.length === 1 ? 'video' : 'videos'} ligados aos spots / ${riders.length} riders no ranking XP`
+    summary.textContent = `${videos.length} ${videos.length === 1 ? 'vídeo' : 'vídeos'} ligados aos spots / ${riders.length} riders no ranking XP`
   }
 }
 
@@ -197,7 +196,7 @@ function renderProofPanels({ spots = [], videos = [], riders = [] }) {
   if (riderName) riderName.textContent = top?.nome || top?.email || 'Sem rider XP'
   if (riderLevel) riderLevel.textContent = summary ? `Nível ${summary.nivel_xp} / ${summary.nivel_nome}` : 'Sem nível XP'
   if (riderXp) riderXp.textContent = `${formatNumber(top?.xp_ranking ?? top?.xp_total ?? 0)} XP`
-  if (videoCount) videoCount.textContent = `${videos.length} ${videos.length === 1 ? 'video' : 'videos'}`
+  if (videoCount) videoCount.textContent = `${videos.length} ${videos.length === 1 ? 'vídeo' : 'vídeos'}`
   if (xpStatus) xpStatus.textContent = summary ? `${summary.progresso_percentagem}% até ao próximo nível` : 'À espera de provas'
   if (xpMeter) xpMeter.style.width = `${summary?.progresso_percentagem || 0}%`
   if (xpCopy) {
@@ -304,12 +303,12 @@ function buildActivityItems(spots = [], videos = []) {
   const spotById = new Map(spots.map((spot) => [spot.id, spot]))
   const videoItems = videos.map((video) => {
     const spot = spotById.get(video.spot_id)
-    const sport = spot?.modalidades?.nome || 'Video'
+    const sport = spot?.modalidades?.nome || 'Vídeo'
     return {
       image: imageForSport(sport),
       meta: `${sport} / publicação recente`,
-      title: vídeo.legenda || spot?.nome || 'Novo vídeo publicado na comunidade.',
-      date: vídeo.data_criacao
+      title: video.legenda || spot?.nome || 'Novo vídeo publicado na comunidade.',
+      date: video.data_criacao
     }
   })
 

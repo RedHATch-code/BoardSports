@@ -2,13 +2,6 @@ import { obterUsuarioAtual, fazerLogout } from './auth_utils.js'
 import { supabase } from './supabase.js'
 
 const ROOT_ID = 'site-floating-dock'
-const SPACER_ID = 'site-floating-dock-spacer'
-const DESKTOP_RANGE = 150
-const BASE_ITEM_SIZE = 48
-const MAX_ITEM_SIZE = 78
-const BASE_ICON_SIZE = 20
-const MAX_ICON_SIZE = 34
-const MAX_ITEM_SHIFT = 14
 
 const PAGE_KEY_MAP = {
   'index.html': 'home',
@@ -24,7 +17,7 @@ const PAGE_KEY_MAP = {
 
 function getCurrentPageKey() {
   const path = window.location.pathname.split('/').pop() || 'index.html'
-  return PAGE_KEY_MAP[path] || ''
+  return PAGE_KEY_MAP[path] || 'home'
 }
 
 function escapeHtml(value = '') {
@@ -47,157 +40,98 @@ function getInitials(label = '') {
     .join('') || 'BS'
 }
 
-function iconSvg(name) {
-  const common = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"'
-  const icons = {
-    home: `<svg class="site-dock__icon" ${common}><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.8V20h14V9.8"/><path d="M9.5 20v-5.5h5V20"/></svg>`,
-    map: `<svg class="site-dock__icon" ${common}><path d="M9 18l-5 2V6l5-2 6 2 5-2v14l-5 2-6-2z"/><path d="M9 4v14"/><path d="M15 6v14"/></svg>`,
-    videos: `<svg class="site-dock__icon" ${common}><rect x="3.5" y="5" width="17" height="14" rx="2.4"/><path d="m10 9 5 3-5 3z"/></svg>`,
-    leaderboard: `<svg class="site-dock__icon" ${common}><path d="M8 21V10"/><path d="M16 21V6"/><path d="M12 21V3"/><path d="M4 21h16"/></svg>`,
-    moderation: `<svg class="site-dock__icon" ${common}><path d="m12 3 7 4v5c0 4.5-2.7 7.9-7 9-4.3-1.1-7-4.5-7-9V7l7-4Z"/><path d="m9.5 12 1.8 1.8 3.7-3.8"/></svg>`,
-    profile: `<svg class="site-dock__icon" ${common}><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>`,
-    login: `<svg class="site-dock__icon" ${common}><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/><path d="M20 4v16"/></svg>`,
-    register: `<svg class="site-dock__icon" ${common}><path d="M12 5v14"/><path d="M5 12h14"/></svg>`,
-    logout: `<svg class="site-dock__icon" ${common}><path d="M14 7l5 5-5 5"/><path d="M19 12H8"/><path d="M4 4v16"/></svg>`,
-    menu: `<svg class="site-dock__icon" ${common}><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>`,
-    close: `<svg class="site-dock__icon" ${common}><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>`
-  }
-
-  return icons[name] || icons.home
+function primaryItems() {
+  return [
+    { key: 'map', title: 'Mapa', href: '/mapa.html' },
+    { key: 'videos', title: 'Publicações', href: '/videos.html' },
+    { key: 'leaderboard', title: 'Ranking', href: '/leaderboard.html' }
+  ]
 }
 
-function buildDockItems(user) {
-  const loginHref = '/login.html'
-  const items = [
-    { key: 'home', title: 'Inicio', href: '/index.html', icon: 'home' },
-    { key: 'map', title: 'Mapa', href: '/mapa.html', icon: 'map' },
-    { key: 'videos', title: 'Videos', href: '/videos.html', icon: 'videos' },
-    { key: 'leaderboard', title: 'Ranking', href: '/leaderboard.html', icon: 'leaderboard' }
+function menuGroups(user) {
+  const explore = [
+    { key: 'home', title: 'Início', href: '/index.html', description: 'Voltar à página principal.' },
+    { key: 'map', title: 'Mapa de spots', href: '/mapa.html', description: 'Ver todos os spots públicos.' },
+    { key: 'videos', title: 'Publicações recentes', href: '/videos.html', description: 'Vídeos e atividade da comunidade.' },
+    { key: 'leaderboard', title: 'Ranking XP', href: '/leaderboard.html', description: 'Níveis, XP e progresso dos riders.' }
   ]
 
+  const account = user
+    ? [
+        { key: 'profile', title: 'Perfil', href: '/perfil.html', description: 'Gerir conta, publicações e mensagens.' },
+        { key: 'settings', title: 'Configuração', href: '/configuracao.html', description: 'Editar dados, avatar e preferências.' },
+        { key: 'logout', title: 'Terminar sessão', action: 'logout', description: 'Sair da conta atual.' }
+      ]
+    : [
+        { key: 'login', title: 'Entrar', href: '/login.html', description: 'Aceder à tua conta.' },
+        { key: 'register', title: 'Criar conta', href: '/register.html', description: 'Entrar na comunidade BoardSports.' }
+      ]
+
   if (user?.perfil?.is_admin) {
-    items.push({ key: 'moderation', title: 'Moderacao', href: '/moderacao.html', icon: 'moderation' })
+    account.splice(1, 0, {
+      key: 'moderation',
+      title: 'Moderação',
+      href: '/moderacao.html',
+      description: 'Validar spots e submissões XP.'
+    })
   }
 
-  if (user) {
-    items.push({ key: 'profile', title: 'Perfil', href: '/perfil.html', icon: 'profile' })
-    items.push({ key: 'logout', title: 'Logout', action: 'logout', icon: 'logout' })
-    return items
-  }
-
-  items.push({ key: 'login', title: 'Entrar', href: loginHref, icon: 'login' })
-  items.push({ key: 'register', title: 'Registar', href: '/register.html', icon: 'register' })
-  return items
+  return [
+    { title: 'Explorar', items: explore },
+    { title: 'Conta', items: account }
+  ]
 }
 
-function renderDockItem(item, currentKey, extraClass = '') {
+function renderLink(item, currentKey, className = 'site-dock__link') {
   const activeClass = item.key === currentKey ? ' is-active' : ''
-  const sharedAttributes = `
-    class="site-dock__item ${item.action ? 'site-dock__action' : 'site-dock__link'}${activeClass}${extraClass ? ` ${extraClass}` : ''}"
-    data-title="${item.title}"
-    data-dock-item
-    aria-label="${item.title}"
-  `
 
   if (item.action) {
     return `
-      <button type="button" ${sharedAttributes} data-action="${item.action}">
-        ${iconSvg(item.icon)}
-        <span class="site-dock__label">${escapeHtml(item.title)}</span>
+      <button type="button" class="${className}${activeClass}" data-action="${item.action}">
+        <span>${escapeHtml(item.title)}</span>
+        ${item.description ? `<em>${escapeHtml(item.description)}</em>` : ''}
       </button>
     `
   }
 
   return `
-    <a ${sharedAttributes} href="${item.href}" ${item.key === currentKey ? 'aria-current="page"' : ''}>
-      ${iconSvg(item.icon)}
-      <span class="site-dock__label">${escapeHtml(item.title)}</span>
+    <a class="${className}${activeClass}" href="${item.href}" ${item.key === currentKey ? 'aria-current="page"' : ''}>
+      <span>${escapeHtml(item.title)}</span>
+      ${item.description ? `<em>${escapeHtml(item.description)}</em>` : ''}
     </a>
-  `
-}
-
-function renderDockItems(items, currentKey, extraClass = '') {
-  return items.map((item) => renderDockItem(item, currentKey, extraClass)).join('')
-}
-
-function buildMobileDockItems() {
-  return [
-    { key: 'home', title: 'Home', href: '/index.html', icon: 'home' },
-    { key: 'map', title: 'Mapa', href: '/mapa.html', icon: 'map' },
-    { key: 'leaderboard', title: 'Ranking', href: '/leaderboard.html', icon: 'leaderboard' },
-    { key: 'profile', title: 'Perfil', href: '/perfil.html', icon: 'profile' }
-  ]
-}
-
-function renderAvatarFallback(label = 'BoardSports') {
-  return `
-    <span class="site-dock__avatar-fallback">
-      <img class="site-dock__avatar-logo" src="/assets/images/logotipo.png" alt="${escapeHtml(label)}" width="38" height="38" decoding="async">
-    </span>
   `
 }
 
 function renderAvatar(user) {
   if (!user) {
-    return `
-      <span class="site-dock__avatar is-fallback">
-        ${renderAvatarFallback()}
-      </span>
-    `
+    return '<span class="site-dock__avatar site-dock__avatar--guest">BS</span>'
   }
 
-  const initials = escapeHtml(getInitials(user?.perfil?.nome || user.email || 'BS'))
   const photoUrl = user?.perfil?.foto_perfil ? escapeHtml(user.perfil.foto_perfil) : ''
+  const initials = escapeHtml(getInitials(user?.perfil?.nome || user.email || 'BS'))
 
   if (photoUrl) {
     return `
       <span class="site-dock__avatar">
-        <img
-          class="site-dock__avatar-image"
-          src="${photoUrl}"
-          alt="Foto de perfil"
-          width="38"
-          height="38"
-          loading="lazy"
-          decoding="async"
-          onerror="this.remove(); this.parentElement.classList.add('is-fallback');"
-        >
-        ${renderAvatarFallback(`Fallback de ${initials}`)}
+        <img src="${photoUrl}" alt="Foto de perfil" width="34" height="34" loading="lazy" decoding="async">
       </span>
     `
   }
 
-  return `
-    <span class="site-dock__avatar is-fallback">
-      ${renderAvatarFallback(`Avatar de ${initials}`)}
-    </span>
-  `
+  return `<span class="site-dock__avatar">${initials}</span>`
 }
 
-function renderUserBlock(user) {
-  if (!user) {
+function renderAccountLink(user, currentKey) {
+  if (user) {
     return `
-      <div class="site-dock__user" aria-label="Sessao">
-        ${renderAvatar(null)}
-        <span class="site-dock__user-copy">
-          <span class="site-dock__user-name">Visitante</span>
-          <span class="site-dock__user-role">Modo visitante</span>
-        </span>
-      </div>
+      <a class="site-dock__account${currentKey === 'profile' ? ' is-active' : ''}" href="/perfil.html" aria-label="Abrir perfil">
+        ${renderAvatar(user)}
+        <span>Perfil</span>
+      </a>
     `
   }
 
-  const displayName = escapeHtml(user?.perfil?.nome || user.email || 'Utilizador')
-
-  return `
-    <div class="site-dock__user" aria-label="Utilizador">
-      ${renderAvatar(user)}
-      <span class="site-dock__user-copy">
-        <span class="site-dock__user-name">${displayName}</span>
-        <span class="site-dock__user-role">Sessao ativa</span>
-      </span>
-    </div>
-  `
+  return '<a class="site-dock__account" href="/login.html"><span>Entrar</span></a>'
 }
 
 function ensureRoot() {
@@ -211,81 +145,9 @@ function ensureRoot() {
   return root
 }
 
-function syncSpacer() {
+function syncLayoutMode() {
   const isAuthLayout = Boolean(document.querySelector('.auth-container'))
   document.body.classList.toggle('site-dock-auth', isAuthLayout)
-
-  let spacer = document.getElementById(SPACER_ID)
-  if (isAuthLayout) {
-    if (spacer) spacer.remove()
-    return
-  }
-
-  if (!spacer) {
-    spacer = document.createElement('div')
-    spacer.id = SPACER_ID
-    spacer.className = 'site-dock-spacer'
-    const root = document.getElementById(ROOT_ID)
-    document.body.insertBefore(spacer, root.nextSibling)
-  }
-}
-
-function setDockItemState(item, ratio = 0, orientation = 'vertical') {
-  const eased = Math.sin((Math.max(0, Math.min(1, ratio)) * Math.PI) / 2)
-  const size = BASE_ITEM_SIZE + (MAX_ITEM_SIZE - BASE_ITEM_SIZE) * eased
-  const iconSize = BASE_ICON_SIZE + (MAX_ICON_SIZE - BASE_ICON_SIZE) * eased
-  const shiftX = orientation === 'vertical' ? MAX_ITEM_SHIFT * eased : 0
-  const shiftY = orientation === 'horizontal' ? -MAX_ITEM_SHIFT * eased : 0
-
-  item.style.setProperty('--dock-item-size', `${size}px`)
-  item.style.setProperty('--dock-icon-size', `${iconSize}px`)
-  item.style.setProperty('--dock-item-shift-x', `${shiftX}px`)
-  item.style.setProperty('--dock-item-shift-y', `${shiftY}px`)
-}
-
-function bindDesktopDock(root) {
-  const container = root.querySelector('[data-dock-desktop]')
-  if (!container) return () => {}
-
-  const items = [...container.querySelectorAll('[data-dock-item]')]
-  const reset = () => items.forEach((item) => setDockItemState(item, 0, 'vertical'))
-
-  const onPointerMove = (event) => {
-    items.forEach((item) => {
-      const rect = item.getBoundingClientRect()
-      const center = rect.top + rect.height / 2
-      const distance = Math.abs(event.clientY - center)
-      const ratio = Math.max(0, 1 - distance / DESKTOP_RANGE)
-      setDockItemState(item, ratio, 'vertical')
-    })
-  }
-
-  const onPointerLeave = () => reset()
-  const onFocusIn = (event) => {
-    const focusedItem = event.target.closest('[data-dock-item]')
-    if (!focusedItem) return
-
-    items.forEach((item) => setDockItemState(item, item === focusedItem ? 0.72 : 0, 'vertical'))
-  }
-
-  const onFocusOut = () => {
-    if (!container.contains(document.activeElement)) {
-      reset()
-    }
-  }
-
-  reset()
-  container.addEventListener('pointermove', onPointerMove)
-  container.addEventListener('pointerleave', onPointerLeave)
-  container.addEventListener('focusin', onFocusIn)
-  container.addEventListener('focusout', onFocusOut)
-
-  return () => {
-    container.removeEventListener('pointermove', onPointerMove)
-    container.removeEventListener('pointerleave', onPointerLeave)
-    container.removeEventListener('focusin', onFocusIn)
-    container.removeEventListener('focusout', onFocusOut)
-  }
 }
 
 function bindActions(root) {
@@ -298,57 +160,58 @@ function bindActions(root) {
   return () => buttons.forEach((button) => button.removeEventListener('click', onClick))
 }
 
-function bindMobileDock(root) {
-  const mobileDock = root.querySelector('[data-dock-mobile]')
-  const toggle = root.querySelector('[data-dock-mobile-toggle]')
-  if (!mobileDock || !toggle) return () => {}
+function bindMenu(root) {
+  const toggle = root.querySelector('[data-site-menu-toggle]')
+  const panel = root.querySelector('[data-site-menu-panel]')
+  if (!toggle || !panel) return () => {}
 
   const closeMenu = () => {
-    mobileDock.classList.remove('is-open')
+    root.classList.remove('is-menu-open')
     toggle.setAttribute('aria-expanded', 'false')
-    toggle.innerHTML = iconSvg('menu')
   }
 
   const openMenu = () => {
-    mobileDock.classList.add('is-open')
+    root.classList.add('is-menu-open')
     toggle.setAttribute('aria-expanded', 'true')
-    toggle.innerHTML = iconSvg('close')
   }
 
   const onToggleClick = () => {
-    if (mobileDock.classList.contains('is-open')) {
+    if (root.classList.contains('is-menu-open')) {
       closeMenu()
-      return
+    } else {
+      openMenu()
     }
-
-    openMenu()
   }
 
   const onDocumentPointerDown = (event) => {
-    if (!root.contains(event.target)) {
-      closeMenu()
-    }
+    if (!root.contains(event.target)) closeMenu()
   }
 
-  const onItemClick = () => closeMenu()
-  const mobileItems = [...mobileDock.querySelectorAll('.site-dock__mobile-panel [data-dock-item]')]
+  const onKeyDown = (event) => {
+    if (event.key === 'Escape') closeMenu()
+  }
+
+  const onPanelClick = (event) => {
+    if (event.target.closest('a, button')) closeMenu()
+  }
 
   toggle.addEventListener('click', onToggleClick)
+  panel.addEventListener('click', onPanelClick)
   document.addEventListener('pointerdown', onDocumentPointerDown)
-  mobileItems.forEach((item) => item.addEventListener('click', onItemClick))
+  document.addEventListener('keydown', onKeyDown)
 
   return () => {
     toggle.removeEventListener('click', onToggleClick)
+    panel.removeEventListener('click', onPanelClick)
     document.removeEventListener('pointerdown', onDocumentPointerDown)
-    mobileItems.forEach((item) => item.removeEventListener('click', onItemClick))
+    document.removeEventListener('keydown', onKeyDown)
   }
 }
 
 function bindInteractions(root) {
   const cleanups = [
-    bindDesktopDock(root),
     bindActions(root),
-    bindMobileDock(root)
+    bindMenu(root)
   ]
 
   return () => cleanups.forEach((cleanup) => cleanup?.())
@@ -362,58 +225,69 @@ async function renderHeader() {
 
   const currentKey = getCurrentPageKey()
   const user = await obterUsuarioAtual()
-  const items = buildDockItems(user)
-  const mobileItems = buildMobileDockItems()
+  const groups = menuGroups(user)
 
   root.innerHTML = `
     <div class="site-dock__shell">
-      <div class="site-dock__brand">
-        <a class="site-dock__brand-link" href="/index.html" aria-label="BoardSports">
-          <span class="site-dock__brand-mark">BS</span>
-          <span class="site-dock__brand-copy">
-            <span class="site-dock__brand-title">BoardSports</span>
-            <span class="site-dock__brand-subtitle">Spots / videos / crew</span>
-          </span>
-        </a>
+      <a class="site-dock__brand-link" href="/index.html" aria-label="BoardSports">
+        <span class="site-dock__brand-mark">BS</span>
+        <span class="site-dock__brand-copy">
+          <span class="site-dock__brand-title">BoardSports</span>
+          <span class="site-dock__brand-subtitle">Spots / XP / crew</span>
+        </span>
+      </a>
+
+      <nav class="site-dock__nav" aria-label="Navegação principal">
+        ${primaryItems().map((item) => renderLink(item, currentKey)).join('')}
+      </nav>
+
+      <div class="site-dock__actions">
+        ${renderAccountLink(user, currentKey)}
+        <button class="site-dock__menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu-panel" data-site-menu-toggle>
+          <span>Menu</span>
+        </button>
       </div>
+    </div>
 
-      <div class="site-dock__center">
-        <nav class="site-dock__nav site-dock__nav--desktop" aria-label="Navegacao principal">
-          <div class="site-dock__items" data-dock-desktop>
-            ${renderDockItems(items, currentKey)}
-          </div>
-        </nav>
-
-        <div class="site-dock__mobile" data-dock-mobile>
-          ${renderDockItems(mobileItems, currentKey, 'site-dock__item--mobile')}
-        </div>
+    <div class="site-dock__panel" id="site-menu-panel" data-site-menu-panel>
+      <div class="site-dock__panel-head">
+        <span>000</span>
+        <strong>BoardSports</strong>
       </div>
-
-      ${renderUserBlock(user)}
+      <div class="site-dock__panel-grid">
+        ${groups.map((group) => `
+          <section>
+            <h2>${escapeHtml(group.title)}</h2>
+            <div class="site-dock__panel-links">
+              ${group.items.map((item) => renderLink(item, currentKey, 'site-dock__panel-link')).join('')}
+            </div>
+          </section>
+        `).join('')}
+      </div>
     </div>
   `
 
-  syncSpacer()
+  syncLayoutMode()
   root._cleanupDock = bindInteractions(root)
 }
 
 function setupListeners() {
   window.addEventListener('boardsports:header-sync', () => {
     renderHeader().catch((error) => {
-      console.error('Erro ao atualizar o header:', error)
+      console.error('Erro ao atualizar a navegação:', error)
     })
   })
 
   supabase.auth.onAuthStateChange(() => {
     renderHeader().catch((error) => {
-      console.error('Erro ao sincronizar sessao no header:', error)
+      console.error('Erro ao sincronizar sessão na navegação:', error)
     })
   })
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   renderHeader().catch((error) => {
-    console.error('Erro ao renderizar o header:', error)
+    console.error('Erro ao renderizar a navegação:', error)
   })
   setupListeners()
 })

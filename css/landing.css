@@ -260,6 +260,24 @@ body.landing-page::after {
   transition: transform 0.22s ease, background-color 0.22s ease;
 }
 
+.hero-command__route {
+  display: grid;
+  gap: 8px;
+}
+
+.hero-command__route span {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(242, 231, 214, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(242, 231, 214, 0.86);
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
 .hero-steps {
   width: min(var(--site-max), 100%);
   margin: clamp(34px, 6vh, 62px) auto 0;
@@ -308,14 +326,73 @@ body.landing-page::after {
 .section-heading,
 .split-section,
 .sport-grid,
+.daily-guide,
 .events-section,
 .site-footer {
   width: min(var(--site-max), calc(100vw - (var(--site-gutter) * 2)));
   margin-inline: auto;
 }
 
+.daily-guide {
+  position: relative;
+  z-index: 4;
+  margin-top: clamp(28px, 5vw, 58px);
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.guide-card {
+  min-height: 178px;
+  display: grid;
+  align-content: space-between;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--cinema-line);
+  border-radius: var(--radius-card);
+  background: rgba(9, 15, 18, 0.78);
+  color: var(--cinema-cream);
+  box-shadow: var(--cinema-shadow);
+  transition: transform 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
+}
+
+.guide-card:hover {
+  border-color: var(--cinema-line-strong);
+  background: rgba(16, 28, 33, 0.86);
+}
+
+.guide-card--primary {
+  background:
+    linear-gradient(135deg, rgba(20, 81, 90, 0.32), transparent 62%),
+    rgba(9, 15, 18, 0.86);
+}
+
+.guide-card h2,
+.guide-card strong {
+  margin: 0;
+  font-family: var(--ui-font-display);
+  font-size: clamp(1.25rem, 2vw, 2.15rem);
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+.guide-card p,
+.guide-card em {
+  margin: 0;
+  color: var(--cinema-muted);
+  font-style: normal;
+  line-height: 1.5;
+}
+
+.guide-card > span:not(.kicker) {
+  color: var(--cinema-sand);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
 .platform-proof {
-  margin-top: calc(var(--section-gap) * -0.28);
+  margin-top: clamp(18px, 3vw, 34px);
   position: relative;
   z-index: 3;
   display: grid;
@@ -848,6 +925,7 @@ body.landing-page::after {
 @media (max-width: 1180px) {
   .platform-proof,
   .split-section,
+  .daily-guide,
   .shop-window {
     grid-template-columns: 1fr;
   }
@@ -885,6 +963,7 @@ body.landing-page::after {
   }
 
   .action-grid,
+  .daily-guide,
   .platform-proof {
     grid-template-columns: 1fr;
   }
@@ -985,9 +1064,14 @@ body.landing-page::after {
 
   .hero-command,
   .proof-panel,
+  .guide-card,
   .rank-board,
   .action-card {
     padding: 16px;
+  }
+
+  .hero-command__route {
+    display: none;
   }
 
   .hero-steps a {

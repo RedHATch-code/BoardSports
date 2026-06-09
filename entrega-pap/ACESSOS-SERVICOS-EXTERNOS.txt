@@ -1,0 +1,47 @@
+Acessos a servicos externos - BoardSports
+=========================================
+
+Preencher antes da entrega ao professor orientador.
+
+Website publico
+---------------
+URL Netlify:
+https://riftboardsports.netlify.app
+
+Deploy unico:
+https://6a229fbaf0ab97052ba8cf55--riftboardsports.netlify.app
+
+Netlify
+-------
+Servico usado para alojamento/deploy do website.
+
+Forma recomendada de disponibilizacao:
+- Adicionar o email do professor como colaborador ou membro com permissao de visualizacao.
+- Em alternativa, partilhar prints do painel de deploy e a URL publica.
+
+Email do professor com acesso:
+[PREENCHER]
+
+Supabase
+--------
+Servico usado para autenticacao, base de dados PostgreSQL e storage.
+
+Forma recomendada de disponibilizacao:
+- Adicionar o email do professor como membro do projeto Supabase com permissao adequada.
+- Se for exigida conta administrativa, criar uma conta temporaria propria para avaliacao.
+
+URL do projeto Supabase:
+https://wuijytacnrfpxffnxmgf.supabase.co
+
+Email/conta de acesso para professor:
+[PREENCHER]
+
+Password temporaria:
+[PREENCHER APENAS SE FOR ENTREGUE EM CANAL SEGURO]
+
+Conta admin da aplicacao BoardSports
+email: tiagomendessss2022@gmail.com
+pass: 123456
+
+
+

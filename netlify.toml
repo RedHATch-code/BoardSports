@@ -3,13 +3,13 @@
   publish = "dist"
 
 [build.environment]
-  SUPABASE_URL = "https://wuijytacnrfpxffnxmdg.supabase.co"
-  SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdWJhc2UiLCJyZWYiOiJ3dWlqeXRhY25yZnB4ZmZueG1nZiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzc3Mzg4ODcsImV4cCI6MjA5Mjk2NDg4N30.WgX0AYTMK7oAzWgh_NP4DlgvjD-XfuJoK7BA7KbnLAg"
+  SUPABASE_URL = "https://wuijytacnrfpxffnxmgf.supabase.co"
+  SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1aWp5dGFjbnJmcHhmZm54bWdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczODg4ODcsImV4cCI6MjA5Mjk2NDg4N30.WgX0AYTMK7oAzWgh_NP4DlgvjD-XfuJoK7BA7KbnLAg"
 
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://nominatim.openstreetmap.org; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com; media-src 'self' https: blob:; form-action 'self'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://nominatim.openstreetmap.org https://api.open-meteo.com https://marine-api.open-meteo.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com; media-src 'self' https: blob:; form-action 'self'; upgrade-insecure-requests"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     Permissions-Policy = "camera=(), microphone=(), payment=(), usb=(), bluetooth=(), accelerometer=(), gyroscope=(), magnetometer=(), interest-cohort=(), geolocation=(self)"
     X-Content-Type-Options = "nosniff"
@@ -30,3 +30,8 @@
   for = "/js/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/env.js"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate, max-age=0"

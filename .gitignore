@@ -8,6 +8,10 @@ desktop.ini
 Desktop.ini
 env.js
 api/mail-config.php
+tmp/
+entrega-pap/produto-final/BoardSports-codigo-fonte/
+backend/supabase/.temp/
+backend/supabase/.temp-root/
 
 # Local Netlify folder
 .netlify

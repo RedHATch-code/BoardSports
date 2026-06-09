@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Consulta detalhes de um spot BoardSports com vídeos, comentários, imagens, estatísticas e condições.">
+  <title>Spot BoardSports - Detalhes, Vídeos e Comunidade</title>
+  <link rel="icon" type="image/png" href="/assets/images/Logo_pap.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/map-page.css">
+  <link rel="stylesheet" href="css/rift-atlas.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Spot BoardSports - Detalhes, Vídeos e Comunidade">
+  <meta property="og:description" content="Consulta detalhes de um spot BoardSports com vídeos, comentários, imagens, estatísticas e condições.">
+  <meta property="og:image" content="https://riftboardsports.netlify.app/assets/images/boardsports-mix.jpg">
+  <meta property="og:url" content="https://riftboardsports.netlify.app/spot.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Spot BoardSports - Detalhes, Vídeos e Comunidade">
+  <meta name="twitter:description" content="Consulta detalhes de um spot BoardSports com vídeos, comentários, imagens, estatísticas e condições.">
+  <meta name="twitter:image" content="https://riftboardsports.netlify.app/assets/images/boardsports-mix.jpg">
+  <link rel="canonical" href="https://riftboardsports.netlify.app/spot.html">
+</head>
+<body class="map-page">
+<a class="skip-link" href="#main-content">Saltar para o conteúdo</a>
+  <main id="main-content" class="map-page-shell spot-detail-shell">
+    <section id="spot-detail-hero" class="map-page-hero">
+      <div class="map-page-copy">
+        <span class="map-page-kicker">Detalhe do spot</span>
+        <h1>A carregar spot.</h1>
+        <p>Estamos a preparar vídeos, comentários, imagens, recomendações e condições.</p>
+      </div>
+    </section>
+
+    <section class="map-toolbar">
+      <button type="button" id="spot-favorite" class="map-secondary-button">Guardar spot</button>
+      <a id="spot-directions" class="map-secondary-button" href="/mapa.html">Direções</a>
+      <button type="button" id="spot-report" class="map-secondary-button">Denunciar</button>
+      <a class="map-primary-button" href="/mapa.html">Voltar ao mapa</a>
+    </section>
+
+    <section class="spots-panel">
+      <div class="map-section-head">
+        <div>
+          <h2>Estatísticas e condições</h2>
+          <p>Resumo do spot, comunidade e previsão externa quando disponível.</p>
+        </div>
+      </div>
+      <div id="spot-stats" class="daily-achievements-grid"></div>
+      <div id="spot-conditions" class="spot-video-list"></div>
+    </section>
+
+    <section class="spots-panel">
+      <div class="map-section-head">
+        <div>
+          <h2>Imagens do spot</h2>
+          <p>Registos visuais publicados pela comunidade.</p>
+        </div>
+      </div>
+      <form id="spot-image-form" class="map-form" hidden>
+        <input type="file" id="spot-image-file" accept="image/png,image/jpeg,image/webp">
+        <input type="text" id="spot-image-caption" placeholder="Legenda opcional">
+        <button type="submit" class="map-primary-button">Enviar imagem</button>
+      </form>
+      <div id="spot-images" class="spots-grid"></div>
+    </section>
+
+    <section class="spots-panel">
+      <div class="map-section-head">
+        <div>
+          <h2>Vídeos</h2>
+          <p>Vídeos ligados a este spot.</p>
+        </div>
+      </div>
+      <div id="spot-videos" class="spots-grid"></div>
+    </section>
+
+    <section class="spots-panel">
+      <div class="map-section-head">
+        <div>
+          <h2>Comentários</h2>
+          <p>Discussão pública do spot.</p>
+        </div>
+      </div>
+      <form id="spot-comment-form" class="map-form" hidden>
+        <textarea id="spot-comment-text" rows="3" placeholder="Escreve um comentário sobre este spot."></textarea>
+        <button type="submit" class="map-primary-button">Comentar</button>
+      </form>
+      <div id="spot-comments" class="moderation-list"></div>
+    </section>
+
+    <section class="spots-panel">
+      <div class="map-section-head">
+        <div>
+          <h2>Recomendações</h2>
+          <p>Spots próximos ou da mesma modalidade.</p>
+        </div>
+      </div>
+      <div id="spot-recommendations" class="spots-grid"></div>
+    </section>
+  </main>
+
+  <script type="module" src="js/spot_page.js"></script>
+  <script src="js/responsive.js"></script>
+  <script type="module" src="js/site_header.js"></script>
+</body>
+</html>

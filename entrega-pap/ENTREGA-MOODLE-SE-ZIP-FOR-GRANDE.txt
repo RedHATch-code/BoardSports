@@ -1,0 +1,26 @@
+Entrega do codigo-fonte - BoardSports
+=====================================
+
+Se o ficheiro comprimido for demasiado grande para submeter no Moodle, entregar este ficheiro de texto com o link do repositorio/pasta partilhada.
+
+Projeto:
+BoardSports
+
+Repositorio ou pasta partilhada:
+[COLOCAR LINK DO GITHUB, GOOGLE DRIVE OU MICROSOFT ONEDRIVE]
+
+Permissoes:
+O link deve permitir acesso ao professor orientador.
+
+Conteudo que deve estar disponivel no link:
+- Codigo-fonte completo do projeto.
+- Ficheiro SQL da base de dados.
+- Manual do utilizador.
+- Documentacao tecnica.
+- Evidencias visuais, se aplicavel.
+
+Website publicado:
+https://riftboardsports.netlify.app
+
+Servicos externos:
+O projeto utiliza Netlify e Supabase. Deve ser disponibilizado acesso de visualizacao ao professor, conforme indicado no ficheiro ACESSOS-SERVICOS-EXTERNOS.txt.

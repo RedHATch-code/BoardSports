@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Página não encontrada na BoardSports.">
+  <link rel="icon" type="image/png" href="assets/images/Logo_pap.png">
+  <title>404 - BoardSports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <link rel="stylesheet" href="css/institutional.css">
+  <link rel="stylesheet" href="css/rift-atlas.css">
+  <style>
+    .not-found-shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 112px 0 72px;
+    }
+
+    .not-found-image {
+      position: relative;
+      min-height: clamp(280px, 50vw, 560px);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background: #111820;
+    }
+
+    .not-found-image img {
+      width: 100%;
+      height: 100%;
+      min-height: inherit;
+      display: block;
+      object-fit: cover;
+    }
+
+    .not-found-image::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8, 12, 16, 0.08), rgba(8, 12, 16, 0.68));
+      pointer-events: none;
+    }
+
+    .not-found-content {
+      max-width: 760px;
+      padding: 32px 0 0;
+    }
+
+    .not-found-content .institutional-kicker {
+      margin-bottom: 10px;
+    }
+
+    .not-found-content h1 {
+      margin: 0;
+      font-size: clamp(64px, 14vw, 160px);
+      line-height: 0.86;
+      letter-spacing: 0;
+      color: #f4efe6;
+    }
+
+    .not-found-content h2 {
+      margin: 18px 0 10px;
+      font-size: clamp(28px, 5vw, 56px);
+      line-height: 1;
+      color: #f8f4ec;
+    }
+
+    .not-found-content p {
+      max-width: 620px;
+      margin: 0;
+      color: rgba(248, 244, 236, 0.74);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .not-found-content .institutional-actions {
+      margin-top: 24px;
+    }
+
+    @media (max-width: 720px) {
+      .not-found-shell {
+        width: min(100% - 24px, 1120px);
+        padding: 92px 0 56px;
+      }
+
+      .not-found-content {
+        padding-top: 24px;
+      }
+    }
+  </style>
+</head>
+<body class="institutional-page">
+<main id="main-content" class="not-found-shell">
+  <figure class="not-found-image" aria-label="Riders em diferentes modalidades BoardSports">
+    <img src="assets/images/boardsports-mix.jpg" alt="Montagem visual de desportos de prancha" loading="eager" decoding="async">
+  </figure>
+
+  <section class="not-found-content" aria-labelledby="not-found-title">
+    <p class="institutional-kicker">Página não encontrada</p>
+    <h1 id="not-found-title">404</h1>
+    <h2>Spot fora do mapa.</h2>
+    <p>Este link não existe ou mudou de lugar. Volta ao mapa, ao ranking ou à página inicial.</p>
+    <div class="institutional-actions">
+      <a class="institutional-button" href="mapa.html">Abrir mapa</a>
+      <a class="institutional-button institutional-button--ghost" href="index.html">Voltar ao início</a>
+    </div>
+  </section>
+</main>
+<script type="module" src="js/site_header.js"></script>
+</body>
+</html>
+
+
+
+
+
+

@@ -1,0 +1,56 @@
+Indice da entrega PAP - BoardSports
+===================================
+
+1. Codigo-fonte do produto final
+--------------------------------
+Ficheiro:
+produto-final/BoardSports-codigo-fonte.zip
+
+Conteudo:
+- frontend/
+- backend/
+- relatorios/
+- deploy/
+- netlify.toml
+- package.json
+- package-lock.json
+
+2. Base de dados
+----------------
+Ficheiro:
+base-dados/BoardSports-base-dados-migrations.sql
+
+Conteudo:
+- Estrutura da base de dados Supabase/PostgreSQL.
+- Migrations SQL.
+- Policies de Row Level Security.
+- Funcoes, triggers e dados seed presentes nas migrations.
+
+3. Manual do utilizador
+-----------------------
+Ficheiro:
+documentacao/MANUAL-UTILIZADOR-ENTREGA.md
+
+Conteudo:
+- Requisitos.
+- Instalacao local.
+- Configuracao.
+- Testes.
+- Utilizacao das principais paginas.
+
+4. Acessos externos
+-------------------
+Ficheiro:
+ACESSOS-SERVICOS-EXTERNOS.txt
+
+Conteudo:
+- URL Netlify.
+- Dados a preencher para acesso ao Supabase.
+- Dados a preencher para conta admin da aplicacao.
+
+5. Alternativa ao upload no Moodle
+----------------------------------
+Ficheiro:
+ENTREGA-MOODLE-SE-ZIP-FOR-GRANDE.txt
+
+Usar este ficheiro caso o Moodle nao aceite o zip por limite de tamanho.

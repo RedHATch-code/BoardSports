@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Consulta o teu perfil BoardSports, publicações, seguidores, mensagens e progresso XP.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Perfil BoardSports - Publicações, Mensagens e XP">
+  <meta property="og:description" content="Consulta o teu perfil BoardSports, publicações, seguidores, mensagens e progresso XP.">
+  <meta property="og:image" content="assets/images/boardsports-mix.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Perfil BoardSports">
+  <meta name="twitter:description" content="Consulta o teu perfil BoardSports, publicações, seguidores, mensagens e progresso XP.">
+  <meta name="twitter:image" content="assets/images/boardsports-mix.jpg">
+  <link rel="canonical" href="perfil.html">
+  <link rel="icon" type="image/png" href="assets/images/logotipo.png">
+  <title>Perfil BoardSports - Publicações, Mensagens e XP</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/profile-page.css">
+</head>
+<body class="profile-page profile-overview-page">
+
+<div class="profile-shell">
+  <section class="profile-overview-hero">
+    <div class="profile-overview-head">
+      <div class="profile-avatar-shell profile-overview-avatar">
+        <img id="avatar-image" class="profile-avatar-image" alt="Foto de perfil">
+        <span id="avatar-fallback" class="profile-avatar-fallback">BS</span>
+      </div>
+
+      <div class="profile-overview-copy">
+        <span class="profile-kicker">Perfil BoardSports</span>
+        <h1 id="profile-display-name">A carregar perfil</h1>
+        <p id="profile-display-bio">A tua bio vai aparecer aqui assim que o perfil estiver carregado.</p>
+      </div>
+    </div>
+
+    <div class="profile-overview-side">
+      <div class="profile-stat-grid">
+        <article class="profile-stat-card">
+          <strong id="publications-count">0</strong>
+          <span>Publicações</span>
+        </article>
+        <article class="profile-stat-card">
+          <strong id="followers-count">0</strong>
+          <span>Seguidores</span>
+        </article>
+      </div>
+
+      <article class="profile-xp-card">
+        <div class="profile-xp-head">
+          <strong id="profile-xp-level">Nivel 1</strong>
+        </div>
+        <h2 id="profile-xp-name">Rider iniciante</h2>
+        <div class="profile-xp-bar" aria-label="Progresso XP">
+          <span id="profile-xp-progress"></span>
+        </div>
+        <p id="profile-xp-meta">0 XP total</p>
+      </article>
+
+      <div class="profile-overview-actions">
+        <a href="configuração.html" class="profile-primary-button">Editar perfil</a>
+        <a href="leaderboard.html" class="profile-secondary-button">Leaderboard</a>
+      </div>
+
+      <span id="profile-admin-link-wrapper" hidden>
+        <a href="moderação.html" class="profile-secondary-button">Abrir moderação</a>
+      </span>
+    </div>
+  </section>
+
+  <div class="profile-overview-grid">
+    <section class="profile-panel">
+      <div class="profile-section-head">
+        <h2>Publicações</h2>
+        <span id="publications-meta">0 itens</span>
+      </div>
+
+      <div id="publications-list" class="profile-publication-list">
+        <article class="profile-empty-card">
+          <p>A carregar publicações...</p>
+        </article>
+      </div>
+    </section>
+
+    <aside class="profile-panel profile-panel-side">
+      <section class="profile-activity-section">
+        <div class="profile-section-head">
+          <h2>Seguidores</h2>
+          <span id="followers-meta">0 seguidores</span>
+        </div>
+
+        <div id="followers-list" class="profile-follower-list">
+          <article class="profile-empty-card">
+            <p>A carregar seguidores...</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="profile-activity-section">
+        <div class="profile-section-head">
+          <h2>Mensagens</h2>
+          <span id="messages-meta">0 mensagens</span>
+        </div>
+
+        <form id="message-form" class="profile-message-form">
+          <label class="profile-field">
+            <span>Email do utilizador</span>
+            <input type="email" id="message-recipient" placeholder="destinatario@dominio.com" autocomplete="email">
+          </label>
+
+          <label class="profile-field">
+            <span>Mensagem</span>
+            <textárea id="message-content" rows="4" placeholder="Escreve uma mensagem curta e direta."></textárea>
+          </label>
+
+          <button type="submit" class="profile-primary-button">Enviar mensagem</button>
+          <div id="message-feedback" class="profile-inline-message" hidden></div>
+        </form>
+
+        <div id="messages-list" class="profile-message-list">
+          <article class="profile-empty-card">
+            <p>A carregar mensagens...</p>
+          </article>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script type="module" src="js/perfil_page.js"></script>
+<script src="js/responsive.js"></script>
+<script type="module" src="js/site_header.js"></script>
+</body>
+</html>

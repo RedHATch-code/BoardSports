@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node backend/scripts/build-static.js",
-    "build:infinityfree": "node backend/scripts/build-static.js",
-    "start": "node backend/run_server.js",
-    "smoke": "node backend/smoke_test.js"
+    "build": "node scripts/build-static.js",
+    "start": "node run_server.js",
+    "smoke": "node smoke_test.js"
   }
 }

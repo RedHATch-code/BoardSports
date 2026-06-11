@@ -254,7 +254,6 @@ async function renderHeader() {
         </span>
         <span class="site-dock__brand-copy">
           <span class="site-dock__brand-title">BoardSports</span>
-          <span class="site-dock__brand-subtitle">Descobre spots. Publica sessões. Ganha XP.</span>
         </span>
       </a>
 

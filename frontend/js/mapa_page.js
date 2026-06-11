@@ -649,7 +649,6 @@ function renderSpotVideoList(videos = []) {
 
 function handleMapClick(event) {
   if (!pickingLocation) {
-    enterMobileMapFocus()
     return
   }
 

@@ -12,6 +12,8 @@ const entriesToCopy = [
   'js',
   '404.html',
   '.htaccess',
+  'admin-login.html',
+  'apresentacao.html',
   'configuracao.html',
   'contacto.html',
   'index.html',
@@ -40,6 +42,14 @@ const pageMeta = {
   '404.html': {
     title: '404 - BoardSports',
     description: 'Página não encontrada na BoardSports.'
+  },
+  'admin-login.html': {
+    title: 'Login Admin - BoardSports',
+    description: 'Login administrativo restrito da BoardSports.'
+  },
+  'apresentacao.html': {
+    title: 'Apresentação do Projeto - BoardSports',
+    description: 'Apresentação técnica e funcional do projeto BoardSports, desenvolvido como PAP de TGPSI.'
   },
   'sobre.html': {
     title: 'Sobre - BoardSports',

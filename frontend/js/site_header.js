@@ -2,9 +2,11 @@
 import { supabase } from './supabase.js'
 
 const ROOT_ID = 'site-floating-dock'
+const ADMIN_EMAIL = 'tiagomendessss2022@gmail.com'
 
 const PAGE_KEY_MAP = {
   'index.html': 'home',
+  'admin-login.html': 'admin-login',
   'login.html': 'login',
   'register.html': 'register',
   'mapa.html': 'map',
@@ -15,6 +17,7 @@ const PAGE_KEY_MAP = {
   'configuracao.html': 'profile',
   'notificacoes.html': 'notifications',
   'moderacao.html': 'moderation',
+  'apresentacao.html': 'presentation',
   'sobre.html': 'about',
   'contacto.html': 'contact',
   'termos.html': 'terms',
@@ -75,7 +78,7 @@ function menuGroups(user) {
         { key: 'register', title: 'Criar conta', href: '/register.html', description: 'Entrar na comunidade BoardSports.' }
       ]
 
-  if (user?.perfil?.is_admin) {
+  if (user?.email?.toLowerCase() === ADMIN_EMAIL && user?.perfil?.is_admin) {
     account.splice(1, 0, {
       key: 'moderation',
       title: 'Moderação',
@@ -85,6 +88,7 @@ function menuGroups(user) {
   }
 
   const institutional = [
+    { key: 'presentation', title: 'Apresentação', href: '/apresentacao.html', description: 'Resumo da PAP e funcionalidades do projeto.' },
     { key: 'about', title: 'Sobre', href: '/sobre.html', description: 'Missão e funcionamento da comunidade.' },
     { key: 'contact', title: 'Contacto', href: '/contacto.html', description: 'Falar com a equipa BoardSports.' },
     { key: 'terms', title: 'Termos', href: '/termos.html', description: 'Regras de uso da plataforma.' },

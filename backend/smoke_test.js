@@ -10,6 +10,14 @@ const checks = [
     markers: ['id="login-form"', 'autocomplete="email"', 'autocomplete="current-password"', 'js/auth.js?v=phpmailer-20260506']
   },
   {
+    path: '/admin-login.html',
+    markers: ['id="admin-login-form"', 'tiagomendessss2022@gmail.com', 'js/admin_login.js']
+  },
+  {
+    path: '/apresentacao.html',
+    markers: ['Apresentação do Projeto', 'PAP 2026', 'HTML, CSS, JS, Supabase']
+  },
+  {
     path: '/register.html',
     markers: ['id="register-form"', 'autocomplete="new-password"', 'autocomplete="tel"']
   },

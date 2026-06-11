@@ -9,6 +9,8 @@ import {
 } from './db_utils.js'
 import { showConfirm, showToast } from './ui_feedback.js'
 
+const ADMIN_EMAIL = 'tiagomendessss2022@gmail.com'
+
 const state = {
   user: null,
   solicitacoes: [],
@@ -45,7 +47,7 @@ async function initModeraçãoPage() {
   bindEvents()
 
   state.user = await obterUsuarioAtual()
-  if (!state.user?.perfil?.is_admin) {
+  if (!isAllowedAdmin(state.user)) {
     renderAccessDenied()
     return
   }
@@ -57,6 +59,10 @@ async function initModeraçãoPage() {
     carregarSubmissoesXp(),
     carregarDenuncias()
   ])
+}
+
+function isAllowedAdmin(user) {
+  return user?.email?.toLowerCase() === ADMIN_EMAIL && user?.perfil?.is_admin === true
 }
 
 function cacheDom() {

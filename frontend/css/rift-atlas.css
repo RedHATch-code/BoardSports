@@ -1626,6 +1626,11 @@ body:not(.site-dock-auth)::after {
   animation: none;
 }
 
+body.map-page::after {
+  display: none !important;
+  content: none !important;
+}
+
 .site-dock__shell {
   max-width: min(1480px, calc(100vw - 32px)) !important;
 }
@@ -2590,5 +2595,135 @@ body::after {
 
   body.map-page .map-mobile-exit__link {
     flex: 1;
+  }
+}
+
+/* Mobile map handling: keep Leaflet touch area clear and move controls outside it. */
+@media (max-width: 720px) {
+  body.map-page .map-page-shell:has(.map-live-stage) {
+    width: min(100% - 18px, 480px) !important;
+    padding-top: calc(96px + env(safe-area-inset-top)) !important;
+    gap: 14px !important;
+  }
+
+  body.map-page .map-live-stage {
+    display: grid !important;
+    gap: 12px !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body.map-page .map-live-stage::before {
+    display: none !important;
+  }
+
+  body.map-page .map-live-stage #map {
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    height: min(58svh, 520px) !important;
+    min-height: 360px !important;
+    margin: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 18px 44px rgba(1, 25, 39, 0.28) !important;
+    overflow: hidden !important;
+  }
+
+  body.map-page .map-mobile-exit,
+  body.map-page .map-stage-overlay,
+  body.map-page .map-stage-overlay--intro,
+  body.map-page .map-stage-overlay--filters {
+    position: static !important;
+    inset: auto !important;
+    z-index: auto !important;
+  }
+
+  body.map-page .map-mobile-exit {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px !important;
+    width: 100%;
+    pointer-events: auto;
+  }
+
+  body.map-page .map-stage-overlay--intro {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    max-width: none !important;
+    pointer-events: auto !important;
+  }
+
+  body.map-page .map-stage-overlay--intro .map-page-copy,
+  body.map-page .map-stage-overlay--intro .map-stat-card,
+  body.map-page .map-stage-overlay--filters {
+    background: rgba(8, 10, 11, 0.88) !important;
+    border: 1px solid rgba(244, 241, 234, 0.16) !important;
+    box-shadow: 0 12px 30px rgba(1, 25, 39, 0.2) !important;
+    backdrop-filter: blur(16px) saturate(1.04);
+    -webkit-backdrop-filter: blur(16px) saturate(1.04);
+  }
+
+  body.map-page .map-stage-overlay--intro .map-page-copy {
+    width: 100% !important;
+    padding: 14px !important;
+  }
+
+  body.map-page .map-stage-overlay--intro h1 {
+    max-width: none !important;
+    margin: 8px 0 0 !important;
+    font-size: clamp(2rem, 11vw, 3rem) !important;
+  }
+
+  body.map-page .map-stage-overlay--intro .map-page-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  body.map-page .map-stage-overlay--intro .map-stat-card {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 78px !important;
+  }
+
+  body.map-page .map-stage-overlay--filters {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 14px !important;
+    border-radius: 18px !important;
+  }
+
+  body.map-page .map-stage-overlay--filters .map-toolbar-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  body.map-page .map-live-stage .leaflet-control-zoom {
+    margin-top: 12px !important;
+    margin-left: 12px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.map-page .map-page-shell:has(.map-live-stage) {
+    width: min(100% - 14px, 420px) !important;
+  }
+
+  body.map-page .map-live-stage #map {
+    height: 54svh !important;
+    min-height: 330px !important;
   }
 }

@@ -59,7 +59,31 @@ function getLegacyProfilePayload(payload) {
   delete legacy.tipo_user
   delete legacy.xp_total
   delete legacy.nivel_xp
+  delete legacy.is_admin
   return legacy
+}
+
+function getCoreProfilePayload(payload) {
+  return {
+    id: payload.id,
+    role: payload.role || 'atleta',
+    nome: payload.nome || null,
+    email: payload.email || null,
+    telefone: payload.telefone || null,
+    foto_perfil: payload.foto_perfil || null,
+    bio: payload.bio || null,
+    localidade: payload.localidade || null,
+    ativo: payload.ativo ?? true
+  }
+}
+
+function getMinimalProfilePayload(payload) {
+  return {
+    id: payload.id,
+    role: payload.role || 'atleta',
+    email: payload.email || null,
+    ativo: payload.ativo ?? true
+  }
 }
 
 function isMissingProfileXpColumn(error) {
@@ -76,8 +100,6 @@ function buildProfileDraft(tipoUser, dadosAdicionais = {}, email = '') {
   return {
     role: normalizeProfileRole(dadosAdicionais.role || 'atleta'),
     tipo_user: boardSportsType,
-    xp_total: Number(dadosAdicionais.xp_total || 0),
-    nivel_xp: Number(dadosAdicionais.nivel_xp || 1),
     nome: normalizeOptionalString(dadosAdicionais.nome),
     telefone: normalizeOptionalString(dadosAdicionais.telefone),
     localidade: normalizeOptionalString(dadosAdicionais.localidade),
@@ -119,8 +141,6 @@ function buildProfilePayload(user, existingProfile = null, fallbackProfile = {})
         || normalizeOptionalString(metadata.tipo_user)
         || 'principiante'
     ),
-    xp_total: Number(existingProfile?.xp_total ?? fallbackProfile.xp_total ?? metadataProfile.xp_total ?? metadata.xp_total ?? 0),
-    nivel_xp: Number(existingProfile?.nivel_xp ?? fallbackProfile.nivel_xp ?? metadataProfile.nivel_xp ?? metadata.nivel_xp ?? 1),
     nome: normalizeOptionalString(existingProfile?.nome)
       || normalizeOptionalString(fallbackProfile.nome)
       || normalizeOptionalString(metadataProfile.nome)
@@ -141,10 +161,7 @@ function buildProfilePayload(user, existingProfile = null, fallbackProfile = {})
       || normalizeOptionalString(metadataProfile.bio)
       || normalizeOptionalString(metadata.bio),
     foto_perfil: normalizeOptionalString(existingProfile?.foto_perfil),
-    website_url: normalizeOptionalString(existingProfile?.website_url),
-    email_verificado: Boolean(user.email_confirmed_at || existingProfile?.email_verificado),
-    data_verificação_email: user.email_confirmed_at || existingProfile?.data_verificação_email || null,
-    ativo: existingProfile?.ativo ?? true
+    website_url: normalizeOptionalString(existingProfile?.website_url)
   }
 }
 
@@ -242,25 +259,30 @@ export async function garantirPerfilUtilizador(user = null, fallbackProfile = {}
 
     const payload = buildProfilePayload(currentUser, existingProfile, fallbackProfile)
 
-    let { data, error } = await supabase
-      .from('profiles')
-      .upsert(payload, { onConflict: 'id' })
-      .select('*')
-      .single()
+    const payloads = [
+      payload,
+      getLegacyProfilePayload(payload),
+      getCoreProfilePayload(payload),
+      getMinimalProfilePayload(payload)
+    ]
+    const errors = []
 
-    if (error && isMissingProfileXpColumn(error)) {
-      const retry = await supabase
+    for (const profilePayload of payloads) {
+      const { data, error } = await supabase
         .from('profiles')
-        .upsert(getLegacyProfilePayload(payload), { onConflict: 'id' })
+        .upsert(profilePayload, { onConflict: 'id' })
         .select('*')
         .single()
 
-      data = retry.data
-      error = retry.error
+      if (!error) return data
+      errors.push(error)
+
+      if (!isMissingProfileXpColumn(error) && error.code !== 'PGRST204' && error.code !== 'PGRST102') {
+        console.warn('Falha ao garantir perfil, a tentar payload mais simples:', error)
+      }
     }
 
-    if (error) throw error
-    return data
+    throw errors.at(-1) || new Error('Não foi possível criar ou atualizar o perfil.')
   } catch (error) {
     console.error('Erro ao garantir perfil do utilizador:', error)
     return null
@@ -364,8 +386,6 @@ export async function fazerRegistro(email, password, tipoUser, dadosAdicionais =
         data: {
           role: profileDraft.role,
           tipo_user: profileDraft.tipo_user,
-          xp_total: profileDraft.xp_total,
-          nivel_xp: profileDraft.nivel_xp,
           nome: profileDraft.nome,
           telefone: profileDraft.telefone,
           localidade: profileDraft.localidade,
@@ -515,7 +535,7 @@ export async function atualizarStatusEmailVerificado() {
       .from('profiles')
       .update({
         email_verificado: true,
-        data_verificação_email: user.email_confirmed_at || new Date().toISOString()
+        data_verificacao_email: user.email_confirmed_at || new Date().toISOString()
       })
       .eq('id', user.id)
 

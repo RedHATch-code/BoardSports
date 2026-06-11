@@ -18,3 +18,7 @@ backend/supabase/.temp-root/
 
 # Documents
 *.pdf
+
+# Local/security files
+token.md
+.scannerwork/

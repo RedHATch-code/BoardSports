@@ -40,7 +40,7 @@ export async function obterEstatisticasDashboard() {
   try {
     const [eventos, riders, pendentesModeração] = await Promise.all([
       countRows('eventos', (query) => query.eq('ativo', true)),
-      countRows('profiles', (query) => query.eq('ativo', true)),
+      countRows('public_profiles', (query) => query.eq('ativo', true)),
       countRows('solicitacoes_publicacao', (query) => query.eq('status', 'pendente'))
     ])
 
@@ -252,8 +252,8 @@ export async function obterParticipantesPorEventos(eventoIds = []) {
     const atletaIds = [...new Set((participacoes || []).map((item) => item.atleta_id).filter(Boolean))]
     const { data: atletas, error: atletasError } = atletaIds.length
       ? await supabase
-          .from('profiles')
-          .select('id, nome, email, foto_perfil')
+          .from('public_profiles')
+          .select('id, nome, foto_perfil')
           .in('id', atletaIds)
       : { data: [], error: null }
 
@@ -352,8 +352,8 @@ export async function obterSeguidoresPerfil(usuario_id) {
     const seguidorIds = [...new Set((seguimentos || []).map((item) => item.seguidor_id).filter(Boolean))]
     const { data: perfis, error: perfisError } = seguidorIds.length
       ? await supabase
-          .from('profiles')
-          .select('id, nome, email, foto_perfil, role, bio')
+          .from('public_profiles')
+          .select('id, nome, foto_perfil, role, bio')
           .in('id', seguidorIds)
       : { data: [], error: null }
 
@@ -376,20 +376,14 @@ export async function obterPerfilPorEmail(email, excludeUserId = '') {
     const normalizedEmail = String(email || '').trim().toLowerCase()
     if (!normalizedEmail) return null
 
-    let query = supabase
-      .from('profiles')
-      .select('id, nome, email, foto_perfil, role, bio')
-      .ilike('email', normalizedEmail)
-      .limit(1)
-
-    if (excludeUserId) {
-      query = query.neq('id', excludeUserId)
-    }
-
-    const { data, error } = await query
+    const { data, error } = await supabase.rpc('buscar_perfil_por_email', {
+      p_email: normalizedEmail
+    })
     if (error) throw error
 
-    return data?.[0] || null
+    const profile = data?.[0] || null
+    if (profile && excludeUserId && profile.id === excludeUserId) return null
+    return profile
   } catch (error) {
     console.error('Erro ao obter perfil por email:', error)
     return null
@@ -413,8 +407,8 @@ export async function obterMensagensUsuario(usuario_id, limite = 20) {
 
     const { data: perfis, error: perfisError } = profileIds.length
       ? await supabase
-          .from('profiles')
-          .select('id, nome, email, foto_perfil, role')
+          .from('public_profiles')
+          .select('id, nome, foto_perfil, role')
           .in('id', profileIds)
       : { data: [], error: null }
 
@@ -748,7 +742,7 @@ export async function obterSpots(filtros = {}) {
         ? supabase.from('categorias').select('id, nome').in('id', categoriaIds)
         : Promise.resolve({ data: [], error: null }),
       criadorIds.length
-        ? supabase.from('profiles').select('id, nome, role, email').in('id', criadorIds)
+        ? supabase.from('public_profiles').select('id, nome, role').in('id', criadorIds)
         : Promise.resolve({ data: [], error: null })
     ])
 
@@ -807,7 +801,7 @@ async function hydrateSpotVídeos(items = []) {
   const [spots, autoresRes] = await Promise.all([
     spotIds.length ? obterSpots({ ids: spotIds }) : Promise.resolve([]),
     autorIds.length
-      ? supabase.from('profiles').select('id, nome, email, foto_perfil, role').in('id', autorIds)
+      ? supabase.from('public_profiles').select('id, nome, foto_perfil, role').in('id', autorIds)
       : Promise.resolve({ data: [], error: null })
   ])
 
@@ -1212,7 +1206,7 @@ export async function obterSolicitacoesPublicacao(filtros = {}) {
     const [spots, perfisRes] = await Promise.all([
       spotIds.length ? obterSpots({ ids: spotIds }) : Promise.resolve([]),
       usuarioIds.length
-        ? supabase.from('profiles').select('id, nome, email').in('id', usuarioIds)
+        ? supabase.from('public_profiles').select('id, nome').in('id', usuarioIds)
         : Promise.resolve({ data: [], error: null })
     ])
 
@@ -1640,9 +1634,9 @@ export async function pesquisarGlobal(termo) {
     obterSpots(),
     obterGaleriaVídeosSpots(),
     supabase
-      .from('profiles')
-      .select('id, nome, email, role, foto_perfil')
-      .or(`nome.ilike.%${search}%,email.ilike.%${search}%`)
+      .from('public_profiles')
+      .select('id, nome, role, foto_perfil')
+      .ilike('nome', `%${search}%`)
       .eq('ativo', true)
       .limit(20)
   ])
@@ -1873,8 +1867,8 @@ export async function obterLeaderboardXp(filtro = 'global', modalidadeId = null)
       if (!ids.length) return []
 
       const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, nome, email, foto_perfil, xp_total, nivel_xp, tipo_user')
+        .from('public_profiles')
+        .select('id, nome, foto_perfil, xp_total, nivel_xp, tipo_user')
         .in('id', ids)
 
       if (profilesError) throw profilesError
@@ -1889,8 +1883,8 @@ export async function obterLeaderboardXp(filtro = 'global', modalidadeId = null)
     }
 
     let query = supabase
-      .from('profiles')
-      .select('id, nome, email, foto_perfil, xp_total, nivel_xp, tipo_user')
+      .from('public_profiles')
+      .select('id, nome, foto_perfil, xp_total, nivel_xp, tipo_user')
       .eq('ativo', true)
       .order('xp_total', { ascending: false })
       .limit(50)
@@ -2047,7 +2041,7 @@ export async function obterSubmissoesModeracao(filtros = {}) {
 
     const [profilesRes, spots, manobrasRes] = await Promise.all([
       userIds.length
-        ? supabase.from('profiles').select('id, nome, email, tipo_user, xp_total, nivel_xp').in('id', userIds)
+        ? supabase.from('public_profiles').select('id, nome, tipo_user, xp_total, nivel_xp').in('id', userIds)
         : Promise.resolve({ data: [], error: null }),
       spotIds.length ? obterSpots({ ids: spotIds }) : Promise.resolve([]),
       manobraIds.length
@@ -2090,6 +2084,9 @@ export async function moderarSubmissãoXp(submissãoId, estado, motivo = '') {
     return null
   }
 }
+
+export const obterGaleriaVídeosSpots = obterGaleriaVÃ­deosSpots
+export const criarSubmissãoXp = criarSubmissÃ£oXp
 
 // ============================================================
 // Fim do arquivo

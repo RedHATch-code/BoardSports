@@ -65,6 +65,11 @@ loginForm.onsubmit = async (event) => {
     return
   }
 
+  if (!email.includes('@')) {
+    mostrarMensagem('Indica um email válido.', 'error')
+    return
+  }
+
   definirEstadoProcessamento()
 
   const resultado = await fazerLogin(email, password)

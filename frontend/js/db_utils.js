@@ -2085,7 +2085,6 @@ export async function moderarSubmissãoXp(submissãoId, estado, motivo = '') {
   }
 }
 
-export const obterGaleriaVídeosSpots = obterGaleriaVÃ­deosSpots
 export const criarSubmissãoXp = criarSubmissÃ£oXp
 
 // ============================================================

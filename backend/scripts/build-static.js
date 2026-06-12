@@ -13,7 +13,7 @@ const entriesToCopy = [
   '404.html',
   '.htaccess',
   'admin-login.html',
-  'apresentacao.html',
+  'apresentacao-tecnica.html',
   'configuracao.html',
   'contacto.html',
   'index.html',
@@ -50,6 +50,10 @@ const pageMeta = {
   'apresentacao.html': {
     title: 'Apresentação do Projeto - BoardSports',
     description: 'Apresentação técnica e funcional do projeto BoardSports, desenvolvido como PAP de TGPSI.'
+  },
+  'apresentacao-tecnica.html': {
+    title: 'Apresentação Técnica - BoardSports',
+    description: 'Tecnologias usadas, requisitos funcionais, arquitetura, base de dados, segurança, testes e deploy do projeto BoardSports.'
   },
   'sobre.html': {
     title: 'Sobre - BoardSports',

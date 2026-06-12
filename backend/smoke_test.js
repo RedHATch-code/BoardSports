@@ -18,6 +18,10 @@ const checks = [
     markers: ['Apresentação do Projeto', 'PAP 2026', 'HTML, CSS, JS, Supabase']
   },
   {
+    path: '/apresentacao-tecnica.html',
+    markers: ['Apresentacao Tecnica', 'Requisitos funcionais', 'Tecnologias usadas e aplicacao']
+  },
+  {
     path: '/register.html',
     markers: ['id="register-form"', 'autocomplete="new-password"', 'autocomplete="tel"']
   },

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Apresentacao tecnica do projeto BoardSports: tecnologias utilizadas, requisitos funcionais, arquitetura, base de dados, seguranca e deploy.">
+  <link rel="canonical" href="apresentacao-tecnica.html">
+  <link rel="icon" type="image/png" href="assets/images/Logo_pap.png">
+  <title>Apresentacao Tecnica - BoardSports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/floating-dock.css">
+  <link rel="stylesheet" href="css/institutional.css">
+  <link rel="stylesheet" href="css/rift-atlas.css">
+</head>
+<body class="institutional-page project-presentation-page technical-presentation-page">
+<main id="main-content" class="institutional-shell project-presentation-shell technical-presentation-shell">
+  <section class="institutional-hero project-presentation-hero technical-presentation-hero">
+    <p class="institutional-kicker">PAP TGPSI 2026 / Apresentacao tecnica</p>
+    <h1>BoardSports.</h1>
+    <p>Plataforma web para comunidade de desportos de prancha, com mapa de spots, perfis, videos, XP, ranking e moderacao. Esta pagina resume o projeto, as tecnologias usadas e a forma como cada funcionalidade foi implementada.</p>
+    <div class="institutional-actions">
+      <a class="institutional-button" href="index.html">Ver site</a>
+      <a class="institutional-button institutional-button--ghost" href="mapa.html">Abrir mapa</a>
+      <a class="institutional-button institutional-button--ghost" href="apresentacao.html">Resumo PAP</a>
+    </div>
+  </section>
+
+  <section class="project-presentation-summary" aria-label="Resumo rapido do projeto">
+    <article>
+      <strong>Produto</strong>
+      <span>Web app</span>
+    </article>
+    <article>
+      <strong>Tema</strong>
+      <span>Board sports</span>
+    </article>
+    <article>
+      <strong>Frontend</strong>
+      <span>HTML CSS JS</span>
+    </article>
+    <article>
+      <strong>Backend</strong>
+      <span>Supabase</span>
+    </article>
+  </section>
+
+  <section class="technical-section" aria-labelledby="overview-title">
+    <div class="technical-section__head">
+      <p class="institutional-kicker">01 / Enquadramento</p>
+      <h2 id="overview-title">O que e o BoardSports</h2>
+    </div>
+    <div class="institutional-grid">
+      <article class="institutional-card institutional-card--wide">
+        <h3>Ideia do projeto</h3>
+        <p>O BoardSports e uma plataforma digital para praticantes e interessados em surf, skate, skimboard, snowboard e sandboard. O objetivo e concentrar informacao util sobre spots, permitir publicacoes da comunidade e incentivar participacao atraves de XP e ranking.</p>
+      </article>
+      <article class="institutional-card">
+        <h3>Problema identificado</h3>
+        <p>A informacao sobre spots esta muitas vezes espalhada por redes sociais, grupos privados ou mapas genericos. Isso torna dificil descobrir locais, perceber a modalidade adequada, ver videos reais e avaliar a qualidade do spot.</p>
+      </article>
+      <article class="institutional-card">
+        <h3>Solucao criada</h3>
+        <p>Foi desenvolvido um site com mapa interativo, sistema de conta, perfis, publicacao de spots e videos, gamificacao por XP, leaderboard e painel de moderacao para validar conteudo.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="technical-section" aria-labelledby="tech-title">
+    <div class="technical-section__head">
+      <p class="institutional-kicker">02 / Tecnologias</p>
+      <h2 id="tech-title">Tecnologias usadas e aplicacao</h2>
+    </div>
+    <div class="technical-table" role="table" aria-label="Tecnologias usadas">
+      <div role="row">
+        <strong role="cell">HTML5</strong>
+        <span role="cell">Estrutura das paginas, formularios, navegacao, secoes institucionais e conteudo da aplicacao.</span>
+      </div>
+      <div role="row">
+        <strong role="cell">CSS3</strong>
+        <span role="cell">Design visual, responsividade mobile, cards, hero sections, botoes, mapa e identidade urbana/premium do site.</span>
+      </div>
+      <div role="row">
+        <strong role="cell">JavaScript ES Modules</strong>
+        <span role="cell">Interatividade, autenticacao, ligacao ao Supabase, carregamento de dados, filtros, modais, formularios e logica de XP.</span>
+      </div>
+      <div role="row">
+        <strong role="cell">Supabase Auth</strong>
+        <span role="cell">Registo, login, sessao do utilizador, recuperacao de palavra-passe e controlo do utilizador autenticado.</span>
+      </div>
+      <div role="row">
+        <strong role="cell">Supabase Postgres</strong>
+        <span role="cell">Base de dados com perfis, spots, modalidades, categorias, videos, XP, notificacoes, denuncias e moderacao.</span>
+      </div>
+      <div role="row">
+        <strong role="cell">RLS e Policies</strong>
+        <span role="cell">Protecao da base de dados: users normais so acedem ao que e publico ou ao que lhes pertence; admin fica restrito.</span>
+      </div>
+      <div role="row">
+        <strong role="cell">Leaflet.js</strong>
+        <span role="cell">Mapa interativo para ver spots, marcadores, popups, filtros e localizacao geografica.</span>
+      </div>
+      <div role="row">
+        <strong role="cell">OpenStreetMap / Carto</strong>
+        <span role="cell">Tiles e base visual do mapa usada para representar Portugal e os spots da comunidade.</span>
+      </div>
+      <div role="row">
+        <strong role="cell">Netlify</strong>
+        <span role="cell">Alojamento do frontend, build estatico, HTTPS, headers de seguranca e deploy publico.</span>
+      </div>
+      <div role="row">
+        <strong role="cell">GitHub</strong>
+        <span role="cell">Controlo de versoes, historico do projeto e entrega do codigo-fonte.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="technical-section" aria-labelledby="requirements-title">
+    <div class="technical-section__head">
+      <p class="institutional-kicker">03 / Requisitos</p>
+      <h2 id="requirements-title">Requisitos funcionais</h2>
+    </div>
+    <div class="technical-requirements">
+      <article class="technical-requirement-card">
+        <span>RF01</span>
+        <h3>Registar e autenticar utilizadores</h3>
+        <p>O utilizador pode criar conta, iniciar sessao, recuperar password e aceder ao seu perfil.</p>
+      </article>
+      <article class="technical-requirement-card">
+        <span>RF02</span>
+        <h3>Explorar spots no mapa</h3>
+        <p>O sistema apresenta spots num mapa interativo com filtros por modalidade e categoria.</p>
+      </article>
+      <article class="technical-requirement-card">
+        <span>RF03</span>
+        <h3>Criar spots</h3>
+        <p>Users autenticados podem adicionar spots com nome, descricao, modalidade, dificuldade e coordenadas.</p>
+      </article>
+      <article class="technical-requirement-card">
+        <span>RF04</span>
+        <h3>Publicar videos</h3>
+        <p>O utilizador pode associar videos a um spot e indicar se e o praticante, se filmou outra pessoa ou se e video de terceiros.</p>
+      </article>
+      <article class="technical-requirement-card">
+        <span>RF05</span>
+        <h3>Atribuir XP</h3>
+        <p>O sistema calcula XP por atividade validada, videos e conquistas, atualizando progresso e nivel do perfil.</p>
+      </article>
+      <article class="technical-requirement-card">
+        <span>RF06</span>
+        <h3>Mostrar ranking</h3>
+        <p>Existe leaderboard global, semanal, mensal e por modalidade para comparar progresso entre riders.</p>
+      </article>
+      <article class="technical-requirement-card">
+        <span>RF07</span>
+        <h3>Gerir perfil</h3>
+        <p>O utilizador pode atualizar dados publicos, avatar, bio, localidade e consultar publicacoes.</p>
+      </article>
+      <article class="technical-requirement-card">
+        <span>RF08</span>
+        <h3>Moderar conteudo</h3>
+        <p>O administrador valida submissao de spots, XP e denuncias para manter qualidade e seguranca.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="technical-section" aria-labelledby="non-functional-title">
+    <div class="technical-section__head">
+      <p class="institutional-kicker">04 / Qualidade</p>
+      <h2 id="non-functional-title">Requisitos nao funcionais</h2>
+    </div>
+    <div class="institutional-grid">
+      <article class="institutional-card">
+        <h3>Responsividade</h3>
+        <p>O site foi adaptado para desktop e telemovel, com especial cuidado no mapa para permitir usar os controlos sem bloquear a navegacao.</p>
+      </article>
+      <article class="institutional-card">
+        <h3>Seguranca</h3>
+        <p>A base de dados usa RLS, policies, triggers e views seguras. Campos privados como email e admin nao ficam expostos publicamente.</p>
+      </article>
+      <article class="institutional-card">
+        <h3>Usabilidade</h3>
+        <p>A navegacao tem menu global, botoes visiveis, formularios claros, mensagens de erro e feedback para o utilizador.</p>
+      </article>
+      <article class="institutional-card">
+        <h3>Manutencao</h3>
+        <p>O codigo esta organizado por paginas e utilitarios JavaScript, com migracoes SQL para documentar alteracoes da base de dados.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="technical-section" aria-labelledby="architecture-title">
+    <div class="technical-section__head">
+      <p class="institutional-kicker">05 / Arquitetura</p>
+      <h2 id="architecture-title">Como o sistema esta organizado</h2>
+    </div>
+    <div class="technical-flow" aria-label="Arquitetura do sistema">
+      <article>
+        <strong>Frontend</strong>
+        <p>Paginas HTML, CSS e JavaScript executadas no browser.</p>
+      </article>
+      <article>
+        <strong>Supabase API</strong>
+        <p>Cliente JavaScript comunica com Auth, REST API, RPC e Storage.</p>
+      </article>
+      <article>
+        <strong>Postgres</strong>
+        <p>Tabelas, views, triggers, RLS e funcoes SQL protegem os dados.</p>
+      </article>
+      <article>
+        <strong>Netlify</strong>
+        <p>Distribui o site estatico com HTTPS e headers de seguranca.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="technical-section" aria-labelledby="database-title">
+    <div class="technical-section__head">
+      <p class="institutional-kicker">06 / Dados</p>
+      <h2 id="database-title">Base de dados e entidades principais</h2>
+    </div>
+    <div class="technical-pill-grid">
+      <span>profiles</span>
+      <span>modalidades</span>
+      <span>categorias</span>
+      <span>spots</span>
+      <span>spot_videos</span>
+      <span>xp_logs</span>
+      <span>submissoes</span>
+      <span>notificacoes</span>
+      <span>comentarios</span>
+      <span>denuncias</span>
+      <span>public_profiles</span>
+      <span>solicitacoes_publicacao</span>
+    </div>
+    <article class="institutional-card institutional-card--wide">
+      <h3>Como os dados sao protegidos</h3>
+      <p>Os dados publicos sao expostos por views seguras e policies. Dados privados, como email e flags de administrador, ficam limitados ao proprio utilizador ou ao admin. A logica sensivel de XP e moderacao fica na base de dados, nao apenas no JavaScript.</p>
+    </article>
+  </section>
+
+  <section class="technical-section" aria-labelledby="pages-title">
+    <div class="technical-section__head">
+      <p class="institutional-kicker">07 / Paginas</p>
+      <h2 id="pages-title">Paginas principais do site</h2>
+    </div>
+    <div class="technical-page-list">
+      <a href="index.html"><strong>index.html</strong><span>Landing page e entrada da plataforma.</span></a>
+      <a href="mapa.html"><strong>mapa.html</strong><span>Mapa interativo, criacao de spots, videos e XP.</span></a>
+      <a href="videos.html"><strong>videos.html</strong><span>Galeria de videos associados aos spots.</span></a>
+      <a href="leaderboard.html"><strong>leaderboard.html</strong><span>Ranking e niveis de XP da comunidade.</span></a>
+      <a href="perfil.html"><strong>perfil.html</strong><span>Perfil, publicacoes, seguidores e mensagens.</span></a>
+      <a href="moderacao.html"><strong>moderacao.html</strong><span>Painel restrito para admin validar conteudo.</span></a>
+      <a href="pesquisa.html"><strong>pesquisa.html</strong><span>Pesquisa global por spots, videos e riders.</span></a>
+      <a href="contacto.html"><strong>contacto.html</strong><span>Suporte e contacto do projeto.</span></a>
+    </div>
+  </section>
+
+  <section class="technical-section" aria-labelledby="test-title">
+    <div class="technical-section__head">
+      <p class="institutional-kicker">08 / Teste e deploy</p>
+      <h2 id="test-title">Como foi testado e publicado</h2>
+    </div>
+    <div class="institutional-grid">
+      <article class="institutional-card">
+        <h3>Build</h3>
+        <p>O comando <code>npm run build</code> gera a pasta <code>dist</code>, copia os ficheiros do frontend e injeta metadados SEO, sitemap, robots e configuracao Supabase.</p>
+      </article>
+      <article class="institutional-card">
+        <h3>Smoke test</h3>
+        <p>O comando <code>npm run smoke</code> verifica se as paginas principais carregam e se os elementos esperados existem.</p>
+      </article>
+      <article class="institutional-card">
+        <h3>Deploy</h3>
+        <p>O site e publicado no Netlify, que executa o build e disponibiliza a aplicacao em HTTPS.</p>
+      </article>
+      <article class="institutional-card">
+        <h3>Controlo de versoes</h3>
+        <p>O codigo e guardado no GitHub, permitindo historico, recuperacao de versoes e entrega do codigo-fonte.</p>
+      </article>
+    </div>
+  </section>
+</main>
+<script type="module" src="js/site_header.js"></script>
+</body>
+</html>

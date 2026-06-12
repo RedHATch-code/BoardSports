@@ -18,6 +18,7 @@ const PAGE_KEY_MAP = {
   'notificacoes.html': 'notifications',
   'moderacao.html': 'moderation',
   'apresentacao.html': 'presentation',
+  'apresentacao-tecnica.html': 'technical-presentation',
   'sobre.html': 'about',
   'contacto.html': 'contact',
   'termos.html': 'terms',
@@ -89,6 +90,7 @@ function menuGroups(user) {
 
   const institutional = [
     { key: 'presentation', title: 'Apresentação', href: '/apresentacao.html', description: 'Resumo da PAP e funcionalidades do projeto.' },
+    { key: 'technical-presentation', title: 'Apresentação técnica', href: '/apresentacao-tecnica.html', description: 'Tecnologias, requisitos, arquitetura e segurança.' },
     { key: 'about', title: 'Sobre', href: '/sobre.html', description: 'Missão e funcionamento da comunidade.' },
     { key: 'contact', title: 'Contacto', href: '/contacto.html', description: 'Falar com a equipa BoardSports.' },
     { key: 'terms', title: 'Termos', href: '/termos.html', description: 'Regras de uso da plataforma.' },

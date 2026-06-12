@@ -2,7 +2,6 @@
 import { supabase } from './supabase.js'
 
 const ROOT_ID = 'site-floating-dock'
-const ADMIN_EMAIL = 'tiagomendessss2022@gmail.com'
 
 const PAGE_KEY_MAP = {
   'index.html': 'home',
@@ -79,7 +78,7 @@ function menuGroups(user) {
         { key: 'register', title: 'Criar conta', href: '/register.html', description: 'Entrar na comunidade BoardSports.' }
       ]
 
-  if (user?.email?.toLowerCase() === ADMIN_EMAIL && user?.perfil?.is_admin) {
+  if (user?.perfil?.is_admin) {
     account.splice(1, 0, {
       key: 'moderation',
       title: 'Moderação',

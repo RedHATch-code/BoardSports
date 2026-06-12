@@ -328,9 +328,11 @@ function filterLoadedSpots(spots = []) {
       spot.criador_id
     ].filter(Boolean).join(' '))
     const countryText = normalizeSearch([
-      spot.pa�s,
+      spot.pais,
+      spot['país'],
       spot.country,
-      spot.localiza��o,
+      spot.localizacao,
+      spot['localização'],
       spot.morada,
       spot.nome,
       spot.descricao
@@ -344,7 +346,7 @@ async function loadDailyAchievements() {
   if (!ui.dailyAchievements) return
 
   if (!user) {
-    ui.dailyAchievements.innerHTML = '<article class="map-empty-card"><p>Faz login para reclamar conquistas di�rias de XP.</p></article>'
+    ui.dailyAchievements.innerHTML = '<article class="map-empty-card"><p>Faz login para reclamar conquistas diárias de XP.</p></article>'
     return
   }
 
@@ -354,14 +356,14 @@ async function loadDailyAchievements() {
 
 function renderDailyAchievements(achievements = []) {
   if (!achievements.length) {
-    ui.dailyAchievements.innerHTML = '<article class="map-empty-card"><p>N�o foi poss�vel carregar as conquistas di�rias.</p></article>'
+    ui.dailyAchievements.innerHTML = '<article class="map-empty-card"><p>Não foi possível carregar as conquistas diárias.</p></article>'
     return
   }
 
   ui.dailyAchievements.innerHTML = achievements.map((achievement) => {
     const buttonLabel = achievement.reclamada
       ? 'Reclamada'
-      : achievement.conclu�da
+      : achievement['concluída']
         ? `Reclamar +${achievement.xp} XP`
         : 'Por concluir'
 
@@ -371,13 +373,13 @@ function renderDailyAchievements(achievements = []) {
           <span class="daily-achievement-xp">+${Number(achievement.xp || 0)} XP</span>
           <h3>${escapeHtml(achievement.titulo)}</h3>
           <p>${escapeHtml(achievement.descricao)}</p>
-          <small>${achievement.conclu�da ? 'Objetivo conclu�do hoje' : 'Ainda falta completar hoje'}</small>
+          <small>${achievement['concluída'] ? 'Objetivo concluído hoje' : 'Ainda falta completar hoje'}</small>
         </div>
         <button
           type="button"
           class="map-secondary-button"
           data-daily-achievement="${escapeHtml(achievement.codigo)}"
-          ${achievement.conclu�da && !achievement.reclamada ? '' : 'disabled'}
+          ${achievement['concluída'] && !achievement.reclamada ? '' : 'disabled'}
         >${escapeHtml(buttonLabel)}</button>
       </article>
     `
@@ -394,7 +396,7 @@ async function handleDailyAchievementClick(event) {
   if (result?.sucesso) {
     showToast(`Conquista reclamada: +${result.xp_ganho} XP.`, { type: 'success' })
   } else {
-    showToast(result?.erro || 'N�o foi poss�vel reclamar a conquista.', { type: 'error' })
+    showToast(result?.erro || 'Não foi possível reclamar a conquista.', { type: 'error' })
   }
 
   user = await obterUsuarioAtual()
@@ -526,16 +528,16 @@ function buildSpotPopup(spot) {
   return `
     <div style="min-width:220px;color:#f3f4f6;">
       <strong style="display:block;font-size:1rem;margin-bottom:8px;">${escapeHtml(spot.nome)}</strong>
-      <p style="margin:0 0 6px;color:#c7c9d1;">${escapeHtml(spot.modalidades?.nome || 'Spot')} � ${escapeHtml(spot.categorias?.nome || 'Geral')}</p>
+      <p style="margin:0 0 6px;color:#c7c9d1;">${escapeHtml(spot.modalidades?.nome || 'Spot')} - ${escapeHtml(spot.categorias?.nome || 'Geral')}</p>
       <p style="margin:0 0 6px;color:#ffd6a3;">Dificuldade: ${escapeHtml(dificuldade.label)}</p>
       ${bestSeason ? `<p style="margin:0 0 6px;color:#b8f1f2;">Melhor altura: ${escapeHtml(bestSeason)}</p>` : ''}
-      <p style="margin:0 0 10px;color:#9ca3af;">${escapeHtml(spot.descricao || 'Sem descri��o adicional.')}</p>
-      <p style="margin:0 0 12px;color:#ffd6a3;">${videoCount} ${videoCount === 1 ? 'v�deo ligado' : 'v�deos ligados'}</p>
+      <p style="margin:0 0 10px;color:#9ca3af;">${escapeHtml(spot.descricao || 'Sem descrição adicional.')}</p>
+      <p style="margin:0 0 12px;color:#ffd6a3;">${videoCount} ${videoCount === 1 ? 'vídeo ligado' : 'vídeos ligados'}</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button type="button" data-spot-action="focus" data-spot-id="${spot.id}" style="min-height:36px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#f3f4f6;cursor:pointer;">Focar</button>
-        <a href="/spot.html?id=${spot.id}" style="min-height:36px;display:inline-flex;align-items:center;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#f3f4f6;text-decoration:none;">P�gina</a>
-        <a href="${escapeHtml(directionsUrl)}" target="_blank" rel="noreferrer" style="min-height:36px;display:inline-flex;align-items:center;padding:0 12px;border-radius:999px;border:1px solid rgba(47,158,163,0.24);background:rgba(47,158,163,0.14);color:#b8f1f2;text-decoration:none;">Dire��es</a>
-        <button type="button" data-spot-action="video" data-spot-id="${spot.id}" style="min-height:36px;padding:0 12px;border-radius:999px;border:0;background:linear-gradient(135deg,#f5d7b5 0%,#d66d24 100%);color:#141414;font-weight:700;cursor:pointer;">Publicar v�deo</button>
+        <a href="/spot.html?id=${spot.id}" style="min-height:36px;display:inline-flex;align-items:center;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#f3f4f6;text-decoration:none;">Página</a>
+        <a href="${escapeHtml(directionsUrl)}" target="_blank" rel="noreferrer" style="min-height:36px;display:inline-flex;align-items:center;padding:0 12px;border-radius:999px;border:1px solid rgba(47,158,163,0.24);background:rgba(47,158,163,0.14);color:#b8f1f2;text-decoration:none;">Direções</a>
+        <button type="button" data-spot-action="video" data-spot-id="${spot.id}" style="min-height:36px;padding:0 12px;border-radius:999px;border:0;background:linear-gradient(135deg,#f5d7b5 0%,#d66d24 100%);color:#141414;font-weight:700;cursor:pointer;">Publicar vídeo</button>
         <button type="button" data-spot-action="xp" data-spot-id="${spot.id}" style="min-height:36px;padding:0 12px;border-radius:999px;border:1px solid rgba(47,158,163,0.24);background:rgba(47,158,163,0.14);color:#b8f1f2;font-weight:700;cursor:pointer;">Submeter XP</button>
         ${canEdit ? `<button type="button" data-spot-action="edit" data-spot-id="${spot.id}" style="min-height:36px;padding:0 12px;border-radius:999px;border:0;background:#2f343d;color:#f3f4f6;cursor:pointer;">Editar</button>` : ''}
       </div>
@@ -562,7 +564,7 @@ function renderSpotCards() {
     const videoCount = videoCountBySpotId.get(spot.id) || 0
     const canEdit = user && spot.criador_id === user.id
     const dificuldade = formatSpotDifficulty(spot.dificuldade)
-    const spotV�deos = getV�deosForSpot(spot.id)
+    const spotVideos = getVideosForSpot(spot.id)
     const previewUrl = buildSpotPreviewUrl(spot)
     const directionsUrl = buildDirectionsUrl(spot)
     const bestSeason = formatBestSeason(spot)
@@ -570,7 +572,7 @@ function renderSpotCards() {
     return `
       <article class="spot-card">
         <div class="spot-preview">
-          <img src="${escapeHtml(previewUrl)}" alt="Preview de localiza��o para ${escapeHtml(spot.nome)}" width="640" height="360" loading="lazy" decoding="async">
+          <img src="${escapeHtml(previewUrl)}" alt="Preview de localização para ${escapeHtml(spot.nome)}" width="640" height="360" loading="lazy" decoding="async">
           <div class="spot-preview-overlay">
             <span>${Number(spot.coordenadas_lat).toFixed(3)}, ${Number(spot.coordenadas_long).toFixed(3)}</span>
           </div>
@@ -579,16 +581,16 @@ function renderSpotCards() {
         <div class="spot-card-top">
           <div>
             <span class="spot-card-tag">${escapeHtml(spot.modalidades?.nome || 'Spot')}</span>
-            <span class="spot-difficulty-tag" data-difficulty="${escapeHtml(dificuldade.value)}">${escapeHtml(dificuldade.label)} � +${dificuldade.xp} XP</span>
+            <span class="spot-difficulty-tag" data-difficulty="${escapeHtml(dificuldade.value)}">${escapeHtml(dificuldade.label)} - +${dificuldade.xp} XP</span>
           </div>
-          <small>${videoCount} ${videoCount === 1 ? 'v�deo' : 'v�deos'}</small>
+          <small>${videoCount} ${videoCount === 1 ? 'vídeo' : 'vídeos'}</small>
         </div>
 
         <div>
           <h3>${escapeHtml(spot.nome)}</h3>
         </div>
 
-        <p>${escapeHtml(spot.descricao || 'Sem descri��o adicional para este spot.')}</p>
+        <p>${escapeHtml(spot.descricao || 'Sem descrição adicional para este spot.')}</p>
 
         <div class="spot-card-meta">
           <span>Categoria: ${escapeHtml(spot.categorias?.nome || 'Geral')}</span>
@@ -603,13 +605,13 @@ function renderSpotCards() {
           </div>
         ` : ''}
 
-        ${renderSpotVideoList(spotV�deos)}
+        ${renderSpotVideoList(spotVideos)}
 
         <div class="spot-card-actions">
           <button type="button" class="map-focus-button has-ui-icon icon-map" data-spot-action="focus" data-spot-id="${spot.id}">Abrir no mapa</button>
-          <a class="map-secondary-button has-ui-icon icon-open" href="/spot.html?id=${spot.id}">P�gina do spot</a>
-          <a class="map-directions-button has-ui-icon icon-location" href="${escapeHtml(directionsUrl)}" target="_blank" rel="noreferrer">Dire��es</a>
-          <button type="button" class="map-video-button has-ui-icon icon-video" data-spot-action="video" data-spot-id="${spot.id}">Publicar v�deo</button>
+          <a class="map-secondary-button has-ui-icon icon-open" href="/spot.html?id=${spot.id}">Página do spot</a>
+          <a class="map-directions-button has-ui-icon icon-location" href="${escapeHtml(directionsUrl)}" target="_blank" rel="noreferrer">Direções</a>
+          <button type="button" class="map-video-button has-ui-icon icon-video" data-spot-action="video" data-spot-id="${spot.id}">Publicar vídeo</button>
           <button type="button" class="map-xp-button has-ui-icon icon-ranking" data-spot-action="xp" data-spot-id="${spot.id}">Submeter XP</button>
           ${canEdit ? `<button type="button" class="map-edit-button has-ui-icon icon-edit" data-spot-action="edit" data-spot-id="${spot.id}">Editar</button>` : ''}
           ${canEdit ? `<button type="button" class="map-delete-button" data-spot-action="delete" data-spot-id="${spot.id}">Apagar</button>` : ''}
@@ -624,7 +626,7 @@ function renderSpotVideoList(videos = []) {
 
   return `
     <div class="spot-video-list">
-      <strong>V�deos deste spot</strong>
+      <strong>Vídeos deste spot</strong>
       ${videos.slice(0, 3).map((video) => {
         const canDelete = user && (video.autor_id === user.id || user.perfil?.is_admin)
         const analysis = video.analise_resultado || analisarVideoUrl(video.video_url)
@@ -632,8 +634,8 @@ function renderSpotVideoList(videos = []) {
         return `
           <article class="spot-video-item">
             <div>
-              <span>${escapeHtml(video.legenda || 'V�deo publicado')}</span>
-              <small>${escapeHtml(analysis.formato === 'short' ? 'Curto vertical' : 'Longo horizontal')} � ${escapeHtml(video.plataforma || analysis.plataforma || 'link')}</small>
+              <span>${escapeHtml(video.legenda || 'Vídeo publicado')}</span>
+              <small>${escapeHtml(analysis.formato === 'short' ? 'Curto vertical' : 'Longo horizontal')} - ${escapeHtml(video.plataforma || analysis.plataforma || 'link')}</small>
             </div>
             <div class="spot-video-actions">
               <a href="${escapeHtml(video.video_url)}" target="_blank" rel="noreferrer">Ver</a>
@@ -642,7 +644,7 @@ function renderSpotVideoList(videos = []) {
           </article>
         `
       }).join('')}
-      ${videos.length > 3 ? `<small>+${videos.length - 3} v�deos adicionais na galeria.</small>` : ''}
+      ${videos.length > 3 ? `<small>+${videos.length - 3} vídeos adicionais na galeria.</small>` : ''}
     </div>
   `
 }
@@ -655,7 +657,7 @@ function handleMapClick(event) {
   setSpotCoordinates(event.latlng.lat, event.latlng.lng, true)
   openSpotModal()
   pickingLocation = false
-  setSpotLocationStatus('Localiza��o definida a partir do mapa.')
+  setSpotLocationStatus('Localização definida a partir do mapa.')
 }
 
 function enterMobileMapFocus() {
@@ -761,7 +763,7 @@ async function submitSpotForm(event) {
 
   const perfil = user.perfil || await garantirPerfilUtilizador(user, { email: user.email })
   if (!perfil) {
-    showToast('N�o foi poss�vel preparar o teu perfil. Termina sess�o, volta a entrar e tenta novamente.', { type: 'error', duration: 5200 })
+    showToast('Não foi possível preparar o teu perfil. Termina sessão, volta a entrar e tenta novamente.', { type: 'error', duration: 5200 })
     return
   }
 
@@ -785,14 +787,14 @@ async function submitSpotForm(event) {
   }
 
   if (!isValidLatitude(payload.coordenadas_lat) || !isValidLongitude(payload.coordenadas_long)) {
-    showToast('As coordenadas do spot n�o s�o v�lidas.', { type: 'warning' })
+    showToast('As coordenadas do spot não são válidas.', { type: 'warning' })
     return
   }
 
   if (spotEditingId) {
     const updated = await atualizarSpot(spotEditingId, payload)
     if (!updated) {
-      showToast('N�o foi poss�vel atualizar o spot.', { type: 'error' })
+      showToast('Não foi possível atualizar o spot.', { type: 'error' })
       return
     }
 
@@ -800,7 +802,7 @@ async function submitSpotForm(event) {
   } else {
     const created = await criarSpot(payload)
     if (!created) {
-      showToast('N�o foi poss�vel criar o spot.', { type: 'error' })
+      showToast('Não foi possível criar o spot.', { type: 'error' })
       return
     }
 
@@ -817,19 +819,19 @@ async function submitVideoForm(event) {
 
   user = await obterUsuarioAtual()
   if (!user) {
-    showToast('Faz login para publicar v�deos num spot.', { type: 'warning' })
+    showToast('Faz login para publicar vídeos num spot.', { type: 'warning' })
     return
   }
 
   const videoUrl = ui.videoUrl.value.trim()
   const tipoAutoria = ui.videoTipoAutoria?.value || 'proprio'
   if (!videoUrl) {
-    showToast('Indica o URL do v�deo.', { type: 'warning' })
+    showToast('Indica o URL do vídeo.', { type: 'warning' })
     return
   }
 
   if (!['proprio', 'filmado', 'terceiros'].includes(tipoAutoria)) {
-    showToast('Indica se �s tu no v�deo, se filmaste algu�m ou se � de terceiros.', { type: 'warning' })
+    showToast('Indica se és tu no vídeo, se filmaste alguém ou se é de terceiros.', { type: 'warning' })
     return
   }
 
@@ -842,11 +844,11 @@ async function submitVideoForm(event) {
   })
 
   if (!resultado?.sucesso) {
-    showToast(resultado?.erro || 'N�o foi poss�vel publicar o v�deo.', { type: 'error', duration: 4800 })
+    showToast(resultado?.erro || 'Não foi possível publicar o vídeo.', { type: 'error', duration: 4800 })
     return
   }
 
-  showToast('V�deo publicado com sucesso.', { type: 'success' })
+  showToast('Vídeo publicado com sucesso.', { type: 'success' })
   closeVideoModal()
   await loadSpots()
   await loadDailyAchievements()
@@ -863,7 +865,7 @@ async function submitXpForm(event) {
 
   const spot = currentSpots.find((item) => Number(item.id) === Number(activeXpSpotId))
   if (!spot) {
-    showToast('Spot inv�lido para submiss�o XP.', { type: 'error' })
+    showToast('Spot inválido para submissão XP.', { type: 'error' })
     return
   }
 
@@ -886,7 +888,7 @@ async function submitXpForm(event) {
     return
   }
 
-  const result = await criarSubmiss�oXp({
+  const result = await criarSubmissãoXp({
     user_id: user.id,
     spot_id: spot.id,
     manobra_id: tipo === 'manobra' ? selectedManobra.id : null,
@@ -900,11 +902,11 @@ async function submitXpForm(event) {
   })
 
   if (!result?.sucesso) {
-    showToast(result?.erro || 'N�o foi poss�vel criar a submiss�o XP.', { type: 'error', duration: 5200 })
+    showToast(result?.erro || 'Não foi possível criar a submissão XP.', { type: 'error', duration: 5200 })
     return
   }
 
-  showToast('Submiss�o XP enviada para modera��o.', { type: 'success' })
+  showToast('Submissão XP enviada para moderação.', { type: 'success' })
   closeXpModal()
 }
 
@@ -924,13 +926,13 @@ function renderVideoXpPreview() {
   const tipoAutoria = ui.videoTipoAutoria?.value || 'proprio'
   const xp = getVideoAuthoringXp(tipoAutoria)
   const labels = {
-    proprio: 'O v�deo mostra-te a praticar o desporto.',
+    proprio: 'O vídeo mostra-te a praticar o desporto.',
     filmado: 'Tu gravaste outra pessoa a praticar. Vale metade dos pontos.',
-    terceiros: 'O v�deo � de terceiros. Fica publicado, mas n�o atribui XP.'
+    terceiros: 'O vídeo é de terceiros. Fica publicado, mas não atribui XP.'
   }
 
   ui.videoXpPreview.innerHTML = `
-    <strong>XP do v�deo: +${xp}</strong>
+    <strong>XP do vídeo: +${xp}</strong>
     <p>${escapeHtml(labels[tipoAutoria] || labels.proprio)}</p>
   `
 }
@@ -947,7 +949,7 @@ function renderVideoAnalysis() {
     : '<p>Cola um link para analisar plataforma, formato e compatibilidade antes de publicar.</p>'
 
   ui.videoAnalysis.innerHTML = `
-    <strong>Analisador de v�deo</strong>
+    <strong>Analisador de vídeo</strong>
     <div class="video-analysis-meta">
       <span>${escapeHtml(analysis.plataforma)}</span>
       <span>${analysis.formato === 'short' ? 'Curto vertical' : 'Longo horizontal'}</span>
@@ -1060,7 +1062,7 @@ function closeSpotModal() {
 function enableSpotMapPicking() {
   pickingLocation = true
   ui.spotModal.hidden = true
-  showToast('Clica no mapa para definir a localiza��o do spot.', { type: 'info' })
+  showToast('Clica no mapa para definir a localização do spot.', { type: 'info' })
 }
 
 function openVideoModal(spot) {
@@ -1070,7 +1072,7 @@ function openVideoModal(spot) {
   ui.videoForm.reset()
   ui.videoModal.hidden = false
   ui.videoModalTitle.textContent = spot.nome || 'Spot selecionado'
-  ui.videoModalCopy.textContent = `O v�deo vai ficar ligado ao spot ${spot.nome || 'selecionado'} e passa a aparecer na galeria p�blica de v�deos.`
+  ui.videoModalCopy.textContent = `O vídeo vai ficar ligado ao spot ${spot.nome || 'selecionado'} e passa a aparecer na galeria pública de vídeos.`
   renderVideoAnalysis()
   renderVideoXpPreview()
 }
@@ -1093,7 +1095,7 @@ async function openXpModal(spot) {
   ui.xpForm.reset()
   ui.xpModal.hidden = false
   ui.xpModalTitle.textContent = spot.nome || 'Spot selecionado'
-  ui.xpModalCopy.textContent = `A modera��o vai validar a prova para ${spot.nome || 'este spot'} antes de atribuir XP.`
+  ui.xpModalCopy.textContent = `A moderação vai validar a prova para ${spot.nome || 'este spot'} antes de atribuir XP.`
 
   currentManobras = await obterManobras({ modalidade_id: spot.modalidade_id })
   ui.xpManobra.innerHTML = [
@@ -1129,7 +1131,7 @@ function renderXpSubmissionState() {
 
   ui.xpPreview.innerHTML = `
     <strong>XP previsto: +${xpPrevisto}</strong>
-    <p>${escapeHtml(label)}. Depois de enviada, a prova aparece no painel de modera��o.</p>
+    <p>${escapeHtml(label)}. Depois de enviada, a prova aparece no painel de moderação.</p>
   `
 }
 
@@ -1164,7 +1166,7 @@ async function deleteSpot(spotId) {
 
   const deleted = await apagarSpot(spotId)
   if (!deleted) {
-    showToast('N�o foi poss�vel apagar o spot.', { type: 'error' })
+    showToast('Não foi possível apagar o spot.', { type: 'error' })
     return
   }
 
@@ -1174,8 +1176,8 @@ async function deleteSpot(spotId) {
 
 async function deleteSpotVideo(videoId) {
   const confirmed = await showConfirm({
-    title: 'Apagar v�deo',
-    message: 'Queres mesmo apagar este v�deo do spot?',
+    title: 'Apagar vídeo',
+    message: 'Queres mesmo apagar este vídeo do spot?',
     confirmText: 'Apagar',
     danger: true
   })
@@ -1184,7 +1186,7 @@ async function deleteSpotVideo(videoId) {
 
   const deleted = await apagarVideoSpot(videoId)
   if (!deleted) {
-    showToast('N�o foi poss�vel apagar o v�deo.', { type: 'error' })
+    showToast('Não foi possível apagar o vídeo.', { type: 'error' })
     return
   }
 
@@ -1235,7 +1237,7 @@ function fitMapToVisibleSpots() {
 
 function focusUserLocation() {
   if (!('geolocation' in navigator)) {
-    showToast('Geolocaliza��o indispon�vel neste browser.', { type: 'warning' })
+    showToast('Geolocalização indisponível neste browser.', { type: 'warning' })
     return
   }
 
@@ -1251,10 +1253,10 @@ function focusUserLocation() {
         userLocationMarker = L.marker([lat, lng]).addTo(map)
       }
 
-      userLocationMarker.bindPopup('Esta � a tua localiza��o atual.').openPopup()
+      userLocationMarker.bindPopup('Esta é a tua localização atual.').openPopup()
     },
     () => {
-      showToast('N�o foi poss�vel obter a tua localiza��o.', { type: 'error' })
+      showToast('Não foi possível obter a tua localização.', { type: 'error' })
     },
     { enableHighAccuracy: true, timeout: 12000 }
   )
@@ -1269,7 +1271,7 @@ async function searchSpotLocation() {
   }
 
   ui.btnSearchSpotLocation.disabled = true
-  setSpotLocationStatus('A pesquisar localiza��o...')
+  setSpotLocationStatus('A pesquisar localização...')
 
   try {
     const params = new URLSearchParams({
@@ -1284,21 +1286,21 @@ async function searchSpotLocation() {
       }
     })
 
-    if (!response.ok) throw new Error('Pesquisa indispon�vel')
+    if (!response.ok) throw new Error('Pesquisa indisponível')
 
     const results = await response.json()
     const result = results?.[0]
 
     if (!result) {
-      setSpotLocationStatus('N�o encontrei esse local. Experimenta escrever tamb�m a cidade ou o pa�s.')
+      setSpotLocationStatus('Não encontrei esse local. Experimenta escrever também a cidade ou o país.')
       return
     }
 
     setSpotCoordinates(result.lat, result.lon, true)
-    setSpotLocationStatus(result.display_name || 'Localiza��o encontrada.')
+    setSpotLocationStatus(result.display_name || 'Localização encontrada.')
   } catch (error) {
-    console.error('Erro ao pesquisar localiza��o do spot:', error)
-    setSpotLocationStatus('N�o foi poss�vel pesquisar agora. Podes escrever as coordenadas manualmente.')
+    console.error('Erro ao pesquisar localização do spot:', error)
+    setSpotLocationStatus('Não foi possível pesquisar agora. Podes escrever as coordenadas manualmente.')
   } finally {
     ui.btnSearchSpotLocation.disabled = false
   }
@@ -1345,7 +1347,7 @@ function updateDraftSpotMarker(lat, lng, focusMap = false) {
     }).addTo(map)
   }
 
-  draftSpotMarker.bindPopup('Localiza��o escolhida para o novo spot.')
+  draftSpotMarker.bindPopup('Localização escolhida para o novo spot.')
 
   if (focusMap) {
     map.setView([lat, lng], 14)
@@ -1385,7 +1387,7 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#39;')
 }
 
-function getV�deosForSpot(spotId) {
+function getVideosForSpot(spotId) {
   return currentVideos.filter((video) => Number(video.spot_id) === Number(spotId))
 }
 
@@ -1415,9 +1417,9 @@ function buildDirectionsUrl(spot) {
 
 function formatSpotDifficulty(value = '') {
   const difficulties = {
-    facil: { value: 'facil', label: 'F�cil', xp: 50 },
-    media: { value: 'media', label: 'M�dia', xp: 120 },
-    dificil: { value: 'dificil', label: 'Dif�cil', xp: 250 }
+    facil: { value: 'facil', label: 'Fácil', xp: 50 },
+    media: { value: 'media', label: 'Média', xp: 120 },
+    dificil: { value: 'dificil', label: 'Difícil', xp: 250 }
   }
 
   return difficulties[String(value || '').trim().toLowerCase()] || difficulties.facil
@@ -1442,7 +1444,7 @@ function debounce(callback, delay = 160) {
 window.focusSpotOnMap = focusSpotOnMap
 window.openVideoPublishModal = (spotId) => {
   if (!user) {
-    showToast('Faz login para publicar v�deos num spot.', { type: 'warning' })
+    showToast('Faz login para publicar vídeos num spot.', { type: 'warning' })
     return
   }
   const spot = currentSpots.find((item) => item.id === spotId)

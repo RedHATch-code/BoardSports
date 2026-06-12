@@ -1,5 +1,8 @@
 ﻿import { inicializarPaginaProtegida, obterUsuarioAtual } from './auth_utils.js'
 import {
+  aplicarTimeoutUsuarioModeracao,
+  banirUsuarioModeracao,
+  excluirSpotModeracao,
   moderarDenuncia,
   moderarSolicitacaoPublicacao,
   moderarSubmissãoXp,
@@ -8,8 +11,6 @@ import {
   obterSolicitacoesPublicacao
 } from './db_utils.js'
 import { showConfirm, showToast } from './ui_feedback.js'
-
-const ADMIN_EMAIL = 'tiagomendessss2022@gmail.com'
 
 const state = {
   user: null,
@@ -62,7 +63,7 @@ async function initModeraçãoPage() {
 }
 
 function isAllowedAdmin(user) {
-  return user?.email?.toLowerCase() === ADMIN_EMAIL && user?.perfil?.is_admin === true
+  return user?.perfil?.is_admin === true
 }
 
 function cacheDom() {
@@ -361,59 +362,142 @@ function renderDenuncias() {
     return
   }
 
-  ui.reportsList.innerHTML = items.map((item) => `
-    <article class="moderation-card">
-      <div class="moderation-card-top">
-        <div>
-          <h3>${escapeHtml(item.motivo || 'Denúncia')}</h3>
-          <p>${escapeHtml(item.detalhe || 'Sem detalhe adicional.')}</p>
+  ui.reportsList.innerHTML = items.map((item) => {
+    const targetUserId = getReportTargetUserId(item)
+    const spot = item.entidade_tipo === 'spot' ? item.entidade : null
+    const targetLabel = getReportTargetLabel(item)
+
+    return `
+      <article class="moderation-card">
+        <div class="moderation-card-top">
+          <div>
+            <h3>${escapeHtml(item.motivo || 'Denúncia')}</h3>
+            <p>${escapeHtml(item.detalhe || 'Sem detalhe adicional.')}</p>
+          </div>
+          <span class="moderation-status-badge" data-status="pendente">${escapeHtml(item.estado)}</span>
         </div>
-        <span class="moderation-status-badge" data-status="pendente">${escapeHtml(item.estado)}</span>
-      </div>
-      <div class="moderation-card-meta">
-        <span>Tipo: ${escapeHtml(item.entidade_tipo)}</span>
-        <span>ID: ${escapeHtml(item.entidade_id)}</span>
-        <span>Denunciante: ${escapeHtml(item.profiles?.nome || item.profiles?.email || 'Utilizador')}</span>
-        <span>${formatDate(item.data_criacao)}</span>
-      </div>
-      <label class="moderation-field">
-        <span>Nota de decisão</span>
-        <textarea rows="3" data-report-note="${item.id}" placeholder="Nota opcional para o denunciante"></textarea>
-      </label>
-      <div class="moderation-actions">
-        <button type="button" class="moderation-primary-button" data-report-resolve="${item.id}">Resolver</button>
-        <button type="button" class="moderation-danger-button" data-report-reject="${item.id}">Rejeitar denúncia</button>
-      </div>
-    </article>
-  `).join('')
+        <div class="moderation-card-meta">
+          <span>Tipo: ${escapeHtml(item.entidade_tipo)}</span>
+          <span>Alvo: ${escapeHtml(targetLabel)}</span>
+          <span>ID: ${escapeHtml(item.entidade_id)}</span>
+          <span>Denunciante: ${escapeHtml(item.profiles?.nome || item.profiles?.email || 'Utilizador')}</span>
+          <span>${formatDate(item.data_criacao)}</span>
+        </div>
+        <label class="moderation-field">
+          <span>Nota de decisão</span>
+          <textarea rows="3" data-report-note="${item.id}" placeholder="Nota opcional para o denunciante ou utilizador alvo"></textarea>
+        </label>
+        <div class="moderation-actions">
+          ${spot ? `<a class="moderation-secondary-button" href="/spot.html?id=${escapeHtml(spot.id)}">Abrir spot</a>` : ''}
+          ${spot ? `<button type="button" class="moderation-danger-button" data-report-action="delete-spot" data-report-id="${item.id}" data-spot-id="${escapeHtml(spot.id)}">Excluir spot</button>` : ''}
+          ${targetUserId ? `<button type="button" class="moderation-secondary-button" data-report-action="timeout-user" data-report-id="${item.id}" data-user-id="${escapeHtml(targetUserId)}">Timeout user</button>` : ''}
+          ${targetUserId ? `<button type="button" class="moderation-danger-button" data-report-action="ban-user" data-report-id="${item.id}" data-user-id="${escapeHtml(targetUserId)}">Banir user</button>` : ''}
+          <button type="button" class="moderation-primary-button" data-report-action="resolve" data-report-id="${item.id}">Resolver</button>
+          <button type="button" class="moderation-danger-button" data-report-action="reject" data-report-id="${item.id}">Rejeitar denúncia</button>
+        </div>
+      </article>
+    `
+  }).join('')
 }
 
 async function onReportClick(event) {
-  const resolve = event.target.closest('[data-report-resolve]')
-  const reject = event.target.closest('[data-report-reject]')
-  if (!resolve && !reject) return
+  const actionButton = event.target.closest('[data-report-action]')
+  if (!actionButton) return
 
-  const id = Number((resolve || reject).dataset.reportResolve || (resolve || reject).dataset.reportReject)
-  const estado = resolve ? 'resolvida' : 'rejeitada'
+  const action = actionButton.dataset.reportAction
+  const id = Number(actionButton.dataset.reportId)
   const note = ui.reportsList.querySelector(`[data-report-note="${id}"]`)?.value.trim() || ''
+  const report = state.denuncias.find((item) => Number(item.id) === id)
+  if (!report) return
 
-  const confirmed = await showConfirm({
-    title: estado === 'resolvida' ? 'Resolver denúncia' : 'Rejeitar denúncia',
-    message: 'Queres fechar esta denúncia?',
-    confirmText: estado === 'resolvida' ? 'Resolver' : 'Rejeitar',
-    danger: estado === 'rejeitada'
-  })
+  let result = null
 
-  if (!confirmed) return
+  if (action === 'resolve' || action === 'reject') {
+    const estado = action === 'resolve' ? 'resolvida' : 'rejeitada'
+    const confirmed = await showConfirm({
+      title: estado === 'resolvida' ? 'Resolver denúncia' : 'Rejeitar denúncia',
+      message: 'Queres fechar esta denúncia?',
+      confirmText: estado === 'resolvida' ? 'Resolver' : 'Rejeitar',
+      danger: estado === 'rejeitada'
+    })
 
-  const result = await moderarDenuncia(id, estado, note)
+    if (!confirmed) return
+    result = await moderarDenuncia(id, estado, note)
+  }
+
+  if (action === 'delete-spot') {
+    const spotId = Number(actionButton.dataset.spotId)
+    const confirmed = await showConfirm({
+      title: 'Excluir spot denunciado',
+      message: 'O spot deixa de aparecer no mapa e a denúncia fica resolvida. Queres continuar?',
+      confirmText: 'Excluir spot',
+      danger: true
+    })
+
+    if (!confirmed) return
+    result = await excluirSpotModeracao({ spotId, denunciaId: id, nota: note })
+  }
+
+  if (action === 'ban-user') {
+    const confirmed = await showConfirm({
+      title: 'Banir utilizador',
+      message: 'O utilizador fica bloqueado e deixa de poder participar. Queres continuar?',
+      confirmText: 'Banir user',
+      danger: true
+    })
+
+    if (!confirmed) return
+    result = await banirUsuarioModeracao({ userId: actionButton.dataset.userId, denunciaId: id, nota: note })
+  }
+
+  if (action === 'timeout-user') {
+    const hours = Number(window.prompt('Timeout por quantas horas?', '24'))
+    if (!Number.isFinite(hours) || hours <= 0) return
+
+    const confirmed = await showConfirm({
+      title: 'Aplicar timeout',
+      message: `O utilizador fica impedido de participar durante ${hours} horas. Queres continuar?`,
+      confirmText: 'Aplicar timeout',
+      danger: true
+    })
+
+    if (!confirmed) return
+    result = await aplicarTimeoutUsuarioModeracao({
+      userId: actionButton.dataset.userId,
+      timeoutUntil: new Date(Date.now() + hours * 60 * 60 * 1000).toISOString(),
+      denunciaId: id,
+      nota: note
+    })
+  }
+
   if (!result) {
-    showToast('Não foi possível moderar a denúncia.', { type: 'error' })
+    showToast('Não foi possível executar a ação de moderação.', { type: 'error' })
     return
   }
 
-  await carregarDenuncias()
-  showToast('Denúncia atualizada.', { type: 'success' })
+  await Promise.all([carregarDenuncias(), carregarSolicitacoes()])
+  showToast(getReportActionSuccessMessage(action), { type: 'success' })
+}
+
+function getReportTargetUserId(item) {
+  if (item.entidade_tipo === 'user') return item.entidade_id
+  if (item.entidade_tipo === 'spot') return item.entidade?.criador_id || null
+  return null
+}
+
+function getReportTargetLabel(item) {
+  if (item.entidade_tipo === 'spot' && item.entidade?.nome) return item.entidade.nome
+  if (item.entidade_tipo === 'user' && item.entidade?.nome) return item.entidade.nome
+  if (item.entidade_tipo === 'user' && item.entidade?.role) return `Utilizador ${item.entidade.role}`
+  return `${item.entidade_tipo || 'entidade'} #${item.entidade_id || '-'}`
+}
+
+function getReportActionSuccessMessage(action) {
+  if (action === 'delete-spot') return 'Spot excluído e denúncia resolvida.'
+  if (action === 'ban-user') return 'Utilizador banido e denúncia resolvida.'
+  if (action === 'timeout-user') return 'Timeout aplicado e denúncia resolvida.'
+  if (action === 'reject') return 'Denúncia rejeitada.'
+  return 'Denúncia atualizada.'
 }
 
 function buildXpSubmissionTitle(submissao) {

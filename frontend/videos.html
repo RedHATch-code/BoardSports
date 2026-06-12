@@ -85,13 +85,6 @@
   </section>
 </main>
 
-<script>
-  (async () => {
-    const env = await import('/env.js');
-    window.SUPABASE_URL = env.SUPABASE_URL;
-    window.SUPABASE_ANON_KEY = env.SUPABASE_ANON_KEY;
-  })();
-</script>
 <script type="module" src="js/videos_page.js"></script>
 <script src="js/responsive.js"></script>
 <script type="module" src="js/site_header.js"></script>

@@ -1,8 +1,6 @@
 import { fazerLogin, obterUsuarioAtual } from './auth_utils.js'
 import { supabase } from './supabase.js'
 
-const ADMIN_EMAIL = 'tiagomendessss2022@gmail.com'
-
 const form = document.getElementById('admin-login-form')
 const emailInput = document.getElementById('admin-email')
 const passwordInput = document.getElementById('admin-password')
@@ -39,11 +37,6 @@ form?.addEventListener('submit', async (event) => {
   const email = emailInput.value.trim().toLowerCase()
   const password = passwordInput.value
 
-  if (email !== ADMIN_EMAIL) {
-    mostrarMensagem('Este login só aceita o email do administrador principal.', 'error')
-    return
-  }
-
   if (!password) {
     mostrarMensagem('Indica a palavra-passe da conta admin.', 'error')
     return
@@ -59,7 +52,7 @@ form?.addEventListener('submit', async (event) => {
   }
 
   const user = await obterUsuarioAtual()
-  const isAllowedAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL && user?.perfil?.is_admin === true
+  const isAllowedAdmin = user?.perfil?.is_admin === true
 
   if (!isAllowedAdmin) {
     await terminarSessaoSemRedirect()

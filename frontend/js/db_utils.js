@@ -688,12 +688,16 @@ export async function obterSpots(filtros = {}) {
       return query
     }
 
-    const runSpotsQuery = (includeVideoUrl, includeBestSeason) => aplicarFiltros(
-      supabase
+    const runSpotsQuery = (includeVideoUrl, includeBestSeason) => {
+      let query = supabase
         .from('spots')
         .select(buildSpotsBaseSelect(includeVideoUrl, includeBestSeason))
         .order('data_criacao', { ascending: false })
-    )
+
+      if (!filtros.includeInactive) query = query.eq('ativo', true)
+
+      return aplicarFiltros(query)
+    }
 
     // The active Supabase schema used by the static site still lacks
     // spots.video_url, so we avoid the initial 400 on every map load.
@@ -1305,7 +1309,11 @@ export async function apagarSpot(id) {
   try {
     const { error } = await supabase
       .from('spots')
-      .delete()
+      .update({
+        ativo: false,
+        publico: false,
+        data_atualizacao: new Date().toISOString()
+      })
       .eq('id', id)
 
     if (error) throw error
@@ -1574,9 +1582,40 @@ export async function obterDenunciasModeracao({ estado = 'pendente' } = {}) {
 
     const { data, error } = await query
     if (error) throw error
-    return (data || []).map((item) => ({
+
+    const reports = (data || []).map((item) => ({
       ...item,
       profiles: item.denunciante || null
+    }))
+
+    const spotIds = [...new Set(reports
+      .filter((item) => item.entidade_tipo === 'spot')
+      .map((item) => Number(item.entidade_id))
+      .filter(Number.isFinite))]
+    const userIds = [...new Set(reports
+      .filter((item) => item.entidade_tipo === 'user')
+      .map((item) => item.entidade_id)
+      .filter(Boolean))]
+
+    const [spots, usersRes] = await Promise.all([
+      spotIds.length ? obterSpots({ ids: spotIds, includeInactive: true }) : Promise.resolve([]),
+      userIds.length
+        ? supabase.from('public_profiles').select('id, nome, role, foto_perfil').in('id', userIds)
+        : Promise.resolve({ data: [], error: null })
+    ])
+
+    if (usersRes.error) console.warn('Erro ao obter utilizadores denunciados:', usersRes.error)
+
+    const spotMap = new Map((spots || []).map((spot) => [String(spot.id), spot]))
+    const userMap = new Map((usersRes.data || []).map((profile) => [String(profile.id), profile]))
+
+    return reports.map((item) => ({
+      ...item,
+      entidade: item.entidade_tipo === 'spot'
+        ? spotMap.get(String(item.entidade_id)) || null
+        : item.entidade_tipo === 'user'
+          ? userMap.get(String(item.entidade_id)) || null
+          : null
     }))
   } catch (error) {
     console.error('Erro ao obter denúncias:', error)
@@ -1596,6 +1635,55 @@ export async function moderarDenuncia(id, estado, nota = '') {
     return data
   } catch (error) {
     console.error('Erro ao moderar denúncia:', error)
+    return null
+  }
+}
+
+export async function excluirSpotModeracao({ spotId, denunciaId = null, nota = '' }) {
+  try {
+    const { data, error } = await supabase.rpc('admin_excluir_spot', {
+      p_spot_id: Number(spotId),
+      p_denuncia_id: denunciaId ? Number(denunciaId) : null,
+      p_nota_admin: nota || null
+    })
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Erro ao excluir spot por moderação:', error)
+    return null
+  }
+}
+
+export async function banirUsuarioModeracao({ userId, denunciaId = null, nota = '' }) {
+  try {
+    const { data, error } = await supabase.rpc('admin_banir_user', {
+      p_user_id: userId,
+      p_denuncia_id: denunciaId ? Number(denunciaId) : null,
+      p_nota_admin: nota || null
+    })
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Erro ao banir utilizador por moderação:', error)
+    return null
+  }
+}
+
+export async function aplicarTimeoutUsuarioModeracao({ userId, timeoutUntil, denunciaId = null, nota = '' }) {
+  try {
+    const { data, error } = await supabase.rpc('admin_timeout_user', {
+      p_user_id: userId,
+      p_timeout_until: timeoutUntil,
+      p_denuncia_id: denunciaId ? Number(denunciaId) : null,
+      p_nota_admin: nota || null
+    })
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Erro ao aplicar timeout por moderação:', error)
     return null
   }
 }

@@ -165,6 +165,30 @@ function buildProfilePayload(user, existingProfile = null, fallbackProfile = {})
   }
 }
 
+function getModerationRestriction(perfil = null) {
+  if (!perfil) return null
+
+  const status = String(perfil.moderation_status || '').toLowerCase()
+  if (status === 'banned' || perfil.ativo === false) {
+    return {
+      type: 'banned',
+      message: perfil.ban_reason || 'Esta conta foi banida pela moderação.'
+    }
+  }
+
+  if (status === 'timeout' && perfil.timeout_until) {
+    const timeoutDate = new Date(perfil.timeout_until)
+    if (Number.isFinite(timeoutDate.getTime()) && timeoutDate > new Date()) {
+      return {
+        type: 'timeout',
+        message: `${perfil.ban_reason || 'Esta conta está em timeout temporário.'} Volta depois de ${timeoutDate.toLocaleString('pt-PT')}.`
+      }
+    }
+  }
+
+  return null
+}
+
 export function obterEmailRegistoPendente() {
   return readStorage(PENDING_SIGNUP_EMAIL_KEY)
 }
@@ -315,6 +339,17 @@ export async function obterUsuarioAtual() {
       perfil = await garantirPerfilUtilizador(user)
     }
 
+    const restriction = getModerationRestriction(perfil)
+    if (restriction) {
+      try {
+        window.sessionStorage.setItem('boardsports.auth-restriction', restriction.message)
+      } catch (storageError) {
+        // Ignore storage failures; the sign-out is the important part.
+      }
+      await supabase.auth.signOut()
+      return null
+    }
+
     return { ...user, perfil }
   } catch (error) {
     console.error('Erro ao obter utilizador:', error)
@@ -341,7 +376,16 @@ export async function fazerLogin(email, password) {
 
     if (error) throw error
 
-    await garantirPerfilUtilizador(data.user, { email })
+    const perfil = await garantirPerfilUtilizador(data.user, { email })
+    const restriction = getModerationRestriction(perfil)
+    if (restriction) {
+      await supabase.auth.signOut()
+      return {
+        sucesso: false,
+        codigo: restriction.type,
+        erro: restriction.message
+      }
+    }
 
     if (data.user?.email_confirmed_at) {
       limparEmailRegistoPendente()

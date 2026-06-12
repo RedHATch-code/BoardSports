@@ -18,6 +18,7 @@
   --rift-radius: 8px;
   --rift-pill: 999px;
   --rift-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+  --dock-height: 76px;
 }
 
 :root[data-density="compact"] {
@@ -1606,33 +1607,16 @@ body.map-page .map-page-shell:has(.map-live-stage) {
 }
 
 /* BoardSports product polish: stronger brand, fewer repeated boxes, unified actions. */
-body:not(.site-dock-auth)::after {
-  content: "BoardSports";
-  position: fixed;
-  left: clamp(14px, 2vw, 28px);
-  bottom: clamp(12px, 1.8vw, 22px);
-  z-index: 1200;
-  height: auto;
-  pointer-events: none;
-  background: none;
-  color: rgba(244, 241, 234, 0.22);
-  font-family: var(--ui-font-display);
-  font-size: clamp(1.5rem, 3.8vw, 4.2rem);
-  font-weight: 950;
-  line-height: 0.8;
-  letter-spacing: 0;
-  text-transform: uppercase;
-  transform: none;
-  animation: none;
-}
-
-body.map-page::after {
+body::after {
   display: none !important;
   content: none !important;
 }
 
 .site-dock__shell {
   max-width: min(1480px, calc(100vw - 32px)) !important;
+  min-height: var(--dock-height) !important;
+  height: auto !important;
+  align-items: center !important;
 }
 
 .site-dock.is-menu-open {
@@ -1645,17 +1629,20 @@ body.map-page::after {
 
 .site-dock__brand-link {
   gap: 12px !important;
+  align-items: center !important;
+  min-height: 100%;
 }
 
 .site-dock__brand-mark {
   width: 58px !important;
   height: 58px !important;
+  align-self: center !important;
 }
 
 .site-dock__brand-title {
   font-family: var(--ui-font-display);
   font-size: clamp(1.05rem, 1.6vw, 1.45rem) !important;
-  line-height: 0.9;
+  line-height: 1;
   text-transform: uppercase;
 }
 
@@ -2725,5 +2712,124 @@ body::after {
   body.map-page .map-live-stage #map {
     height: 54svh !important;
     min-height: 330px !important;
+  }
+}
+
+/* Tablet and short landscape screens need the map controls outside the Leaflet canvas. */
+@media (min-width: 721px) and (max-width: 1180px) {
+  body.map-page .map-page-shell:has(.map-live-stage) {
+    width: min(100% - 28px, 1040px) !important;
+    padding-top: 14px !important;
+    gap: 14px !important;
+  }
+
+  body.map-page .map-live-stage {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body.map-page .map-live-stage::before {
+    display: none !important;
+  }
+
+  body.map-page .map-live-stage #map {
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    height: clamp(300px, 42svh, 420px) !important;
+    min-height: 300px !important;
+    border: 1px solid rgba(244, 241, 234, 0.16) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 22px 58px rgba(0, 0, 0, 0.34) !important;
+    overflow: hidden !important;
+  }
+
+  body.map-page .map-stage-overlay,
+  body.map-page .map-stage-overlay--intro,
+  body.map-page .map-stage-overlay--filters {
+    position: static !important;
+    inset: auto !important;
+    z-index: auto !important;
+  }
+
+  body.map-page .map-stage-overlay--intro {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: stretch !important;
+    max-width: none !important;
+    gap: 12px !important;
+    pointer-events: auto !important;
+  }
+
+  body.map-page .map-stage-overlay--intro .map-page-copy {
+    width: auto !important;
+    min-width: 0 !important;
+  }
+
+  body.map-page .map-stage-overlay--intro h1 {
+    max-width: none !important;
+    font-size: clamp(1.8rem, 4vw, 3rem) !important;
+    line-height: 0.92 !important;
+  }
+
+  body.map-page .map-stage-overlay--intro .map-page-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(100px, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  body.map-page .map-stage-overlay--intro .map-stat-card {
+    width: auto !important;
+    min-width: 0 !important;
+  }
+
+  body.map-page .map-stage-overlay--filters {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 14px !important;
+    border-radius: 14px !important;
+  }
+
+  body.map-page .map-stage-overlay--filters .map-toolbar-actions {
+    display: grid !important;
+    grid-column: 1 / -1 !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  body.map-page .map-stage-overlay--filters .map-toolbar-actions button {
+    width: 100% !important;
+  }
+
+  body.map-page .map-live-stage .leaflet-control-zoom {
+    margin-top: 12px !important;
+    margin-left: 12px !important;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 860px) {
+  body.map-page .map-stage-overlay--intro,
+  body.map-page .map-stage-overlay--filters,
+  body.map-page .map-stage-overlay--filters .map-toolbar-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.map-page .map-page-shell:has(.map-live-stage) {
+    padding-top: 92px !important;
+  }
+
+  body.map-page .map-live-stage #map {
+    height: clamp(340px, 50svh, 500px) !important;
+    min-height: 340px !important;
   }
 }

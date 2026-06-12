@@ -54,6 +54,16 @@ function redirecionarParaDashboard() {
   }, 900)
 }
 
+try {
+  const restrictionMessage = window.sessionStorage.getItem('boardsports.auth-restriction')
+  if (restrictionMessage) {
+    window.sessionStorage.removeItem('boardsports.auth-restriction')
+    mostrarMensagem(restrictionMessage, 'error')
+  }
+} catch (error) {
+  // Session storage can be unavailable in private modes.
+}
+
 loginForm.onsubmit = async (event) => {
   event.preventDefault()
 

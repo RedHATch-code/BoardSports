@@ -13,6 +13,7 @@ const entriesToCopy = [
   '404.html',
   '.htaccess',
   'admin-login.html',
+  'apresentacao.html',
   'apresentacao-tecnica.html',
   'configuracao.html',
   'contacto.html',

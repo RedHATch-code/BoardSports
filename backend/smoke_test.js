@@ -3,7 +3,7 @@
 const checks = [
   {
     path: '/',
-    markers: ['<title>', 'data-cinematic-reel', 'id="contactos"', 'class="home-contact-strip"', 'riftsuport.tm@gmail.com', 'class="footer-sponsor-pill"']
+    markers: ['<title>', 'data-cinematic-reel', 'id="contactos"', 'class="site-footer"', 'riftsuport.tm@gmail.com', 'class="footer-sponsor-pill"']
   },
   {
     path: '/login.html',
@@ -11,7 +11,7 @@ const checks = [
   },
   {
     path: '/admin-login.html',
-    markers: ['id="admin-login-form"', 'tiagomendessss2022@gmail.com', 'js/admin_login.js']
+    markers: ['id="admin-login-form"', 'admin@boardsports.pt', 'js/admin_login.js']
   },
   {
     path: '/apresentacao.html',

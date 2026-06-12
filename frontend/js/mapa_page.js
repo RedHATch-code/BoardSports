@@ -8,7 +8,7 @@ import {
   criarSpot,
   obterConquistasDiarias,
   obterCategoriasPorModalidade,
-  obterGaleriaVideosSpots,
+  obterGaleriaVídeosSpots,
   obterManobras,
   obterModalidades,
   obterSpots,
@@ -280,7 +280,7 @@ async function loadSpots() {
   })
   currentSpots = filterLoadedSpots(allLoadedSpots)
   currentVideos = currentSpots.length
-    ? await obterGaleriaVideosSpots({ spot_ids: currentSpots.map((spot) => spot.id) })
+    ? await obterGaleriaVídeosSpots({ spot_ids: currentSpots.map((spot) => spot.id) })
     : []
 
   rebuildVideoCounts()
@@ -307,7 +307,7 @@ async function clearMapFilters() {
 async function applyTextFiltersAndRender() {
   currentSpots = filterLoadedSpots(allLoadedSpots)
   currentVideos = currentSpots.length
-    ? await obterGaleriaVideosSpots({ spot_ids: currentSpots.map((spot) => spot.id) })
+    ? await obterGaleriaVídeosSpots({ spot_ids: currentSpots.map((spot) => spot.id) })
     : []
 
   rebuildVideoCounts()

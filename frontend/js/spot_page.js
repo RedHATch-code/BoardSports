@@ -128,7 +128,7 @@ async function renderImages() {
 }
 
 async function renderVideos() {
-  videos = await obterGaleriaVideosSpots({ spot_id: spotId })
+  videos = await obterGaleriaVídeosSpots({ spot_id: spotId })
   if (!videos.length) {
     ui.videos.innerHTML = '<article class="map-empty-card"><p>Ainda não existem vídeos neste spot.</p></article>'
     return

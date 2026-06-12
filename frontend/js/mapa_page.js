@@ -8,7 +8,7 @@ import {
   criarSpot,
   obterConquistasDiarias,
   obterCategoriasPorModalidade,
-  obterGaleriaVídeosSpots,
+  obterGaleriaVideosSpots,
   obterManobras,
   obterModalidades,
   obterSpots,
@@ -280,7 +280,7 @@ async function loadSpots() {
   })
   currentSpots = filterLoadedSpots(allLoadedSpots)
   currentVideos = currentSpots.length
-    ? await obterGaleriaV�deosSpots({ spot_ids: currentSpots.map((spot) => spot.id) })
+    ? await obterGaleriaVideosSpots({ spot_ids: currentSpots.map((spot) => spot.id) })
     : []
 
   rebuildVideoCounts()
@@ -307,7 +307,7 @@ async function clearMapFilters() {
 async function applyTextFiltersAndRender() {
   currentSpots = filterLoadedSpots(allLoadedSpots)
   currentVideos = currentSpots.length
-    ? await obterGaleriaV�deosSpots({ spot_ids: currentSpots.map((spot) => spot.id) })
+    ? await obterGaleriaVideosSpots({ spot_ids: currentSpots.map((spot) => spot.id) })
     : []
 
   rebuildVideoCounts()
@@ -1459,6 +1459,7 @@ window.deleteSpot = deleteSpot
 window.deleteSpotVideo = deleteSpotVideo
 
 document.addEventListener('DOMContentLoaded', initMapPage)
+
 
 
 

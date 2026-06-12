@@ -177,7 +177,7 @@ function generateEnvFile() {
 
   fs.writeFileSync(
     path.join(distDir, 'env.js'),
-    `export const SUPABASE_URL = '${escapeJs(supabaseUrl)}'\nexport const SUPABASE_ANON_KEY = '${escapeJs(supabaseAnonKey)}'\n`,
+    `export const SUPABASE_URL = '${escapeJs(supabaseUrl)}'\nexport const SUPABASE_ANON_KEY = '${escapeJs(supabaseAnonKey)}'\n\n// Also make available globally for non-module scripts\nif (typeof window !== 'undefined') {\n  window.SUPABASE_URL = SUPABASE_URL\n  window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY\n}\n`,
     'utf8'
   )
 }

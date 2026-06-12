@@ -8,7 +8,7 @@ import {
   obterCondicoesSpot,
   obterEstatisticasSpot,
   obterFavoritos,
-  obterGaleriaVideosSpots,
+  obterGaleriaVídeosSpots,
   obterImagensSpot,
   obterRecomendacoesSpots,
   obterSpots

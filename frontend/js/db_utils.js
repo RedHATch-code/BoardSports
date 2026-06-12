@@ -1301,8 +1301,6 @@ export async function atualizarSpot(id, updates) {
   }
 }
 
-export const obterGaleriaVideosSpots = obterGaleriaVídeosSpots
-
 export async function apagarSpot(id) {
   try {
     const { error } = await supabase

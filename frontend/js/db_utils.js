@@ -1372,14 +1372,26 @@ export async function obterComentarios(entidade_tipo, entidade_id) {
   try {
     const { data, error } = await supabase
       .from('comentarios')
-      .select('id, entidade_tipo, entidade_id, user_id, conteudo, data_criacao, profiles(nome, email, foto_perfil)')
+      .select('id, entidade_tipo, entidade_id, user_id, conteudo, data_criacao')
       .eq('entidade_tipo', entidade_tipo)
       .eq('entidade_id', String(entidade_id))
       .eq('ativo', true)
       .order('data_criacao', { ascending: false })
 
     if (error) throw error
-    return data || []
+
+    const userIds = [...new Set((data || []).map((item) => item.user_id).filter(Boolean))]
+    const profilesRes = userIds.length
+      ? await supabase.from('public_profiles').select('id, nome, foto_perfil, role').in('id', userIds)
+      : { data: [], error: null }
+
+    if (profilesRes.error) console.warn('Erro ao obter autores dos comentários:', profilesRes.error)
+
+    const profileMap = new Map((profilesRes.data || []).map((profile) => [profile.id, profile]))
+    return (data || []).map((item) => ({
+      ...item,
+      profiles: profileMap.get(item.user_id) || null
+    }))
   } catch (error) {
     console.error('Erro ao obter comentários:', error)
     return []
@@ -1470,13 +1482,25 @@ export async function obterImagensSpot(spotId) {
   try {
     const { data, error } = await supabase
       .from('spot_imagens')
-      .select('id, spot_id, user_id, image_url, storage_path, legenda, data_criacao, profiles(nome, email)')
+      .select('id, spot_id, user_id, image_url, storage_path, legenda, data_criacao')
       .eq('spot_id', spotId)
       .eq('ativo', true)
       .order('data_criacao', { ascending: false })
 
     if (error) throw error
-    return data || []
+
+    const userIds = [...new Set((data || []).map((item) => item.user_id).filter(Boolean))]
+    const profilesRes = userIds.length
+      ? await supabase.from('public_profiles').select('id, nome, foto_perfil, role').in('id', userIds)
+      : { data: [], error: null }
+
+    if (profilesRes.error) console.warn('Erro ao obter autores das imagens:', profilesRes.error)
+
+    const profileMap = new Map((profilesRes.data || []).map((profile) => [profile.id, profile]))
+    return (data || []).map((item) => ({
+      ...item,
+      profiles: profileMap.get(item.user_id) || null
+    }))
   } catch (error) {
     console.error('Erro ao obter imagens do spot:', error)
     return []

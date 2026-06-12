@@ -51,6 +51,13 @@ npm run smoke
 
 Os ficheiros finais para entregar estao em `entrega-pap/`.
 
+Manual de utilizador para avaliacao:
+
+```text
+relatorios/MANUAL-UTILIZADOR.md
+entrega-pap/documentacao/MANUAL-UTILIZADOR-ENTREGA.md
+```
+
 O ficheiro principal de codigo-fonte e:
 
 ```text

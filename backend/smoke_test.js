@@ -11,7 +11,7 @@ const checks = [
   },
   {
     path: '/admin-login.html',
-    markers: ['id="admin-login-form"', 'admin@boardsports.pt', 'js/admin_login.js']
+    markers: ['id="admin-login-form"', 'placeholder="admin"', 'js/admin_login.js']
   },
   {
     path: '/apresentacao.html',

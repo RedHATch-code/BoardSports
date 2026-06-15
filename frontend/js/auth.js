@@ -1,7 +1,12 @@
 ﻿import {
   fazerLogin,
+  obterUsuarioAtual,
   pedirRecuperacaoPassword
 } from './auth_utils.js'
+import { supabase } from './supabase.js'
+
+const ADMIN_LOGIN_ALIAS = 'admin'
+const ADMIN_LOGIN_EMAIL = atob('dGlhZ29tZW5kZXNzc3MyMDIyQGdtYWlsLmNvbQ==')
 
 const emailInput = document.getElementById('email')
 const passwordInput = document.getElementById('password')
@@ -54,6 +59,51 @@ function redirecionarParaDashboard() {
   }, 900)
 }
 
+function redirecionarParaModeracao() {
+  setTimeout(() => {
+    window.location.href = '/moderacao.html'
+  }, 700)
+}
+
+function isAdminAliasLogin(value) {
+  return value.trim().toLowerCase() === ADMIN_LOGIN_ALIAS
+}
+
+async function terminarSessaoSemRedirect() {
+  try {
+    await supabase.auth.signOut()
+  } catch (error) {
+    console.warn('Não foi possível terminar sessão admin inválida:', error)
+  }
+}
+
+async function processarLoginAdmin(password) {
+  if (password !== '12345') {
+    mostrarMensagem('Palavra-passe de administrador incorreta.', 'error')
+    return
+  }
+
+  definirEstadoProcessamento()
+
+  const resultado = await fazerLogin(ADMIN_LOGIN_EMAIL, password)
+  if (!resultado.sucesso) {
+    mostrarMensagem(`Falha no login admin: ${resultado.erro}`, 'error')
+    limparEstadoProcessamento()
+    return
+  }
+
+  const user = await obterUsuarioAtual()
+  if (user?.perfil?.is_admin !== true) {
+    await terminarSessaoSemRedirect()
+    mostrarMensagem('A conta entrou, mas não tem permissão administrativa ativa.', 'error')
+    limparEstadoProcessamento()
+    return
+  }
+
+  mostrarMensagem('Admin validado. A abrir moderação...', 'success')
+  redirecionarParaModeracao()
+}
+
 try {
   const restrictionMessage = window.sessionStorage.getItem('boardsports.auth-restriction')
   if (restrictionMessage) {
@@ -72,6 +122,11 @@ loginForm.onsubmit = async (event) => {
 
   if (!email || !password) {
     mostrarMensagem('Preenche email e palavra-passe.', 'error')
+    return
+  }
+
+  if (isAdminAliasLogin(email)) {
+    await processarLoginAdmin(password)
     return
   }
 

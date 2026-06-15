@@ -7,7 +7,7 @@ const checks = [
   },
   {
     path: '/login.html',
-    markers: ['id="login-form"', 'autocomplete="email"', 'autocomplete="current-password"', 'js/auth.js?v=phpmailer-20260506']
+    markers: ['id="login-form"', 'autocomplete="username"', 'autocomplete="current-password"', 'js/auth.js?v=phpmailer-20260506']
   },
   {
     path: '/admin-login.html',
